@@ -1,0 +1,27 @@
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env.local
+frontend/.env.production
+
+# Backend
+backend/.venv/
+backend/venv/
+backend/.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets e dados locais
+*.db
+*.sqlite
+*.sqlite3
+.streamlit/secrets.toml

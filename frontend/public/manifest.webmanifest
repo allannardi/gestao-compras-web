@@ -1,0 +1,24 @@
+{
+  "name": "Gestão de Compras",
+  "short_name": "Compras",
+  "description": "Gestão de compras e histórico de preços",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f2f5f8",
+  "theme_color": "#0f4c81",
+  "lang": "pt-BR",
+  "categories": [
+    "finance",
+    "shopping",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "/icons/app_icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
