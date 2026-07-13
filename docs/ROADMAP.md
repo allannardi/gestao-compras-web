@@ -8,17 +8,42 @@
 - endpoint `/health`;
 - tela inicial mobile;
 - estrutura PWA;
-- documentação de arquitetura;
 - sem alteração no banco de produção.
 
-## v0.1.1 — Integração local
+## v0.1.1 — Integração local validada
 
-- frontend consulta `/health`;
-- configuração de ambientes;
-- tratamento de indisponibilidade;
-- padronização de respostas da API.
+- frontend e backend funcionando no Windows;
+- status `API conectada`;
+- correção do registro público do npm;
+- primeiro commit no repositório `gestao-compras-web`.
 
-## v0.2.0 — Banco e autenticação
+## v0.2.0 — Prova inicial da NFC-e
+
+- câmera web com preferência pela câmera traseira;
+- alternativa por foto já tirada;
+- envio de imagem ao FastAPI;
+- leitura do QR Code;
+- consulta da página pública da NFC-e;
+- conferência mobile em cards;
+- consolidação de itens idênticos;
+- nenhuma gravação em banco.
+
+## v0.2.1 — Correção da câmera
+
+- associação reativa do `MediaStream` ao vídeo;
+- captura liberada somente após o primeiro quadro;
+- câmera local validada.
+
+## v0.2.2 — Deploy online e validação no iPhone
+
+- backend preparado para Render;
+- frontend preparado para Vercel;
+- CORS de produção configurável;
+- status da API com tentativa manual de reconexão;
+- HTTPS para permitir câmera no Safari;
+- teste pelo navegador e pelo atalho da tela inicial.
+
+## v0.3.0 — Banco e autenticação
 
 - criar projeto Supabase;
 - criar schema PostgreSQL;
@@ -27,19 +52,9 @@
 - criar conta familiar;
 - proteger endpoints.
 
-## v0.3.0 — Prova da NFC-e
-
-- captura de imagem no iPhone;
-- envio ao FastAPI;
-- leitura do QR Code;
-- consulta da NFC-e;
-- conferência em cards;
-- ainda sem gravar compra definitiva.
-
 ## v0.4.0 — Registro de compras
 
 - confirmar compra;
-- consolidar itens idênticos;
 - produtos automáticos;
 - categorias;
 - duplicidade de NFC-e;
@@ -66,6 +81,5 @@
 - exportar dados do Turso;
 - importar no PostgreSQL;
 - conferir totais;
-- testes no iPhone;
 - período de uso paralelo;
 - decisão sobre substituição do Streamlit.

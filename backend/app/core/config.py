@@ -12,6 +12,10 @@ class Settings(BaseSettings):
         default="http://localhost:3000",
         validation_alias="CORS_ORIGINS",
     )
+    cors_origin_regex_raw: str = Field(
+        default="",
+        validation_alias="CORS_ORIGIN_REGEX",
+    )
 
     supabase_url: str = ""
     supabase_service_role_key: str = ""
@@ -25,10 +29,15 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         return [
-            origin.strip()
+            origin.strip().rstrip("/")
             for origin in self.cors_origins_raw.split(",")
             if origin.strip()
         ]
+
+    @property
+    def cors_origin_regex(self) -> str | None:
+        value = self.cors_origin_regex_raw.strip()
+        return value or None
 
 
 @lru_cache

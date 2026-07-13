@@ -4,6 +4,7 @@ frontend/.next/
 frontend/out/
 frontend/.env.local
 frontend/.env.production
+frontend/.vercel/
 
 # Backend
 backend/.venv/
