@@ -2,30 +2,12 @@
 
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 
+import { savePurchase } from "@/services/compras";
+import type { CompraSalva } from "@/types/compras";
+import type { NfcePreview } from "@/types/nfce";
+
 type CaptureState = "idle" | "camera" | "processing" | "result" | "error";
-
-type NfceItem = {
-  descricao_original: string;
-  quantidade: number;
-  unidade: string;
-  valor_unitario: number;
-  valor_total: number;
-};
-
-type NfcePreview = {
-  ok: boolean;
-  mensagem: string;
-  qr_texto: string;
-  chave_nfce: string;
-  mercado_nome: string;
-  cnpj: string;
-  data_compra: string;
-  valor_total: number;
-  forma_pagamento: string;
-  valor_pago: number;
-  itens: NfceItem[];
-  html_obtido: boolean;
-};
+type SaveState = "idle" | "saving" | "saved";
 
 type Props = {
   apiUrl: string;
@@ -62,6 +44,9 @@ export function NfceCapture({ apiUrl, accessToken }: Props) {
   const [state, setState] = useState<CaptureState>("idle");
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<NfcePreview | null>(null);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveError, setSaveError] = useState("");
+  const [savedPurchase, setSavedPurchase] = useState<CompraSalva | null>(null);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -130,6 +115,9 @@ export function NfceCapture({ apiUrl, accessToken }: Props) {
   const startCamera = async () => {
     setError("");
     setPreview(null);
+    setSaveState("idle");
+    setSaveError("");
+    setSavedPurchase(null);
     setCameraReady(false);
 
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -173,6 +161,9 @@ export function NfceCapture({ apiUrl, accessToken }: Props) {
     setState("processing");
     setError("");
     setPreview(null);
+    setSaveState("idle");
+    setSaveError("");
+    setSavedPurchase(null);
 
     const formData = new FormData();
     formData.append("file", file, filename);
@@ -244,11 +235,34 @@ export function NfceCapture({ apiUrl, accessToken }: Props) {
     await sendImage(file, file.name || "nfce-foto.jpg");
   };
 
+  const persistPurchase = async () => {
+    if (!preview || saveState === "saving") return;
+
+    setSaveState("saving");
+    setSaveError("");
+
+    try {
+      const result = await savePurchase(apiUrl, accessToken, preview);
+      setSavedPurchase(result);
+      setSaveState("saved");
+    } catch (requestError) {
+      setSaveState("idle");
+      setSaveError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Não foi possível salvar a compra.",
+      );
+    }
+  };
+
   const reset = () => {
     stopCamera();
     setState("idle");
     setError("");
     setPreview(null);
+    setSaveState("idle");
+    setSaveError("");
+    setSavedPurchase(null);
   };
 
   return (
@@ -275,7 +289,7 @@ export function NfceCapture({ apiUrl, accessToken }: Props) {
           >
             Usar uma foto já tirada
           </button>
-          <p className="privacy-note">Nesta fase, nenhuma compra será gravada.</p>
+          <p className="privacy-note">A compra só será salva depois da sua confirmação.</p>
         </div>
       )}
 
@@ -420,13 +434,51 @@ export function NfceCapture({ apiUrl, accessToken }: Props) {
             </div>
           )}
 
-          <div className="not-saved-card">
-            <strong>Teste seguro</strong>
-            <span>Nenhuma informação foi salva. Esta versão valida apenas autenticação, família e leitura.</span>
-          </div>
+          {saveError && (
+            <div className="feedback-card error-card" role="alert">
+              <strong>Não foi possível salvar</strong>
+              <p>{saveError}</p>
+            </div>
+          )}
+
+          {saveState === "saved" && savedPurchase ? (
+            <div className="saved-purchase-card" role="status">
+              <div className="saved-purchase-icon" aria-hidden="true">✓</div>
+              <div>
+                <strong>Compra salva com sucesso</strong>
+                <span>
+                  {savedPurchase.itens_salvos} itens registrados · {savedPurchase.produtos_criados} produtos novos
+                </span>
+              </div>
+            </div>
+          ) : (
+            <div className="save-confirmation-card">
+              <strong>Conferiu os dados?</strong>
+              <span>Ao salvar, a compra ficará disponível somente para os membros da sua família.</span>
+              <button
+                className="capture-button save-purchase-button"
+                type="button"
+                onClick={() => void persistPurchase()}
+                disabled={
+                  saveState === "saving" ||
+                  !preview.ok ||
+                  preview.itens.length === 0 ||
+                  preview.valor_total <= 0 ||
+                  !preview.data_compra
+                }
+              >
+                {saveState === "saving" ? "Salvando compra…" : "Salvar compra"}
+              </button>
+              {(!preview.ok || preview.itens.length === 0 || !preview.data_compra) && (
+                <small>
+                  A gravação será liberada quando a NFC-e retornar data e itens válidos.
+                </small>
+              )}
+            </div>
+          )}
 
           <button className="secondary-action full-width" type="button" onClick={reset}>
-            Ler outra NFC-e
+            {saveState === "saved" ? "Ler uma nova NFC-e" : "Cancelar e ler outra NFC-e"}
           </button>
         </div>
       )}

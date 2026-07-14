@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { Session } from "@supabase/supabase-js";
 import { FormEvent, useEffect, useState } from "react";
 
@@ -176,18 +177,33 @@ export function AuthGate({ apiUrl }: Props) {
   if (!session) {
     return (
       <section className="auth-shell">
-        <div className="hero-card compact-hero">
-          <div>
-            <p className="eyebrow">Gestão de Compras Web</p>
-            <h1>{mode === "login" ? "Acesse sua família" : "Crie sua família"}</h1>
-            <p className="subtitle">
-              Cada família possui seus próprios membros e dados, completamente
-              separados das demais contas.
-            </p>
+        <section className="auth-brand-card" aria-label="Gestão de Compras">
+          <div className="auth-brand-row">
+            <Image
+              className="auth-brand-logo"
+              src="/icons/app_icon.png"
+              alt="Logo do Gestão de Compras"
+              width={92}
+              height={92}
+              priority
+            />
+            <div className="auth-brand-name">
+              <span>GESTÃO DE</span>
+              <strong>COMPRAS</strong>
+            </div>
           </div>
-        </div>
+          <p>ACESSE A SUA CONTA</p>
+        </section>
 
         <form className="auth-card" onSubmit={submit}>
+          <div className="auth-mode-copy">
+            <strong>{mode === "login" ? "Bem-vindo de volta" : "Crie o espaço da sua família"}</strong>
+            <span>
+              {mode === "login"
+                ? "Entre para consultar e registrar as compras da sua família."
+                : "Cada família possui seus próprios membros e dados, separados das demais contas."}
+            </span>
+          </div>
           <div className="auth-tabs">
             <button
               type="button"

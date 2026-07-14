@@ -1,0 +1,25 @@
+Gestão de Compras Web v0.3.1 — Primeira gravação de compras
+
+Baseline: v0.3.0 validada
+
+Principais entregas:
+- card inicial com logo e identidade Gestão de Compras;
+- endpoint POST /api/v1/compras;
+- migration 002_compras_nfce.sql;
+- gravação atômica por família;
+- supermercados, produtos, itens e histórico de preços;
+- bloqueio de NFC-e duplicada;
+- confirmação explícita antes de salvar.
+
+Validação realizada:
+- 16 testes Python aprovados;
+- compilação Python aprovada;
+- sintaxe TypeScript/TSX aprovada.
+
+O patch não inclui:
+- .env ou .env.local;
+- tokens e chaves;
+- node_modules;
+- .venv;
+- package-lock.json;
+- bancos ou dados pessoais.

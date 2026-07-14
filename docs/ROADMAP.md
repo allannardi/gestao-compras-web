@@ -1,54 +1,36 @@
 # Roadmap — Gestão de Compras Web
 
-## v0.1.x — Fundação local — Validada
-
-- Next.js e FastAPI;
-- conexão local;
-- correção do npm.
-
-## v0.2.x — NFC-e online — Validada
-
-- câmera e foto;
-- leitura e consulta da NFC-e;
-- correção da tela preta;
-- Vercel + Render;
-- validação no iPhone e PWA.
-
-## v0.3.0 — Fundação SaaS por Famílias — Atual
+## v0.3.0 — Fundação SaaS por Famílias — validada
 
 - Supabase Auth;
-- criar família;
-- primeiro membro Administrador;
-- sessão persistente;
-- RLS e isolamento por `familia_id`;
-- contexto `/api/v1/auth/me`;
-- NFC-e protegida por login;
-- nenhuma compra gravada ainda.
+- família e administrador automáticos;
+- isolamento por `familia_id`;
+- câmera e consulta online preservadas.
 
-## v0.3.1 — Primeira gravação
+## v0.3.1 — Primeira gravação — em validação
 
-- schema de compras, itens, produtos, categorias e supermercados;
-- salvar a compra no PostgreSQL;
-- impedir duplicidade por família;
-- histórico de preços inicial.
+- identidade visual no login;
+- compras e itens no PostgreSQL;
+- supermercados e produtos automáticos;
+- histórico de preços;
+- bloqueio de duplicidade.
 
-## v0.3.2 — Operação principal
+## v0.3.2 — Compras salvas
 
-- listar compras da família;
-- detalhes em cards;
-- produtos para revisão;
-- categorias e mercados.
+- listagem em cards mobile;
+- detalhes na própria página;
+- filtros básicos;
+- exclusão controlada de compra de teste.
 
-## v0.3.3 — Membros e convites
+## v0.4.0 — Produtos e classificação
 
-- tela da família;
-- convidar membro;
-- aceitar convite;
-- limites do plano Free.
+- produtos para revisar;
+- categorias;
+- regras automáticas;
+- edição mobile.
 
-## v0.4.0 — Dashboard e histórico
+## v0.5.0 — Histórico e dashboard
 
-- resumo mensal;
-- gastos por categoria e supermercado;
-- top produtos;
-- variação de preços.
+- histórico de preços;
+- comparação mensal;
+- top produtos e categorias.

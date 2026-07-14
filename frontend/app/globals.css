@@ -655,3 +655,157 @@ h2 {
     font-size: 0.9rem;
   }
 }
+
+/* v0.3.1 — identidade visual no acesso e gravação da compra */
+.auth-brand-card {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  padding: 22px 20px 20px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 12px 32px rgba(30, 48, 64, 0.08);
+}
+
+.auth-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.auth-brand-logo {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 auto;
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(18, 77, 154, 0.2);
+}
+
+.auth-brand-name {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  color: #0f4c81;
+  line-height: 0.96;
+  letter-spacing: 0.035em;
+}
+
+.auth-brand-name span {
+  font-size: clamp(0.9rem, 4.2vw, 1.15rem);
+  font-weight: 750;
+}
+
+.auth-brand-name strong {
+  font-size: clamp(1.55rem, 7vw, 2.1rem);
+  font-weight: 900;
+}
+
+.auth-brand-card > p {
+  margin: 0;
+  color: #17212b;
+  font-size: 0.82rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-align: center;
+}
+
+.auth-mode-copy {
+  display: grid;
+  gap: 4px;
+}
+
+.auth-mode-copy strong {
+  color: #17212b;
+  font-size: 1rem;
+}
+
+.auth-mode-copy span {
+  color: #65727d;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.save-confirmation-card,
+.saved-purchase-card {
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(30, 48, 64, 0.08);
+}
+
+.save-confirmation-card {
+  display: grid;
+  gap: 7px;
+  padding: 17px;
+  background: #f4f9fd;
+  border-color: rgba(15, 76, 129, 0.16);
+}
+
+.save-confirmation-card > strong {
+  color: #0f4c81;
+}
+
+.save-confirmation-card > span,
+.save-confirmation-card > small {
+  color: #5e6b76;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.save-purchase-button {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 7px;
+}
+
+.save-purchase-button:disabled {
+  cursor: not-allowed;
+}
+
+.saved-purchase-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 17px;
+  color: #145c38;
+  background: #eef9f3;
+  border-color: rgba(23, 98, 59, 0.2);
+}
+
+.saved-purchase-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: white;
+  background: #1f7a4c;
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.saved-purchase-card > div:last-child {
+  display: grid;
+  gap: 3px;
+}
+
+.saved-purchase-card span {
+  color: #4d6d5c;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+@media (min-width: 640px) {
+  .auth-brand-card {
+    padding: 28px;
+  }
+
+  .auth-brand-logo {
+    width: 86px;
+    height: 86px;
+    border-radius: 21px;
+  }
+}

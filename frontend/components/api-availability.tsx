@@ -90,10 +90,9 @@ export function ApiAvailability({
       <section className="hero-card compact-hero">
         <div>
           <p className="eyebrow">Gestão de Compras Web</p>
-          <h1>Leitura inicial da NFC-e</h1>
+          <h1>Registre uma compra</h1>
           <p className="subtitle">
-            Capture o QR Code e confira os dados. A gravação das compras será
-            implementada na próxima etapa.
+            Capture o QR Code, confira os itens e salve a compra no espaço seguro da sua família.
           </p>
         </div>
 
@@ -142,11 +141,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.3.0 — Fundação SaaS por Famílias</strong>
+          <strong>v0.3.1 — Primeira gravação de compras</strong>
         </div>
         <div>
-          <span>Isolamento</span>
-          <strong>Dados vinculados por familia_id</strong>
+          <span>Banco online</span>
+          <strong>Supabase com isolamento por familia_id</strong>
         </div>
       </section>
     </>

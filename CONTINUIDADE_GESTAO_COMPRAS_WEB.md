@@ -1,36 +1,28 @@
 # Continuidade — Gestão de Compras Web
 
-## Baseline anterior validada
+## Checkpoint em preparação
 
-**v0.2.2 — Deploy online e prova completa da NFC-e**
+**v0.3.1 — Primeira gravação de compras**
 
-Validada no desktop e iPhone, com Vercel, Render, Safari, PWA, câmera, foto e consulta da NFC-e.
+A versão parte do checkpoint validado v0.3.0 e adiciona:
 
-## Versão atual preparada
+- identidade visual no primeiro card do login;
+- gravação real no Supabase/PostgreSQL;
+- compras e itens vinculados à família autenticada;
+- criação/reutilização de supermercado e produtos;
+- histórico de preços;
+- bloqueio de NFC-e duplicada por família.
 
-**v0.3.0 — Fundação SaaS por Famílias**
+## Regras preservadas
 
-Implementações:
+- frontend Next.js na Vercel;
+- backend FastAPI no Render;
+- Supabase Auth e PostgreSQL;
+- isolamento por `familia_id`;
+- uso principal no iPhone/PWA;
+- câmera traseira e upload de foto;
+- projeto Streamlit v0.5.14 mantido como referência funcional.
 
-- Supabase Auth;
-- criar e entrar em uma família;
-- família, perfil, membros, papel Administrador e configurações iniciais;
-- isolamento via `familia_id` e RLS;
-- função `meu_contexto()`;
-- endpoint autenticado `/api/v1/auth/me`;
-- NFC-e exige sessão válida;
-- estrutura de convites preparada, sem tela ainda.
+## Próximo passo depois da validação
 
-## Regra arquitetural definitiva
-
-Dados de negócio pertencem à família, não a um usuário isolado.
-
-```text
-Família → Membros → Compras → Produtos → Histórico
-```
-
-As próximas tabelas de negócio devem possuir `familia_id` e políticas RLS.
-
-## Próxima etapa após a validação
-
-**v0.3.1 — Primeira gravação real no PostgreSQL**, mantendo o Streamlit v0.5.14 como referência funcional.
+Criar a primeira tela de compras salvas, com cards compactos e detalhes sem modal pesado.

@@ -1,24 +1,23 @@
 -- Gestão de Compras Web — modelo conceitual por Famílias
 -- Não execute este arquivo no Supabase.
--- A migration executável da v0.3.0 está em:
--- database/migrations/001_fundacao_familias.sql
+-- Execute as migrations em database/migrations na ordem numérica.
 
--- Núcleo já implementado na v0.3.0:
+-- Fundação v0.3.0:
 -- familias
 -- perfis
 -- familia_membros
 -- convites_familia
 -- configuracoes_familia
 
--- Entidades de negócio planejadas para a v0.3.1:
--- categorias(familia_id, ...)
--- supermercados(familia_id, ...)
--- produtos(familia_id, ...)
--- compras(familia_id, ...)
--- itens_compra(familia_id, ...)
--- historico_precos(familia_id, ...)
+-- Persistência v0.3.1:
+-- categorias
+-- supermercados
+-- produtos
+-- compras
+-- itens_compra
+-- historico_precos
 
 -- Regra definitiva:
--- toda entidade de negócio pertence a uma família e deve possuir familia_id,
--- índice por familia_id e políticas RLS que permitam acesso somente aos
--- membros ativos daquela família.
+-- toda entidade de negócio pertence a uma família e possui familia_id.
+-- A gravação da NFC-e deriva a família da sessão autenticada e não aceita
+-- familia_id enviado pelo cliente.

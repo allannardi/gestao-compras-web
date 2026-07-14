@@ -26,6 +26,7 @@ class FamilyContext:
     familia_id: str
     familia_nome: str
     papel: str
+    access_token: str = ""
 
 
 def _supabase_headers(access_token: str) -> dict[str, str]:
@@ -153,6 +154,7 @@ def _fetch_family_context(user: AuthenticatedUser) -> FamilyContext:
         familia_id=str(context.get("familia_id") or ""),
         familia_nome=str(context.get("familia_nome") or "Minha família"),
         papel=str(context.get("papel") or "membro"),
+        access_token=user.access_token,
     )
 
 

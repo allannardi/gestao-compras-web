@@ -92,3 +92,23 @@ Ao cadastrar um usuário, um trigger cria automaticamente:
 - uploads limitados a 12 MB;
 - URLs privadas bloqueadas na consulta de NFC-e;
 - nenhuma credencial no repositório.
+
+## Persistência v0.3.1
+
+A compra é enviada pelo Next.js ao endpoint autenticado `POST /api/v1/compras`.
+O FastAPI valida o payload e chama a RPC `registrar_compra_nfce` usando o JWT do usuário.
+A função PostgreSQL deriva a família da sessão (`auth.uid()`), grava a compra em uma única transação e nunca aceita `familia_id` do navegador.
+
+Fluxo:
+
+```text
+NFC-e conferida
+    ↓
+POST /api/v1/compras + Bearer Token
+    ↓
+FastAPI / validação
+    ↓
+Supabase RPC registrar_compra_nfce
+    ↓
+compras + itens + produtos + supermercado + histórico
+```
