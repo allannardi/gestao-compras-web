@@ -1,3 +1,4 @@
+from datetime import date
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -7,11 +8,14 @@ from app.core.auth import FamilyContext, get_current_family_context
 from app.repositories.compras import (
     SupabasePurchaseError,
     detalhar_compra_familia,
+    excluir_compra_teste,
     listar_compras_familia,
     registrar_compra_nfce,
 )
 from app.schemas.compras import (
     CompraCreateResponse,
+    CompraDeleteRequest,
+    CompraDeleteResponse,
     CompraDetalheResponse,
     CompraListaResponse,
     CompraNfceCreate,
@@ -28,6 +32,8 @@ def _raise_http_error(exc: SupabasePurchaseError) -> None:
 async def list_purchases(
     limite: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
+    busca: str = Query(default="", max_length=80),
+    mes: date | None = Query(default=None),
     context: FamilyContext = Depends(get_current_family_context),
 ) -> CompraListaResponse:
     try:
@@ -36,6 +42,8 @@ async def list_purchases(
             context.access_token,
             limite,
             offset,
+            busca,
+            mes,
         )
     except SupabasePurchaseError as exc:
         _raise_http_error(exc)
@@ -58,6 +66,31 @@ async def get_purchase_detail(
         _raise_http_error(exc)
 
     return CompraDetalheResponse(**result)
+
+
+@router.delete("/{compra_id}", response_model=CompraDeleteResponse)
+async def delete_test_purchase(
+    compra_id: UUID,
+    payload: CompraDeleteRequest,
+    context: FamilyContext = Depends(get_current_family_context),
+) -> CompraDeleteResponse:
+    if context.papel != "administrador":
+        raise HTTPException(
+            status_code=403,
+            detail="Somente administradores podem excluir compras de teste.",
+        )
+
+    try:
+        result = await run_in_threadpool(
+            excluir_compra_teste,
+            str(compra_id),
+            payload.confirmacao,
+            context.access_token,
+        )
+    except SupabasePurchaseError as exc:
+        _raise_http_error(exc)
+
+    return CompraDeleteResponse(**result)
 
 
 @router.post("", response_model=CompraCreateResponse, status_code=201)

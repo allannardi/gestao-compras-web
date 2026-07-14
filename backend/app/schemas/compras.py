@@ -50,6 +50,28 @@ class CompraCreateResponse(BaseModel):
     mensagem: str
 
 
+
+
+class CompraDeleteRequest(BaseModel):
+    confirmacao: Annotated[str, Field(min_length=7, max_length=20)]
+
+    @field_validator("confirmacao")
+    @classmethod
+    def normalize_confirmation(cls, value: str) -> str:
+        normalized = value.strip().upper()
+        if normalized != "EXCLUIR":
+            raise ValueError("Digite EXCLUIR para confirmar a exclusão.")
+        return normalized
+
+
+class CompraDeleteResponse(BaseModel):
+    compra_id: str
+    familia_id: str
+    itens_excluidos: int = Field(ge=0)
+    historicos_excluidos: int = Field(ge=0)
+    mensagem: str
+
+
 class CompraResumo(BaseModel):
     id: str
     supermercado_nome: str

@@ -1176,3 +1176,165 @@ h2 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* v0.3.3 — filtros e exclusão controlada do histórico */
+.items-header small {
+  display: block;
+  margin-top: 3px;
+  color: #74818b;
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.purchase-filters-card {
+  display: grid;
+  gap: 11px;
+  padding: 15px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 10px 26px rgba(30, 48, 64, 0.07);
+}
+
+.purchase-filters-card label,
+.delete-confirmation-stack label {
+  display: grid;
+  gap: 6px;
+  color: #34424e;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.purchase-filters-card input,
+.delete-confirmation-stack input {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #ccd7df;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #17212b;
+  background: white;
+  outline: none;
+}
+
+.purchase-filters-card input:focus,
+.delete-confirmation-stack input:focus {
+  border-color: #0f4c81;
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.12);
+}
+
+.purchase-filter-actions,
+.delete-button-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.purchase-filter-actions button,
+.delete-button-row button {
+  min-height: 46px;
+}
+
+.active-filter-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  border-top: 1px solid #e8edf1;
+  padding-top: 10px;
+}
+
+.active-filter-summary span {
+  width: 100%;
+  color: #74818b;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.active-filter-summary strong {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #0f4c81;
+  background: #edf5fb;
+  font-size: 0.7rem;
+}
+
+.purchases-success {
+  margin: 0;
+}
+
+.delete-purchase-card {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+  padding: 16px;
+  border: 1px solid rgba(154, 54, 45, 0.22);
+  border-radius: 18px;
+  background: #fff8f6;
+}
+
+.delete-purchase-card > div,
+.delete-confirmation-stack > div:first-child {
+  display: grid;
+  gap: 5px;
+}
+
+.delete-purchase-card strong {
+  color: #8f3028;
+}
+
+.delete-purchase-card span {
+  color: #6d5b59;
+  font-size: 0.78rem;
+  line-height: 1.48;
+}
+
+.delete-outline-button,
+.delete-danger-button {
+  min-height: 48px;
+  border-radius: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.delete-outline-button {
+  border: 1px solid rgba(154, 54, 45, 0.34);
+  color: #8f3028;
+  background: white;
+}
+
+.delete-danger-button {
+  border: 0;
+  color: white;
+  background: #9a362d;
+}
+
+.delete-danger-button:disabled,
+.delete-outline-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.delete-confirmation-stack {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .purchase-filters-card {
+    grid-template-columns: minmax(0, 1.6fr) minmax(180px, 0.8fr);
+    align-items: end;
+  }
+
+  .purchase-filter-actions {
+    grid-column: 1 / -1;
+    width: 320px;
+    justify-self: end;
+  }
+
+  .active-filter-summary {
+    grid-column: 1 / -1;
+  }
+}

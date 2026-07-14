@@ -124,12 +124,22 @@ def test_repository_lista_compras_com_paginacao(monkeypatch) -> None:
     monkeypatch.setattr(settings, "supabase_url", "https://project.supabase.co")
     monkeypatch.setattr(settings, "supabase_publishable_key", "publishable-key")
 
-    result = repository.listar_compras_familia("token-123", limite=1, offset=0)
+    result = repository.listar_compras_familia(
+        "token-123",
+        limite=1,
+        offset=0,
+        busca="Mercado",
+    )
 
     assert len(result["compras"]) == 1
     assert result["tem_mais"] is True
     assert result["proximo_offset"] == 1
-    assert captured["json"] == {"p_limite": 2, "p_offset": 0}
+    assert captured["json"] == {
+        "p_limite": 2,
+        "p_offset": 0,
+        "p_busca": "Mercado",
+        "p_mes": None,
+    }
     assert captured["url"].endswith("/rpc/listar_compras_familia")
 
 
@@ -206,3 +216,37 @@ def test_repository_mapeia_compra_nao_encontrada(monkeypatch) -> None:
         assert exc.status_code == 404
     else:
         raise AssertionError("Era esperado erro de compra não encontrada.")
+
+
+def test_repository_exclui_compra_de_teste(monkeypatch) -> None:
+    captured = {}
+
+    def fake_post(url, headers, json, timeout):
+        captured.update(url=url, headers=headers, json=json, timeout=timeout)
+        return FakeResponse(
+            200,
+            {
+                "compra_id": "11111111-1111-4111-8111-111111111111",
+                "familia_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+                "itens_excluidos": 4,
+                "historicos_excluidos": 3,
+                "mensagem": "Compra de teste excluída com sucesso.",
+            },
+        )
+
+    monkeypatch.setattr(repository.requests, "post", fake_post)
+    monkeypatch.setattr(settings, "supabase_url", "https://project.supabase.co")
+    monkeypatch.setattr(settings, "supabase_publishable_key", "publishable-key")
+
+    result = repository.excluir_compra_teste(
+        "11111111-1111-4111-8111-111111111111",
+        "EXCLUIR",
+        "token-123",
+    )
+
+    assert result["itens_excluidos"] == 4
+    assert captured["json"] == {
+        "p_compra_id": "11111111-1111-4111-8111-111111111111",
+        "p_confirmacao": "EXCLUIR",
+    }
+    assert captured["url"].endswith("/rpc/excluir_compra_teste")

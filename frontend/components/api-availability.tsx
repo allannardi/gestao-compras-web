@@ -165,6 +165,7 @@ export function ApiAvailability({
           apiUrl={apiUrl}
           accessToken={accessToken}
           refreshKey={purchaseRefreshKey}
+          canDeletePurchases={context.papel === "administrador"}
           onAddPurchase={() => setView("add")}
         />
       )}
@@ -192,11 +193,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.3.2 — Compras e detalhes</strong>
+          <strong>v0.3.3 — Operação do histórico</strong>
         </div>
         <div>
           <span>Dados</span>
-          <strong>Histórico isolado por familia_id</strong>
+          <strong>Filtros e exclusão controlada</strong>
         </div>
       </section>
     </>

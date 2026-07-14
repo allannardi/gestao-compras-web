@@ -8,6 +8,14 @@ export type CompraSalva = {
   mensagem: string;
 };
 
+export type CompraExcluida = {
+  compra_id: string;
+  familia_id: string;
+  itens_excluidos: number;
+  historicos_excluidos: number;
+  mensagem: string;
+};
+
 export type CompraResumo = {
   id: string;
   supermercado_nome: string;

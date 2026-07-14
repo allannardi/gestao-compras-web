@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import date
 from typing import Any
 
 import requests
@@ -78,6 +79,8 @@ def _rpc_post(
             raise SupabasePurchaseError(message, status_code=409)
         if "não encontrada nesta família" in normalized or "nao encontrada nesta familia" in normalized:
             raise SupabasePurchaseError(message, status_code=404)
+        if "somente administradores" in normalized:
+            raise SupabasePurchaseError(message, status_code=403)
         if response.status_code in {400, 409, 422}:
             raise SupabasePurchaseError(message, status_code=422)
         raise SupabasePurchaseError(message, status_code=503)
@@ -111,6 +114,8 @@ def listar_compras_familia(
     access_token: str,
     limite: int = 20,
     offset: int = 0,
+    busca: str = "",
+    mes: date | None = None,
 ) -> dict[str, Any]:
     requested_limit = max(1, min(limite, 100))
     requested_offset = max(offset, 0)
@@ -121,6 +126,8 @@ def listar_compras_familia(
         {
             "p_limite": requested_limit + 1,
             "p_offset": requested_offset,
+            "p_busca": busca.strip() or None,
+            "p_mes": mes.isoformat() if mes else None,
         },
     )
 
@@ -158,6 +165,32 @@ def detalhar_compra_familia(
     if not isinstance(payload, dict) or not payload.get("id"):
         raise SupabasePurchaseError(
             "O banco não retornou os detalhes da compra.",
+            status_code=503,
+        )
+
+    return payload
+
+
+def excluir_compra_teste(
+    compra_id: str,
+    confirmacao: str,
+    access_token: str,
+) -> dict[str, Any]:
+    payload = _rpc_post(
+        "excluir_compra_teste",
+        access_token,
+        {
+            "p_compra_id": compra_id,
+            "p_confirmacao": confirmacao,
+        },
+    )
+
+    if isinstance(payload, list):
+        payload = payload[0] if payload else None
+
+    if not isinstance(payload, dict) or not payload.get("compra_id"):
+        raise SupabasePurchaseError(
+            "O banco não confirmou a exclusão da compra.",
             status_code=503,
         )
 

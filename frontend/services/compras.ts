@@ -1,5 +1,6 @@
 import type {
   CompraDetalhe,
+  CompraExcluida,
   CompraLista,
   CompraSalva,
 } from "@/types/compras";
@@ -63,12 +64,23 @@ export async function fetchPurchases(
   accessToken: string,
   offset = 0,
   limit = 20,
+  search = "",
+  month = "",
   signal?: AbortSignal,
 ): Promise<CompraLista> {
   const query = new URLSearchParams({
     limite: String(limit),
     offset: String(offset),
   });
+
+  const normalizedSearch = search.trim();
+  if (normalizedSearch) {
+    query.set("busca", normalizedSearch);
+  }
+
+  if (/^\d{4}-\d{2}$/.test(month)) {
+    query.set("mes", `${month}-01`);
+  }
 
   const response = await fetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/compras?${query.toString()}`,
@@ -116,4 +128,32 @@ export async function fetchPurchaseDetail(
   }
 
   return payload as CompraDetalhe;
+}
+
+export async function deleteTestPurchase(
+  apiUrl: string,
+  accessToken: string,
+  purchaseId: string,
+  confirmation: string,
+): Promise<CompraExcluida> {
+  const response = await fetch(
+    `${normalizeApiUrl(apiUrl)}/api/v1/compras/${encodeURIComponent(purchaseId)}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ confirmacao: confirmation }),
+    },
+  );
+
+  const payload = await readJson(response);
+  if (!response.ok) {
+    throw new Error(
+      getApiError(payload, "Não foi possível excluir a compra de teste."),
+    );
+  }
+
+  return payload as CompraExcluida;
 }

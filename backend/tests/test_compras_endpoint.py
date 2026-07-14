@@ -155,8 +155,14 @@ def test_listar_compras_exige_login() -> None:
 def test_listar_compras_retorna_apenas_contexto_autenticado(monkeypatch) -> None:
     captured = {}
 
-    def fake_list(access_token, limite, offset):
-        captured.update(access_token=access_token, limite=limite, offset=offset)
+    def fake_list(access_token, limite, offset, busca, mes):
+        captured.update(
+            access_token=access_token,
+            limite=limite,
+            offset=offset,
+            busca=busca,
+            mes=mes,
+        )
         return {
             "compras": [_purchase_summary()],
             "limite": limite,
@@ -173,6 +179,8 @@ def test_listar_compras_retorna_apenas_contexto_autenticado(monkeypatch) -> None
         assert response.json()["compras"][0]["supermercado_nome"] == "Mercado Teste"
         assert captured["access_token"] == "token-123"
         assert captured["limite"] == 20
+        assert captured["busca"] == ""
+        assert captured["mes"] is None
     finally:
         app.dependency_overrides.clear()
 
@@ -211,5 +219,116 @@ def test_detalhar_compra_de_outra_familia_retorna_404(monkeypatch) -> None:
             "/api/v1/compras/11111111-1111-4111-8111-111111111111"
         )
         assert response.status_code == 404
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_listar_compras_encaminha_filtros(monkeypatch) -> None:
+    captured = {}
+
+    def fake_list(access_token, limite, offset, busca, mes):
+        captured.update(
+            access_token=access_token,
+            limite=limite,
+            offset=offset,
+            busca=busca,
+            mes=mes,
+        )
+        return {
+            "compras": [],
+            "limite": limite,
+            "offset": offset,
+            "proximo_offset": None,
+            "tem_mais": False,
+        }
+
+    monkeypatch.setattr(compras_endpoint, "listar_compras_familia", fake_list)
+    app.dependency_overrides[get_current_family_context] = _context
+    try:
+        response = client.get(
+            "/api/v1/compras?busca=Mercado&mes=2026-07-01&limite=10&offset=0"
+        )
+        assert response.status_code == 200
+        assert captured["busca"] == "Mercado"
+        assert captured["mes"].isoformat() == "2026-07-01"
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_excluir_compra_exige_login() -> None:
+    response = client.request(
+        "DELETE",
+        "/api/v1/compras/11111111-1111-4111-8111-111111111111",
+        json={"confirmacao": "EXCLUIR"},
+    )
+    assert response.status_code == 401
+
+
+def test_excluir_compra_exige_administrador() -> None:
+    def member_context() -> FamilyContext:
+        return FamilyContext(
+            user_id="user-456",
+            email="membro@example.com",
+            nome="Membro",
+            familia_id="family-123",
+            familia_nome="Família Nardi",
+            papel="membro",
+            access_token="token-456",
+        )
+
+    app.dependency_overrides[get_current_family_context] = member_context
+    try:
+        response = client.request(
+            "DELETE",
+            "/api/v1/compras/11111111-1111-4111-8111-111111111111",
+            json={"confirmacao": "EXCLUIR"},
+        )
+        assert response.status_code == 403
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_excluir_compra_de_teste(monkeypatch) -> None:
+    captured = {}
+
+    def fake_delete(compra_id, confirmacao, access_token):
+        captured.update(
+            compra_id=compra_id,
+            confirmacao=confirmacao,
+            access_token=access_token,
+        )
+        return {
+            "compra_id": compra_id,
+            "familia_id": "family-123",
+            "itens_excluidos": 3,
+            "historicos_excluidos": 2,
+            "mensagem": "Compra de teste excluída com sucesso.",
+        }
+
+    monkeypatch.setattr(compras_endpoint, "excluir_compra_teste", fake_delete)
+    app.dependency_overrides[get_current_family_context] = _context
+    try:
+        response = client.request(
+            "DELETE",
+            "/api/v1/compras/11111111-1111-4111-8111-111111111111",
+            json={"confirmacao": "EXCLUIR"},
+        )
+        assert response.status_code == 200
+        assert response.json()["itens_excluidos"] == 3
+        assert captured["confirmacao"] == "EXCLUIR"
+        assert captured["access_token"] == "token-123"
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_excluir_compra_rejeita_confirmacao_incorreta() -> None:
+    app.dependency_overrides[get_current_family_context] = _context
+    try:
+        response = client.request(
+            "DELETE",
+            "/api/v1/compras/11111111-1111-4111-8111-111111111111",
+            json={"confirmacao": "APAGAR"},
+        )
+        assert response.status_code == 422
     finally:
         app.dependency_overrides.clear()

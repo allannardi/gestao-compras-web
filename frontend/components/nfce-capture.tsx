@@ -42,6 +42,15 @@ function getErrorMessage(payload: unknown): string {
   return "Não foi possível processar a imagem da NFC-e.";
 }
 
+function compareItemsByTotal<
+  T extends { valor_total: number; descricao_original: string },
+>(first: T, second: T): number {
+  const totalDifference = second.valor_total - first.valor_total;
+  if (totalDifference !== 0) return totalDifference;
+
+  return first.descricao_original.localeCompare(second.descricao_original, "pt-BR");
+}
+
 export function NfceCapture({
   apiUrl,
   accessToken,
@@ -273,6 +282,10 @@ export function NfceCapture({
     setSavedPurchase(null);
   };
 
+  const sortedPreviewItems = preview
+    ? [...preview.itens].sort(compareItemsByTotal)
+    : [];
+
   return (
     <section className="capture-section" aria-label="Leitura de NFC-e">
       <input
@@ -403,13 +416,14 @@ export function NfceCapture({
             <div>
               <p className="eyebrow">Conferência</p>
               <h2>Itens da compra</h2>
+              <small>Ordenados do maior para o menor valor total</small>
             </div>
             <span>{preview.itens.length} itens</span>
           </div>
 
           {preview.itens.length > 0 ? (
             <div className="items-list">
-              {preview.itens.map((item, index) => (
+              {sortedPreviewItems.map((item, index) => (
                 <article
                   className="item-card"
                   key={`${item.descricao_original}-${item.valor_unitario}-${index}`}
