@@ -18,12 +18,14 @@ class Settings(BaseSettings):
     )
 
     supabase_url: str = ""
-    supabase_service_role_key: str = ""
+    supabase_publishable_key: str = ""
+    supabase_request_timeout_seconds: float = 20.0
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
+        populate_by_name=True,
     )
 
     @property
@@ -38,6 +40,10 @@ class Settings(BaseSettings):
     def cors_origin_regex(self) -> str | None:
         value = self.cors_origin_regex_raw.strip()
         return value or None
+
+    @property
+    def supabase_configured(self) -> bool:
+        return bool(self.supabase_url.strip() and self.supabase_publishable_key.strip())
 
 
 @lru_cache

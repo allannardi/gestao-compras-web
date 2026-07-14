@@ -1,0 +1,32 @@
+Gestão de Compras Web v0.3.0 — Fundação SaaS por Famílias
+
+Arquivos principais alterados/adicionados:
+- backend/app/core/auth.py
+- backend/app/core/config.py
+- backend/app/core/version.py
+- backend/app/api/v1/endpoints/auth.py
+- backend/app/api/v1/endpoints/nfce.py
+- backend/app/api/v1/router.py
+- backend/app/schemas/auth.py
+- backend/tests/test_auth.py
+- backend/tests/test_config.py
+- database/migrations/001_fundacao_familias.sql
+- frontend/app/page.tsx
+- frontend/app/globals.css
+- frontend/components/auth-gate.tsx
+- frontend/components/api-availability.tsx
+- frontend/components/nfce-capture.tsx
+- frontend/lib/supabase.ts
+- frontend/services/auth-context.ts
+- frontend/types/auth.ts
+- frontend/package.json
+- frontend/.env.example
+- backend/.env.example
+- render.yaml
+- documentação da versão
+
+Não incluídos no patch:
+- .env / .env.local
+- .venv / node_modules
+- package-lock.json
+- tokens, chaves ou banco de dados

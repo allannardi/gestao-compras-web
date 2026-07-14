@@ -1,78 +1,24 @@
--- Schema conceitual inicial.
--- A criação definitiva será feita com migrations na fase Supabase/PostgreSQL.
+-- Gestão de Compras Web — modelo conceitual por Famílias
+-- Não execute este arquivo no Supabase.
+-- A migration executável da v0.3.0 está em:
+-- database/migrations/001_fundacao_familias.sql
 
-create table if not exists contas (
-    id uuid primary key,
-    nome text not null,
-    criado_em timestamptz not null default now()
-);
+-- Núcleo já implementado na v0.3.0:
+-- familias
+-- perfis
+-- familia_membros
+-- convites_familia
+-- configuracoes_familia
 
-create table if not exists perfis (
-    id uuid primary key,
-    conta_id uuid not null references contas(id),
-    nome text not null,
-    email text not null,
-    criado_em timestamptz not null default now()
-);
+-- Entidades de negócio planejadas para a v0.3.1:
+-- categorias(familia_id, ...)
+-- supermercados(familia_id, ...)
+-- produtos(familia_id, ...)
+-- compras(familia_id, ...)
+-- itens_compra(familia_id, ...)
+-- historico_precos(familia_id, ...)
 
-create table if not exists categorias (
-    id bigint generated always as identity primary key,
-    conta_id uuid not null references contas(id),
-    nome text not null,
-    criado_em timestamptz not null default now(),
-    unique (conta_id, nome)
-);
-
-create table if not exists supermercados (
-    id bigint generated always as identity primary key,
-    conta_id uuid not null references contas(id),
-    nome text not null,
-    cnpj text,
-    criado_em timestamptz not null default now()
-);
-
-create table if not exists produtos (
-    id bigint generated always as identity primary key,
-    conta_id uuid not null references contas(id),
-    categoria_id bigint references categorias(id),
-    nome_padronizado text not null,
-    marca text,
-    unidade_padrao text,
-    criado_em timestamptz not null default now()
-);
-
-create table if not exists compras (
-    id bigint generated always as identity primary key,
-    conta_id uuid not null references contas(id),
-    supermercado_id bigint references supermercados(id),
-    chave_nfce text,
-    data_compra timestamptz not null,
-    valor_total numeric(12, 2) not null,
-    forma_pagamento text,
-    origem text,
-    criado_em timestamptz not null default now(),
-    unique (conta_id, chave_nfce)
-);
-
-create table if not exists itens_compra (
-    id bigint generated always as identity primary key,
-    conta_id uuid not null references contas(id),
-    compra_id bigint not null references compras(id) on delete cascade,
-    produto_id bigint references produtos(id),
-    descricao_original text not null,
-    quantidade numeric(12, 3) not null,
-    unidade text,
-    valor_unitario numeric(12, 4) not null,
-    valor_total numeric(12, 2) not null
-);
-
-create table if not exists historico_precos (
-    id bigint generated always as identity primary key,
-    conta_id uuid not null references contas(id),
-    produto_id bigint not null references produtos(id),
-    compra_id bigint not null references compras(id) on delete cascade,
-    supermercado_id bigint references supermercados(id),
-    data_compra timestamptz not null,
-    valor_unitario numeric(12, 4) not null,
-    criado_em timestamptz not null default now()
-);
+-- Regra definitiva:
+-- toda entidade de negócio pertence a uma família e deve possuir familia_id,
+-- índice por familia_id e políticas RLS que permitam acesso somente aos
+-- membros ativos daquela família.

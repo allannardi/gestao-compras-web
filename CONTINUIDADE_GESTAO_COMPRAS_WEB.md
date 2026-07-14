@@ -1,52 +1,36 @@
-# CONTINUIDADE — GESTÃO DE COMPRAS WEB
+# Continuidade — Gestão de Compras Web
 
-## Projeto original preservado
+## Baseline anterior validada
 
-O sistema atual permanece em produção:
+**v0.2.2 — Deploy online e prova completa da NFC-e**
 
-- Stack: Streamlit + Turso + Streamlit Cloud
-- Checkpoint: v0.5.14 — Captura original restaurada
-- Python no Streamlit Cloud: 3.12
-- URL: https://gestao-compras.streamlit.app
-- Repositório atual: https://github.com/allannardi/gestao-compras.git
+Validada no desktop e iPhone, com Vercel, Render, Safari, PWA, câmera, foto e consulta da NFC-e.
 
-Esse sistema é a referência funcional e plano de contingência durante a migração.
+## Versão atual preparada
 
-## Novo projeto
+**v0.3.0 — Fundação SaaS por Famílias**
 
-Nome sugerido do repositório:
+Implementações:
+
+- Supabase Auth;
+- criar e entrar em uma família;
+- família, perfil, membros, papel Administrador e configurações iniciais;
+- isolamento via `familia_id` e RLS;
+- função `meu_contexto()`;
+- endpoint autenticado `/api/v1/auth/me`;
+- NFC-e exige sessão válida;
+- estrutura de convites preparada, sem tela ainda.
+
+## Regra arquitetural definitiva
+
+Dados de negócio pertencem à família, não a um usuário isolado.
 
 ```text
-gestao-compras-web
+Família → Membros → Compras → Produtos → Histórico
 ```
 
-Arquitetura:
+As próximas tabelas de negócio devem possuir `familia_id` e políticas RLS.
 
-```text
-Next.js PWA
-    ↓
-FastAPI
-    ↓
-PostgreSQL / Supabase
-```
+## Próxima etapa após a validação
 
-## Decisões obrigatórias
-
-1. Não converter diretamente o `app.py`.
-2. Não interromper o Streamlit durante a construção.
-3. Não voltar para aplicativo nativo de iPhone agora.
-4. Priorizar o iPhone e o uso mobile.
-5. Manter cards compactos.
-6. Evitar tabelas largas e modais pesados.
-7. Reaproveitar regras Python validadas da NFC-e.
-8. Não colocar tokens, senhas ou arquivos `.env` no GitHub.
-9. Preservar os ícones atuais.
-10. Validar cada módulo novo comparando com o Streamlit.
-
-## Primeiro marco funcional real
-
-O primeiro marco relevante da nova aplicação será:
-
-> Abrir a PWA no iPhone, capturar uma NFC-e, consultar a nota e exibir corretamente os itens para conferência.
-
-Até esse marco estar validado, não priorizar dashboard avançado, exportações ou recursos SaaS.
+**v0.3.1 — Primeira gravação real no PostgreSQL**, mantendo o Streamlit v0.5.14 como referência funcional.

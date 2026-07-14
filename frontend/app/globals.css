@@ -519,3 +519,139 @@ h2 {
   width: 100%;
   margin-top: 14px;
 }
+
+/* v0.3.0 — Fundação SaaS por Famílias */
+.auth-shell {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-card,
+.family-session-card {
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 12px 32px rgba(30, 48, 64, 0.08);
+}
+
+.auth-card {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  gap: 8px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #edf2f6;
+}
+
+.auth-tabs button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 11px;
+  padding: 9px 10px;
+  color: #53616d;
+  background: transparent;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.auth-tabs button.active {
+  color: #0f4c81;
+  background: white;
+  box-shadow: 0 4px 12px rgba(30, 48, 64, 0.08);
+}
+
+.auth-card label {
+  display: grid;
+  gap: 7px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.auth-card input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #cdd7df;
+  border-radius: 12px;
+  padding: 0 13px;
+  color: #17212b;
+  background: white;
+  font-size: 1rem;
+}
+
+.auth-card input:focus {
+  outline: 3px solid rgba(15, 76, 129, 0.14);
+  border-color: #0f4c81;
+}
+
+.auth-submit {
+  min-height: 52px;
+  border-radius: 14px;
+}
+
+.auth-message {
+  margin: 0;
+  padding: 12px 13px;
+  border-radius: 12px;
+  color: #5d4a16;
+  background: #fff7dc;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.family-session-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 13px 16px;
+}
+
+.family-session-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.family-session-copy span,
+.family-session-copy small {
+  color: #6c7882;
+  font-size: 0.75rem;
+}
+
+.family-session-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #0f4c81;
+  font-size: 0.98rem;
+}
+
+.family-session-card button {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 13px;
+  color: #0f4c81;
+  background: #edf4fa;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.family-session-card button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+@media (min-width: 640px) {
+  .auth-tabs button {
+    font-size: 0.9rem;
+  }
+}

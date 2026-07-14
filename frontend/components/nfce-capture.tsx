@@ -29,6 +29,7 @@ type NfcePreview = {
 
 type Props = {
   apiUrl: string;
+  accessToken: string;
 };
 
 const moneyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -57,7 +58,7 @@ function getErrorMessage(payload: unknown): string {
   return "Não foi possível processar a imagem da NFC-e.";
 }
 
-export function NfceCapture({ apiUrl }: Props) {
+export function NfceCapture({ apiUrl, accessToken }: Props) {
   const [state, setState] = useState<CaptureState>("idle");
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<NfcePreview | null>(null);
@@ -181,6 +182,9 @@ export function NfceCapture({ apiUrl }: Props) {
         `${normalizeApiUrl(apiUrl)}/api/v1/nfce/preview`,
         {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
           body: formData,
         },
       );
@@ -418,7 +422,7 @@ export function NfceCapture({ apiUrl }: Props) {
 
           <div className="not-saved-card">
             <strong>Teste seguro</strong>
-            <span>Nenhuma informação foi salva no Turso ou no PostgreSQL.</span>
+            <span>Nenhuma informação foi salva. Esta versão valida apenas autenticação, família e leitura.</span>
           </div>
 
           <button className="secondary-action full-width" type="button" onClick={reset}>

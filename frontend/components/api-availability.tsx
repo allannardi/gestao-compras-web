@@ -3,11 +3,15 @@
 import { useEffect, useState } from "react";
 
 import { NfceCapture } from "@/components/nfce-capture";
+import type { FamilyContext } from "@/types/auth";
 
 type ApiState = "checking" | "online" | "offline";
 
 type Props = {
   apiUrl: string;
+  accessToken: string;
+  context: FamilyContext;
+  onLogout: () => Promise<void>;
 };
 
 const HEALTH_TIMEOUT_MS = 75_000;
@@ -16,9 +20,15 @@ function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
 }
 
-export function ApiAvailability({ apiUrl }: Props) {
+export function ApiAvailability({
+  apiUrl,
+  accessToken,
+  context,
+  onLogout,
+}: Props) {
   const [apiState, setApiState] = useState<ApiState>("checking");
   const [attempt, setAttempt] = useState(0);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -46,12 +56,8 @@ export function ApiAvailability({ apiUrl }: Props) {
 
         setApiState(isHealthy ? "online" : "offline");
       })
-      .catch(() => {
-        setApiState("offline");
-      })
-      .finally(() => {
-        window.clearTimeout(timeout);
-      });
+      .catch(() => setApiState("offline"))
+      .finally(() => window.clearTimeout(timeout));
 
     return () => {
       controller.abort();
@@ -61,13 +67,33 @@ export function ApiAvailability({ apiUrl }: Props) {
 
   return (
     <>
+      <section className="family-session-card">
+        <div className="family-session-copy">
+          <span>Sua família</span>
+          <strong>{context.familia_nome}</strong>
+          <small>
+            {context.nome} · {context.papel === "administrador" ? "Administrador" : "Membro"}
+          </small>
+        </div>
+        <button
+          type="button"
+          disabled={loggingOut}
+          onClick={async () => {
+            setLoggingOut(true);
+            await onLogout();
+          }}
+        >
+          {loggingOut ? "Saindo…" : "Sair"}
+        </button>
+      </section>
+
       <section className="hero-card compact-hero">
         <div>
           <p className="eyebrow">Gestão de Compras Web</p>
           <h1>Leitura inicial da NFC-e</h1>
           <p className="subtitle">
-            Capture o QR Code, envie ao FastAPI e confira os dados extraídos sem
-            gravar a compra.
+            Capture o QR Code e confira os dados. A gravação das compras será
+            implementada na próxima etapa.
           </p>
         </div>
 
@@ -89,7 +115,9 @@ export function ApiAvailability({ apiUrl }: Props) {
         </section>
       )}
 
-      {apiState === "online" && <NfceCapture apiUrl={apiUrl} />}
+      {apiState === "online" && (
+        <NfceCapture apiUrl={apiUrl} accessToken={accessToken} />
+      )}
 
       {apiState === "offline" && (
         <section className="feedback-card error-card api-warning" role="alert">
@@ -114,11 +142,11 @@ export function ApiAvailability({ apiUrl }: Props) {
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.2.2 — Preparação do deploy online</strong>
+          <strong>v0.3.0 — Fundação SaaS por Famílias</strong>
         </div>
         <div>
-          <span>Próximo teste</span>
-          <strong>Safari e atalho no iPhone</strong>
+          <span>Isolamento</span>
+          <strong>Dados vinculados por familia_id</strong>
         </div>
       </section>
     </>

@@ -1,6 +1,7 @@
-from fastapi import APIRouter, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from starlette.concurrency import run_in_threadpool
 
+from app.core.auth import AuthenticatedUser, get_current_user
 from app.schemas.nfce import NfcePreviewResponse
 from app.services.nfce_parser import consultar_nfce_por_qrcode
 from app.services.qr_decoder import InvalidImageError, decode_qr_from_bytes, extrair_chave_nfce
@@ -12,7 +13,10 @@ MAX_UPLOAD_BYTES = 12 * 1024 * 1024
 
 
 @router.post("/preview", response_model=NfcePreviewResponse)
-async def preview_nfce(file: UploadFile = File(...)) -> NfcePreviewResponse:
+async def preview_nfce(
+    file: UploadFile = File(...),
+    _user: AuthenticatedUser = Depends(get_current_user),
+) -> NfcePreviewResponse:
     content_type = (file.content_type or "").lower()
     if content_type not in ALLOWED_CONTENT_TYPES:
         raise HTTPException(

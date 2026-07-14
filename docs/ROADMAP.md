@@ -1,85 +1,54 @@
 # Roadmap — Gestão de Compras Web
 
-## v0.1.0 — Estrutura inicial
+## v0.1.x — Fundação local — Validada
 
-- repositório separado;
-- frontend Next.js;
-- backend FastAPI;
-- endpoint `/health`;
-- tela inicial mobile;
-- estrutura PWA;
-- sem alteração no banco de produção.
+- Next.js e FastAPI;
+- conexão local;
+- correção do npm.
 
-## v0.1.1 — Integração local validada
+## v0.2.x — NFC-e online — Validada
 
-- frontend e backend funcionando no Windows;
-- status `API conectada`;
-- correção do registro público do npm;
-- primeiro commit no repositório `gestao-compras-web`.
+- câmera e foto;
+- leitura e consulta da NFC-e;
+- correção da tela preta;
+- Vercel + Render;
+- validação no iPhone e PWA.
 
-## v0.2.0 — Prova inicial da NFC-e
+## v0.3.0 — Fundação SaaS por Famílias — Atual
 
-- câmera web com preferência pela câmera traseira;
-- alternativa por foto já tirada;
-- envio de imagem ao FastAPI;
-- leitura do QR Code;
-- consulta da página pública da NFC-e;
-- conferência mobile em cards;
-- consolidação de itens idênticos;
-- nenhuma gravação em banco.
+- Supabase Auth;
+- criar família;
+- primeiro membro Administrador;
+- sessão persistente;
+- RLS e isolamento por `familia_id`;
+- contexto `/api/v1/auth/me`;
+- NFC-e protegida por login;
+- nenhuma compra gravada ainda.
 
-## v0.2.1 — Correção da câmera
+## v0.3.1 — Primeira gravação
 
-- associação reativa do `MediaStream` ao vídeo;
-- captura liberada somente após o primeiro quadro;
-- câmera local validada.
+- schema de compras, itens, produtos, categorias e supermercados;
+- salvar a compra no PostgreSQL;
+- impedir duplicidade por família;
+- histórico de preços inicial.
 
-## v0.2.2 — Deploy online e validação no iPhone
+## v0.3.2 — Operação principal
 
-- backend preparado para Render;
-- frontend preparado para Vercel;
-- CORS de produção configurável;
-- status da API com tentativa manual de reconexão;
-- HTTPS para permitir câmera no Safari;
-- teste pelo navegador e pelo atalho da tela inicial.
-
-## v0.3.0 — Banco e autenticação
-
-- criar projeto Supabase;
-- criar schema PostgreSQL;
-- configurar migrations;
-- implementar Supabase Auth;
-- criar conta familiar;
-- proteger endpoints.
-
-## v0.4.0 — Registro de compras
-
-- confirmar compra;
-- produtos automáticos;
-- categorias;
-- duplicidade de NFC-e;
-- histórico de preços.
-
-## v0.5.0 — Operação principal
-
-- listagem de compras;
-- detalhes sem modal pesado;
+- listar compras da família;
+- detalhes em cards;
 - produtos para revisão;
-- mercados e categorias;
-- manutenção controlada.
+- categorias e mercados.
 
-## v0.6.0 — Dashboard e histórico
+## v0.3.3 — Membros e convites
+
+- tela da família;
+- convidar membro;
+- aceitar convite;
+- limites do plano Free.
+
+## v0.4.0 — Dashboard e histórico
 
 - resumo mensal;
+- gastos por categoria e supermercado;
 - top produtos;
-- gastos por categoria;
-- gastos por supermercado;
-- histórico e variação de preços.
-
-## v0.7.0 — Migração e substituição
-
-- exportar dados do Turso;
-- importar no PostgreSQL;
-- conferir totais;
-- período de uso paralelo;
-- decisão sobre substituição do Streamlit.
+- variação de preços.

@@ -91,3 +91,8 @@ frontend/public/favicon.png
 ```
 
 Não substituir esses arquivos sem solicitação.
+
+
+## Checkpoint v0.3.0
+
+A aplicação agora possui autenticação e isolamento por Famílias com Supabase. Consulte `COMO_APLICAR_V0_3_0.md`.

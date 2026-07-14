@@ -1,18 +1,34 @@
 from fastapi.testclient import TestClient
 
 from app.api.v1.endpoints import nfce as nfce_endpoint
+from app.core.auth import AuthenticatedUser, get_current_user
 from app.main import app
 
 client = TestClient(app)
 
 
-def test_preview_rejeita_arquivo_que_nao_e_imagem() -> None:
+def _authenticated_user() -> AuthenticatedUser:
+    return AuthenticatedUser(id="user-123", email="allan@example.com")
+
+
+def test_preview_exige_login() -> None:
     response = client.post(
         "/api/v1/nfce/preview",
         files={"file": ("nota.txt", b"texto", "text/plain")},
     )
+    assert response.status_code == 401
 
-    assert response.status_code == 415
+
+def test_preview_rejeita_arquivo_que_nao_e_imagem() -> None:
+    app.dependency_overrides[get_current_user] = _authenticated_user
+    try:
+        response = client.post(
+            "/api/v1/nfce/preview",
+            files={"file": ("nota.txt", b"texto", "text/plain")},
+        )
+        assert response.status_code == 415
+    finally:
+        app.dependency_overrides.clear()
 
 
 def test_preview_retorna_dados_sem_gravar(monkeypatch) -> None:
@@ -44,13 +60,16 @@ def test_preview_retorna_dados_sem_gravar(monkeypatch) -> None:
         },
     )
 
-    response = client.post(
-        "/api/v1/nfce/preview",
-        files={"file": ("qr.jpg", b"imagem-falsa", "image/jpeg")},
-    )
-
-    assert response.status_code == 200
-    body = response.json()
-    assert body["ok"] is True
-    assert body["mercado_nome"] == "Mercado Teste"
-    assert body["chave_nfce"] == "35260712345678000123650010000012341000012345"
+    app.dependency_overrides[get_current_user] = _authenticated_user
+    try:
+        response = client.post(
+            "/api/v1/nfce/preview",
+            files={"file": ("qr.jpg", b"imagem-falsa", "image/jpeg")},
+        )
+        assert response.status_code == 200
+        body = response.json()
+        assert body["ok"] is True
+        assert body["mercado_nome"] == "Mercado Teste"
+        assert body["chave_nfce"] == "35260712345678000123650010000012341000012345"
+    finally:
+        app.dependency_overrides.clear()
