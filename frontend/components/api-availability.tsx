@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 
 import { NfceCapture } from "@/components/nfce-capture";
+import { PurchasesView } from "@/components/purchases-view";
 import type { FamilyContext } from "@/types/auth";
 
 type ApiState = "checking" | "online" | "offline";
+type AppView = "add" | "purchases";
 
 type Props = {
   apiUrl: string;
@@ -29,6 +31,8 @@ export function ApiAvailability({
   const [apiState, setApiState] = useState<ApiState>("checking");
   const [attempt, setAttempt] = useState(0);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [view, setView] = useState<AppView>("add");
+  const [purchaseRefreshKey, setPurchaseRefreshKey] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -65,6 +69,11 @@ export function ApiAvailability({
     };
   }, [apiUrl, attempt]);
 
+  const showPurchases = () => {
+    setPurchaseRefreshKey((value) => value + 1);
+    setView("purchases");
+  };
+
   return (
     <>
       <section className="family-session-card">
@@ -87,12 +96,37 @@ export function ApiAvailability({
         </button>
       </section>
 
+      {apiState === "online" && (
+        <nav className="app-navigation" aria-label="Navegação principal">
+          <button
+            type="button"
+            className={view === "add" ? "active" : ""}
+            aria-current={view === "add" ? "page" : undefined}
+            onClick={() => setView("add")}
+          >
+            <span aria-hidden="true">＋</span>
+            Adicionar
+          </button>
+          <button
+            type="button"
+            className={view === "purchases" ? "active" : ""}
+            aria-current={view === "purchases" ? "page" : undefined}
+            onClick={showPurchases}
+          >
+            <span aria-hidden="true">▤</span>
+            Compras
+          </button>
+        </nav>
+      )}
+
       <section className="hero-card compact-hero">
         <div>
           <p className="eyebrow">Gestão de Compras Web</p>
-          <h1>Registre uma compra</h1>
+          <h1>{view === "add" ? "Registre uma compra" : "Suas compras"}</h1>
           <p className="subtitle">
-            Capture o QR Code, confira os itens e salve a compra no espaço seguro da sua família.
+            {view === "add"
+              ? "Capture o QR Code, confira os itens e salve a compra no espaço seguro da sua família."
+              : "Consulte o histórico e abra os itens de cada compra sem sair da página."}
           </p>
         </div>
 
@@ -108,14 +142,31 @@ export function ApiAvailability({
         <section className="processing-card api-connection-card" role="status">
           <span className="spinner" aria-hidden="true" />
           <div>
-            <strong>Preparando a leitura</strong>
+            <strong>Preparando o aplicativo</strong>
             <p>O servidor online pode levar alguns segundos para responder.</p>
           </div>
         </section>
       )}
 
-      {apiState === "online" && (
-        <NfceCapture apiUrl={apiUrl} accessToken={accessToken} />
+      {apiState === "online" && view === "add" && (
+        <NfceCapture
+          apiUrl={apiUrl}
+          accessToken={accessToken}
+          onPurchaseSaved={() => {
+            setPurchaseRefreshKey((value) => value + 1);
+          }}
+          onOpenPurchases={showPurchases}
+        />
+      )}
+
+      {apiState === "online" && view === "purchases" && (
+        <PurchasesView
+          key={`purchases-${purchaseRefreshKey}`}
+          apiUrl={apiUrl}
+          accessToken={accessToken}
+          refreshKey={purchaseRefreshKey}
+          onAddPurchase={() => setView("add")}
+        />
       )}
 
       {apiState === "offline" && (
@@ -141,11 +192,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.3.1 — Primeira gravação de compras</strong>
+          <strong>v0.3.2 — Compras e detalhes</strong>
         </div>
         <div>
-          <span>Banco online</span>
-          <strong>Supabase com isolamento por familia_id</strong>
+          <span>Dados</span>
+          <strong>Histórico isolado por familia_id</strong>
         </div>
       </section>
     </>

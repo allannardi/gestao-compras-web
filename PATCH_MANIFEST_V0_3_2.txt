@@ -1,0 +1,27 @@
+Gestão de Compras Web v0.3.2 — Compras e detalhes
+
+Base obrigatória: v0.3.1 validada
+Arquivos alterados/adicionados:
+
+- CHANGELOG.md
+- COMO_APLICAR_V0_3_2.md
+- CONTINUIDADE_GESTAO_COMPRAS_WEB.md
+- README.md
+- backend/app/api/v1/endpoints/compras.py
+- backend/app/api/v1/router.py
+- backend/app/core/version.py
+- backend/app/repositories/compras.py
+- backend/app/schemas/compras.py
+- backend/tests/test_compras_endpoint.py
+- backend/tests/test_compras_repository.py
+- database/migrations/003_consulta_compras.sql
+- docs/ROADMAP.md
+- docs/VALIDACAO_V0_3_2.md
+- frontend/app/globals.css
+- frontend/components/api-availability.tsx
+- frontend/components/nfce-capture.tsx
+- frontend/components/purchases-view.tsx
+- frontend/package.json
+- frontend/public/sw.js
+- frontend/services/compras.ts
+- frontend/types/compras.ts

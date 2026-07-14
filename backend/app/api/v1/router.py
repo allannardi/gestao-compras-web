@@ -15,6 +15,6 @@ router.include_router(nfce_router)
 def status() -> dict[str, str]:
     return {
         "api": "ready",
-        "next_step": "purchase-persistence-validation",
+        "next_step": "purchases-list-and-details-validation",
         "version": APP_VERSION,
     }

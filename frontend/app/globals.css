@@ -809,3 +809,370 @@ h2 {
     border-radius: 21px;
   }
 }
+
+/* v0.3.2 — navegação, listagem e detalhes de compras */
+.app-navigation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-bottom: 16px;
+  padding: 5px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 24px rgba(30, 48, 64, 0.07);
+}
+
+.app-navigation button {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 12px;
+  color: #56636e;
+  background: transparent;
+  font-size: 0.88rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.app-navigation button span {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.app-navigation button.active {
+  color: white;
+  background: #0f4c81;
+  box-shadow: 0 7px 16px rgba(15, 76, 129, 0.2);
+}
+
+.purchases-section,
+.purchase-detail-stack,
+.saved-purchase-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.purchases-section,
+.purchase-detail-stack {
+  margin-top: 16px;
+}
+
+.purchases-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 2px 0;
+}
+
+.purchases-heading .eyebrow {
+  margin-bottom: 3px;
+}
+
+.purchases-heading button {
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: #0f4c81;
+  background: #e9f2f9;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.purchases-heading button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+.purchase-list {
+  display: grid;
+  gap: 10px;
+}
+
+.purchase-card,
+.purchase-detail-summary,
+.purchases-empty-card {
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 10px 26px rgba(30, 48, 64, 0.07);
+}
+
+.purchase-card {
+  display: grid;
+  gap: 13px;
+  padding: 16px;
+}
+
+.purchase-card-topline {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.purchase-card-topline > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.purchase-card-topline span {
+  color: #71808b;
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+.purchase-card-topline > div strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.96rem;
+}
+
+.purchase-card-topline > strong {
+  flex: 0 0 auto;
+  color: #0f4c81;
+  font-size: 1.05rem;
+}
+
+.purchase-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.purchase-card-meta span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #5f6d78;
+  background: #f0f4f7;
+  font-size: 0.72rem;
+}
+
+.purchase-card > button {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  border-top: 1px solid #e8edf1;
+  padding: 11px 0 0;
+  color: #0f4c81;
+  background: transparent;
+  font-size: 0.84rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.purchase-card > button span {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.purchases-empty-card {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 26px 20px;
+  text-align: center;
+}
+
+.purchases-empty-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 16px;
+  background: #edf5fb;
+  font-size: 1.5rem;
+}
+
+.purchases-empty-card p {
+  max-width: 32ch;
+  margin: 0 0 7px;
+  color: #65727d;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.purchases-empty-card .capture-button {
+  width: 100%;
+  min-height: 50px;
+}
+
+.load-more-button {
+  margin-top: 2px;
+}
+
+.load-more-button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.purchases-inline-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff8f6;
+}
+
+.back-purchases-button {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 42px;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 12px;
+  padding: 9px 13px;
+  color: #0f4c81;
+  background: rgba(255, 255, 255, 0.94);
+  font-size: 0.82rem;
+  font-weight: 850;
+  box-shadow: 0 8px 20px rgba(30, 48, 64, 0.07);
+  cursor: pointer;
+}
+
+.back-purchases-button span {
+  font-size: 1.35rem;
+  line-height: 0.7;
+}
+
+.purchase-detail-summary {
+  display: grid;
+  gap: 17px;
+  padding: 18px;
+}
+
+.purchase-detail-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.purchase-detail-heading > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.purchase-detail-heading span,
+.purchase-detail-heading small {
+  color: #6a7782;
+  font-size: 0.73rem;
+}
+
+.purchase-detail-heading h2 {
+  overflow-wrap: anywhere;
+}
+
+.purchase-detail-heading > strong {
+  flex: 0 0 auto;
+  color: #0f4c81;
+  font-size: 1.16rem;
+}
+
+.purchase-detail-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.purchase-detail-meta span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 12px;
+  color: #3f4d59;
+  background: #f4f7f9;
+  font-size: 0.79rem;
+}
+
+.purchase-detail-meta small {
+  color: #73808b;
+  font-size: 0.68rem;
+}
+
+.nfce-key-details {
+  border-top: 1px solid #e6ecef;
+  padding-top: 12px;
+  color: #65727d;
+  font-size: 0.74rem;
+}
+
+.nfce-key-details summary {
+  color: #0f4c81;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.nfce-key-details span {
+  display: block;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+}
+
+.purchase-items-header {
+  margin-top: 4px;
+  padding: 0 2px;
+}
+
+.purchase-detail-item {
+  gap: 11px;
+}
+
+.item-category-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #e8edf1;
+  padding-top: 10px;
+}
+
+.item-category-row span {
+  color: #74818b;
+  font-size: 0.7rem;
+}
+
+.item-category-row strong {
+  color: #0f4c81;
+  font-size: 0.76rem;
+  text-align: right;
+}
+
+.retry-detail-button,
+.view-purchases-button {
+  width: 100%;
+  min-height: 50px;
+  margin-top: 13px;
+}
+
+.saved-purchase-stack .view-purchases-button {
+  margin-top: 0;
+}
+
+@media (min-width: 640px) {
+  .app-navigation {
+    width: 390px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .purchase-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .purchase-detail-meta {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

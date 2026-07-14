@@ -1,11 +1,15 @@
-import type { CompraSalva } from "@/types/compras";
+import type {
+  CompraDetalhe,
+  CompraLista,
+  CompraSalva,
+} from "@/types/compras";
 import type { NfcePreview } from "@/types/nfce";
 
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
 }
 
-function getApiError(payload: unknown): string {
+function getApiError(payload: unknown, fallback: string): string {
   if (
     payload &&
     typeof payload === "object" &&
@@ -15,7 +19,11 @@ function getApiError(payload: unknown): string {
     return payload.detail;
   }
 
-  return "Não foi possível salvar a compra.";
+  return fallback;
+}
+
+async function readJson(response: Response): Promise<unknown> {
+  return response.json().catch(() => null);
 }
 
 export async function savePurchase(
@@ -42,10 +50,70 @@ export async function savePurchase(
     }),
   });
 
-  const payload: unknown = await response.json().catch(() => null);
+  const payload = await readJson(response);
   if (!response.ok) {
-    throw new Error(getApiError(payload));
+    throw new Error(getApiError(payload, "Não foi possível salvar a compra."));
   }
 
   return payload as CompraSalva;
+}
+
+export async function fetchPurchases(
+  apiUrl: string,
+  accessToken: string,
+  offset = 0,
+  limit = 20,
+  signal?: AbortSignal,
+): Promise<CompraLista> {
+  const query = new URLSearchParams({
+    limite: String(limit),
+    offset: String(offset),
+  });
+
+  const response = await fetch(
+    `${normalizeApiUrl(apiUrl)}/api/v1/compras?${query.toString()}`,
+    {
+      cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      signal,
+    },
+  );
+
+  const payload = await readJson(response);
+  if (!response.ok) {
+    throw new Error(
+      getApiError(payload, "Não foi possível carregar as compras."),
+    );
+  }
+
+  return payload as CompraLista;
+}
+
+export async function fetchPurchaseDetail(
+  apiUrl: string,
+  accessToken: string,
+  purchaseId: string,
+  signal?: AbortSignal,
+): Promise<CompraDetalhe> {
+  const response = await fetch(
+    `${normalizeApiUrl(apiUrl)}/api/v1/compras/${encodeURIComponent(purchaseId)}`,
+    {
+      cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      signal,
+    },
+  );
+
+  const payload = await readJson(response);
+  if (!response.ok) {
+    throw new Error(
+      getApiError(payload, "Não foi possível abrir os detalhes da compra."),
+    );
+  }
+
+  return payload as CompraDetalhe;
 }

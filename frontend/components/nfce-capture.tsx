@@ -12,6 +12,8 @@ type SaveState = "idle" | "saving" | "saved";
 type Props = {
   apiUrl: string;
   accessToken: string;
+  onPurchaseSaved?: (purchase: CompraSalva) => void;
+  onOpenPurchases?: () => void;
 };
 
 const moneyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -40,7 +42,12 @@ function getErrorMessage(payload: unknown): string {
   return "Não foi possível processar a imagem da NFC-e.";
 }
 
-export function NfceCapture({ apiUrl, accessToken }: Props) {
+export function NfceCapture({
+  apiUrl,
+  accessToken,
+  onPurchaseSaved,
+  onOpenPurchases,
+}: Props) {
   const [state, setState] = useState<CaptureState>("idle");
   const [error, setError] = useState("");
   const [preview, setPreview] = useState<NfcePreview | null>(null);
@@ -245,6 +252,7 @@ export function NfceCapture({ apiUrl, accessToken }: Props) {
       const result = await savePurchase(apiUrl, accessToken, preview);
       setSavedPurchase(result);
       setSaveState("saved");
+      onPurchaseSaved?.(result);
     } catch (requestError) {
       setSaveState("idle");
       setSaveError(
@@ -442,14 +450,25 @@ export function NfceCapture({ apiUrl, accessToken }: Props) {
           )}
 
           {saveState === "saved" && savedPurchase ? (
-            <div className="saved-purchase-card" role="status">
-              <div className="saved-purchase-icon" aria-hidden="true">✓</div>
-              <div>
-                <strong>Compra salva com sucesso</strong>
-                <span>
-                  {savedPurchase.itens_salvos} itens registrados · {savedPurchase.produtos_criados} produtos novos
-                </span>
+            <div className="saved-purchase-stack">
+              <div className="saved-purchase-card" role="status">
+                <div className="saved-purchase-icon" aria-hidden="true">✓</div>
+                <div>
+                  <strong>Compra salva com sucesso</strong>
+                  <span>
+                    {savedPurchase.itens_salvos} itens registrados · {savedPurchase.produtos_criados} produtos novos
+                  </span>
+                </div>
               </div>
+              {onOpenPurchases && (
+                <button
+                  className="capture-button view-purchases-button"
+                  type="button"
+                  onClick={onOpenPurchases}
+                >
+                  Ver minhas compras
+                </button>
+              )}
             </div>
           ) : (
             <div className="save-confirmation-card">

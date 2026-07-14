@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Annotated
 
 from pydantic import BaseModel, Field, field_validator
@@ -48,3 +48,51 @@ class CompraCreateResponse(BaseModel):
     produtos_criados: int = Field(ge=0)
     produtos_reutilizados: int = Field(ge=0)
     mensagem: str
+
+
+class CompraResumo(BaseModel):
+    id: str
+    supermercado_nome: str
+    data_compra: date
+    valor_total: float = Field(ge=0)
+    forma_pagamento: str = ""
+    status: str
+    itens_count: int = Field(ge=0)
+    criado_em: datetime
+
+
+class CompraListaResponse(BaseModel):
+    compras: list[CompraResumo]
+    limite: int = Field(ge=1, le=100)
+    offset: int = Field(ge=0)
+    proximo_offset: int | None = Field(default=None, ge=0)
+    tem_mais: bool
+
+
+class CompraItemDetalhe(BaseModel):
+    id: str
+    produto_id: str | None = None
+    produto_nome: str
+    descricao_original: str
+    quantidade: float = Field(gt=0)
+    unidade: str
+    valor_unitario: float = Field(ge=0)
+    valor_total: float = Field(ge=0)
+    categoria_nome: str
+
+
+class CompraDetalheResponse(BaseModel):
+    id: str
+    familia_id: str
+    supermercado_id: str | None = None
+    supermercado_nome: str
+    supermercado_cnpj: str = ""
+    chave_nfce: str = ""
+    data_compra: date
+    valor_total: float = Field(ge=0)
+    forma_pagamento: str = ""
+    valor_pago: float = Field(ge=0)
+    origem: str
+    status: str
+    criado_em: datetime
+    itens: list[CompraItemDetalhe]
