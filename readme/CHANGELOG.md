@@ -1,3 +1,9 @@
+# v0.5.1 — Correção mobile do filtro de mês
+
+- Corrige overflow do campo Mês da compra no Safari/iPhone.
+- Mantém todos os recursos da v0.5.0.
+- Sem migration ou novas dependências.
+
 # Changelog — Gestão de Compras Web
 
 ## v0.5.0 — Dashboard e histórico de preços

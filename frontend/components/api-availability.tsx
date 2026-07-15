@@ -242,7 +242,7 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.5.0 — Dashboard e histórico de preços</strong>
+          <strong>v0.5.1 — Dashboard e histórico de preços</strong>
         </div>
         <div>
           <span>Dados</span>

@@ -2280,8 +2280,26 @@ h2 {
     font-size: 0.92rem;
   }
 
-  .purchase-month-field input {
+  /* Safari/iOS aplica uma largura intrínseca maior em input[type="month"].
+     O wrapper e o campo precisam limitar explicitamente o tamanho físico. */
+  .purchase-month-field {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .purchase-month-field input[type="month"] {
+    display: block;
+    inline-size: 100%;
+    width: 100%;
+    max-inline-size: 100%;
+    max-width: 100%;
+    min-inline-size: 0;
+    min-width: 0;
+    box-sizing: border-box;
+    padding-right: 6px;
     font-size: 0.88rem;
+    overflow: hidden;
   }
 }
 

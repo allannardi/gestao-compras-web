@@ -1,0 +1,8 @@
+frontend/app/globals.css
+backend/app/core/version.py
+frontend/package.json
+frontend/components/api-availability.tsx
+frontend/public/sw.js
+readme/COMO_APLICAR_V0_5_1.md
+readme/VALIDACAO_V0_5_1.md
+readme/PATCH_MANIFEST_V0_5_1.txt
