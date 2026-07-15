@@ -1,10 +1,10 @@
 # Gestão de Compras Web
 
-Aplicação mobile/PWA para registrar compras domésticas por NFC-e.
+Aplicação mobile/PWA para registrar e acompanhar compras domésticas por NFC-e.
 
 ## Checkpoint deste patch
 
-**v0.3.3 — Operação do histórico**
+**v0.4.0 — Produtos e classificação**
 
 ## Stack
 
@@ -15,7 +15,7 @@ Aplicação mobile/PWA para registrar compras domésticas por NFC-e.
 - Render;
 - uso principal pelo Safari/PWA no iPhone.
 
-## Recursos já validados
+## Recursos consolidados
 
 - famílias isoladas por `familia_id`;
 - login e sessão;
@@ -23,19 +23,21 @@ Aplicação mobile/PWA para registrar compras domésticas por NFC-e.
 - leitura e consulta da NFC-e;
 - gravação real das compras;
 - listagem e detalhes em cards mobile;
-- filtros do histórico;
-- exclusão controlada de compras de teste.
+- filtros e exclusão controlada de compras;
+- catálogo de produtos;
+- categorias e revisão mobile;
+- classificação automática preservando revisões manuais.
 
 ## Aplicação
 
 Leia:
 
 ```text
-readme\COMO_APLICAR_V0_3_3.md
+readme\COMO_APLICAR_V0_4_0.md
 ```
 
-Antes dos testes, execute:
+Antes do deploy, execute:
 
 ```text
-database\migrations\004_operacao_historico.sql
+database\migrations\005_produtos_classificacao.sql
 ```

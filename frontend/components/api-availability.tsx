@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 
 import { NfceCapture } from "@/components/nfce-capture";
 import { PurchasesView } from "@/components/purchases-view";
+import { ProductsView } from "@/components/products-view";
 import type { FamilyContext } from "@/types/auth";
 
 type ApiState = "checking" | "online" | "offline";
-type AppView = "add" | "purchases";
+type AppView = "add" | "purchases" | "products";
 
 type Props = {
   apiUrl: string;
@@ -116,17 +117,34 @@ export function ApiAvailability({
             <span aria-hidden="true">▤</span>
             Compras
           </button>
+          <button
+            type="button"
+            className={view === "products" ? "active" : ""}
+            aria-current={view === "products" ? "page" : undefined}
+            onClick={() => setView("products")}
+          >
+            <span aria-hidden="true">▦</span>
+            Produtos
+          </button>
         </nav>
       )}
 
       <section className="hero-card compact-hero">
         <div>
           <p className="eyebrow">Gestão de Compras Web</p>
-          <h1>{view === "add" ? "Registre uma compra" : "Suas compras"}</h1>
+          <h1>
+            {view === "add"
+              ? "Registre uma compra"
+              : view === "purchases"
+                ? "Suas compras"
+                : "Seus produtos"}
+          </h1>
           <p className="subtitle">
             {view === "add"
               ? "Capture o QR Code, confira os itens e salve a compra no espaço seguro da sua família."
-              : "Consulte o histórico e abra os itens de cada compra sem sair da página."}
+              : view === "purchases"
+                ? "Consulte o histórico e abra os itens de cada compra sem sair da página."
+                : "Revise nomes, marcas e categorias sem perder o histórico já registrado."}
           </p>
         </div>
 
@@ -170,6 +188,15 @@ export function ApiAvailability({
         />
       )}
 
+
+      {apiState === "online" && view === "products" && (
+        <ProductsView
+          apiUrl={apiUrl}
+          accessToken={accessToken}
+          onAddPurchase={() => setView("add")}
+        />
+      )}
+
       {apiState === "offline" && (
         <section className="feedback-card error-card api-warning" role="alert">
           <strong>Não consegui acessar o backend</strong>
@@ -193,11 +220,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.3.3 — Operação do histórico</strong>
+          <strong>v0.4.0 — Produtos e classificação</strong>
         </div>
         <div>
           <span>Dados</span>
-          <strong>Filtros e exclusão controlada</strong>
+          <strong>Catálogo, categorias e revisão mobile</strong>
         </div>
       </section>
     </>

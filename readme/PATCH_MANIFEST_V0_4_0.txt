@@ -1,0 +1,35 @@
+Gestão de Compras Web v0.4.0 — Produtos e classificação
+
+Principais arquivos novos:
+- backend/app/api/v1/endpoints/produtos.py
+- backend/app/repositories/produtos.py
+- backend/app/schemas/produtos.py
+- backend/tests/test_produtos_endpoint.py
+- backend/tests/test_produtos_repository.py
+- database/migrations/005_produtos_classificacao.sql
+- frontend/components/products-view.tsx
+- frontend/services/produtos.ts
+- frontend/types/produtos.ts
+- readme/COMO_APLICAR_V0_4_0.md
+- readme/VALIDACAO_V0_4_0.md
+
+Arquivos principais alterados:
+- backend/app/api/v1/router.py
+- backend/app/core/version.py
+- frontend/components/api-availability.tsx
+- frontend/app/globals.css
+- frontend/public/sw.js
+- frontend/package.json
+- readme/CHANGELOG.md
+- readme/CONTINUIDADE_GESTAO_COMPRAS_WEB.md
+- readme/README.md
+- readme/ROADMAP.md
+
+Não incluídos:
+- .env
+- .env.local
+- .venv
+- node_modules
+- package-lock.json
+- .next
+- caches
