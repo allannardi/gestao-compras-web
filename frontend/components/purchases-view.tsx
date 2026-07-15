@@ -7,6 +7,7 @@ import {
   fetchPurchaseDetail,
   fetchPurchases,
 } from "@/services/compras";
+import { MonthSelect } from "@/components/month-select";
 import { fetchSupermarkets } from "@/services/dashboard";
 import type {
   CompraDetalhe,
@@ -535,10 +536,12 @@ export function PurchasesView({
         </label>
         <label className="purchase-month-field">
           Mês da compra
-          <input
-            type="month"
+          <MonthSelect
             value={monthDraft}
-            onChange={(event) => setMonthDraft(event.target.value)}
+            onChange={setMonthDraft}
+            allowEmpty
+            emptyLabel="Todos os meses"
+            ariaLabel="Mês da compra"
           />
         </label>
         <div className="purchase-filter-actions">

@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
+import { MonthSelect } from "@/components/month-select";
 import {
   fetchDashboard,
   fetchProductPriceHistory,
@@ -309,11 +310,11 @@ export function DashboardView({ apiUrl, accessToken, onAddPurchase }: Props) {
       <form className="dashboard-month-card" onSubmit={applyMonth}>
         <label>
           Mês do resumo
-          <input
-            type="month"
+          <MonthSelect
             value={monthDraft}
-            onChange={(event) => setMonthDraft(event.target.value)}
+            onChange={setMonthDraft}
             required
+            ariaLabel="Mês do resumo"
           />
         </label>
         <button className="capture-button" type="submit">

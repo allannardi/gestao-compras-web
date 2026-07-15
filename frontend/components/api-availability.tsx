@@ -242,11 +242,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.5.1 — Dashboard e histórico de preços</strong>
+          <strong>v0.5.2 — Seletor de mês no iPhone</strong>
         </div>
         <div>
           <span>Dados</span>
-          <strong>Resumo mensal, rankings e evolução de preços</strong>
+          <strong>Filtro e resumo mensal compatíveis com Safari/iPhone</strong>
         </div>
       </section>
     </>

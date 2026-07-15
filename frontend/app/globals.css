@@ -2330,3 +2330,52 @@ h2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* v0.5.2 — seletor de mês compatível com Safari/iPhone */
+.month-select-control {
+  display: block;
+  inline-size: 100%;
+  width: 100%;
+  max-inline-size: 100%;
+  max-width: 100%;
+  min-inline-size: 0;
+  min-width: 0;
+  min-height: 46px;
+  box-sizing: border-box;
+  border: 1px solid #ccd7df;
+  border-radius: 12px;
+  padding: 10px 36px 10px 12px;
+  color: #17212b;
+  background-color: white;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  outline: none;
+}
+
+.month-select-control:focus {
+  border-color: #0f4c81;
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.12);
+}
+
+.purchase-month-field,
+.dashboard-month-card label {
+  inline-size: 100%;
+  width: 100%;
+  max-inline-size: 100%;
+  max-width: 100%;
+  min-inline-size: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 420px) {
+  .month-select-control {
+    inline-size: 100%;
+    width: 100%;
+    max-inline-size: 100%;
+    max-width: 100%;
+    padding-right: 32px;
+    font-size: 0.84rem;
+  }
+}
