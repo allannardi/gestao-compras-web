@@ -128,7 +128,7 @@ def test_repository_lista_compras_com_paginacao(monkeypatch) -> None:
         "token-123",
         limite=1,
         offset=0,
-        busca="Mercado",
+        supermercado_id="22222222-2222-4222-8222-222222222222",
     )
 
     assert len(result["compras"]) == 1
@@ -137,7 +137,7 @@ def test_repository_lista_compras_com_paginacao(monkeypatch) -> None:
     assert captured["json"] == {
         "p_limite": 2,
         "p_offset": 0,
-        "p_busca": "Mercado",
+        "p_supermercado_id": "22222222-2222-4222-8222-222222222222",
         "p_mes": None,
     }
     assert captured["url"].endswith("/rpc/listar_compras_familia")

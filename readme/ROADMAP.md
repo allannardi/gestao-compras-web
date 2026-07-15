@@ -21,25 +21,33 @@
 
 - itens por valor total decrescente;
 - filtros mobile;
-- exclusão controlada de compras de teste.
+- exclusão controlada.
 
-## v0.4.0 — Produtos e classificação — patch atual
+## v0.4.0 — Produtos e classificação — validada
 
 - produtos para revisar;
-- categorias padrão e personalizadas;
+- categorias;
 - regras automáticas;
-- edição mobile;
-- preservação da categoria já revisada.
+- edição mobile.
 
-## v0.5.0 — Histórico de preços e dashboard
+## v0.5.0 — Dashboard e histórico de preços — patch atual
 
+- resumo mensal;
+- comparação com mês anterior;
+- top produtos, categorias e supermercados;
 - histórico por produto;
 - variação de preços;
-- resumo mensal;
-- top produtos, categorias e supermercados.
+- gráfico leve mobile;
+- filtro de supermercado por seleção.
 
 ## v0.6.0 — Operação familiar
 
 - membros e convites;
 - configurações da família;
 - ajustes de perfil e permissões.
+
+## v0.7.0 — Backup e exportação
+
+- exportação Excel;
+- backup manual;
+- preparação de restauração.

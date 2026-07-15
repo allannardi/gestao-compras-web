@@ -7,10 +7,12 @@ import {
   fetchPurchaseDetail,
   fetchPurchases,
 } from "@/services/compras";
+import { fetchSupermarkets } from "@/services/dashboard";
 import type {
   CompraDetalhe,
   CompraResumo,
 } from "@/types/compras";
+import type { SupermercadoResumo } from "@/types/dashboard";
 
 type Props = {
   apiUrl: string;
@@ -82,9 +84,11 @@ export function PurchasesView({
   const [loadingMore, setLoadingMore] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
-  const [searchDraft, setSearchDraft] = useState("");
+  const [supermarkets, setSupermarkets] = useState<SupermercadoResumo[]>([]);
+  const [supermarketsError, setSupermarketsError] = useState("");
+  const [supermarketDraft, setSupermarketDraft] = useState("");
   const [monthDraft, setMonthDraft] = useState("");
-  const [appliedSearch, setAppliedSearch] = useState("");
+  const [appliedSupermarket, setAppliedSupermarket] = useState("");
   const [appliedMonth, setAppliedMonth] = useState("");
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -97,10 +101,34 @@ export function PurchasesView({
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
 
-  const filtersActive = Boolean(appliedSearch || appliedMonth);
+  const filtersActive = Boolean(appliedSupermarket || appliedMonth);
+  const appliedSupermarketName =
+    supermarkets.find((item) => item.id === appliedSupermarket)?.nome ?? "";
   const sortedDetailItems = detail
     ? [...detail.itens].sort(compareItemsByTotal)
     : [];
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    void fetchSupermarkets(apiUrl, accessToken, controller.signal)
+      .then((result) => {
+        setSupermarkets(result);
+        setSupermarketsError("");
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        setSupermarketsError(
+          error instanceof Error
+            ? error.message
+            : "Não foi possível carregar os supermercados.",
+        );
+      });
+
+    return () => controller.abort();
+  }, [accessToken, apiUrl, refreshKey, reloadKey]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -110,7 +138,7 @@ export function PurchasesView({
       accessToken,
       0,
       PAGE_SIZE,
-      appliedSearch,
+      appliedSupermarket,
       appliedMonth,
       controller.signal,
     )
@@ -138,7 +166,7 @@ export function PurchasesView({
     accessToken,
     apiUrl,
     appliedMonth,
-    appliedSearch,
+    appliedSupermarket,
     refreshKey,
     reloadKey,
   ]);
@@ -151,25 +179,23 @@ export function PurchasesView({
 
   const applyFilters = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const nextSearch = searchDraft.trim();
-
     setListMessage("");
     setListState("loading");
     setListError("");
-    setAppliedSearch(nextSearch);
+    setAppliedSupermarket(supermarketDraft);
     setAppliedMonth(monthDraft);
 
-    if (nextSearch === appliedSearch && monthDraft === appliedMonth) {
+    if (supermarketDraft === appliedSupermarket && monthDraft === appliedMonth) {
       reloadList();
     }
   };
 
   const clearFilters = () => {
-    setSearchDraft("");
+    setSupermarketDraft("");
     setMonthDraft("");
     setListState("loading");
     setListError("");
-    setAppliedSearch("");
+    setAppliedSupermarket("");
     setAppliedMonth("");
     setListMessage("");
 
@@ -190,7 +216,7 @@ export function PurchasesView({
         accessToken,
         nextOffset,
         PAGE_SIZE,
-        appliedSearch,
+        appliedSupermarket,
         appliedMonth,
       );
 
@@ -493,17 +519,21 @@ export function PurchasesView({
       </div>
 
       <form className="purchase-filters-card" onSubmit={applyFilters}>
-        <label className="purchase-search-field">
-          Buscar supermercado
-          <input
-            type="search"
-            value={searchDraft}
-            onChange={(event) => setSearchDraft(event.target.value)}
-            maxLength={80}
-            placeholder="Ex.: Carrefour"
-          />
+        <label className="purchase-supermarket-field">
+          Supermercado
+          <select
+            value={supermarketDraft}
+            onChange={(event) => setSupermarketDraft(event.target.value)}
+          >
+            <option value="">Todos os supermercados</option>
+            {supermarkets.map((supermarket) => (
+              <option key={supermarket.id} value={supermarket.id}>
+                {supermarket.nome}
+              </option>
+            ))}
+          </select>
         </label>
-        <label>
+        <label className="purchase-month-field">
           Mês da compra
           <input
             type="month"
@@ -522,11 +552,19 @@ export function PurchasesView({
         {filtersActive && (
           <div className="active-filter-summary" aria-live="polite">
             <span>Filtros ativos</span>
-            {appliedSearch && <strong>Mercado: {appliedSearch}</strong>}
+            {appliedSupermarketName && (
+              <strong>Mercado: {appliedSupermarketName}</strong>
+            )}
             {appliedMonth && <strong>Mês: {formatMonth(appliedMonth)}</strong>}
           </div>
         )}
       </form>
+
+      {supermarketsError && (
+        <p className="inline-error purchases-inline-error">
+          {supermarketsError}
+        </p>
+      )}
 
       {listMessage && (
         <section className="feedback-card success-card purchases-success" role="status">

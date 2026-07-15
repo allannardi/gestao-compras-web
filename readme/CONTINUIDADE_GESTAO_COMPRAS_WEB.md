@@ -2,9 +2,9 @@
 
 ## Estado atual
 
-Checkpoint de origem validado: **v0.3.3 — Operação do histórico**.
+Checkpoint de origem validado: **v0.4.0 — Produtos e classificação**.
 
-Patch atual: **v0.4.0 — Produtos e classificação**.
+Patch atual: **v0.5.0 — Dashboard e histórico de preços**.
 
 ## Funcionalidades consolidadas
 
@@ -13,56 +13,55 @@ Patch atual: **v0.4.0 — Produtos e classificação**.
 - Supabase Auth e PostgreSQL;
 - famílias isoladas por `familia_id`;
 - câmera e foto no iPhone;
-- consulta da NFC-e;
-- gravação de compras, itens, produtos, supermercados e histórico;
-- listagem de compras em cards;
-- detalhes na própria página;
-- filtros e exclusão controlada de compras de teste;
-- itens exibidos do maior para o menor valor total.
+- consulta e gravação de NFC-e;
+- listagem e detalhes de compras;
+- filtros e exclusão controlada;
+- produtos, categorias e classificação automática;
+- revisão mobile de produtos;
+- documentação `.md` e `.txt` na pasta `readme`.
 
-## Alterações da v0.4.0
+## Alterações da v0.5.0
 
-- tela Produtos em cards mobile;
-- indicadores do catálogo;
-- busca e filtros;
-- filtro rápido Para revisar;
-- edição de nome, marca, unidade e categoria;
-- criação de categorias personalizadas;
-- categorias padrão por família;
-- classificação automática de novos produtos;
-- reclassificação dos produtos ainda pendentes;
-- preservação das categorias já revisadas.
-
-## Regras importantes de produtos
-
-- produtos são criados automaticamente pela leitura da NFC-e;
-- um produto existente mantém sua categoria revisada;
-- a reclassificação atua somente em produtos com `revisar = true` e categoria Não classificado;
-- a edição manual confirma a revisão;
-- selecionar Não classificado mantém o produto na fila Para revisar;
-- todo produto, categoria e operação permanece isolado por `familia_id`.
+- nova aba **Resumo**;
+- total mensal, compras, itens e ticket médio;
+- comparação com o mês anterior;
+- top produtos, categorias e supermercados;
+- histórico de preços por produto;
+- gráfico leve em SVG;
+- registros de preço por mercado e data;
+- supermercado selecionado por lista na tela Compras;
+- campo mensal ajustado para telas pequenas.
 
 ## Banco
 
 Migration obrigatória:
 
 ```text
-database/migrations/005_produtos_classificacao.sql
+database/migrations/006_dashboard_historico_precos.sql
 ```
+
+A migration é aditiva em relação aos dados. Ela substitui apenas a assinatura da função de listagem de compras para receber `supermercado_id` em vez de texto livre.
+
+## Regras importantes
+
+- o backend deriva a família pela sessão autenticada;
+- o frontend nunca envia `familia_id` para consultar dados;
+- supermercados disponíveis no filtro pertencem somente à família atual;
+- dashboards e históricos consultam apenas compras confirmadas da família;
+- nenhuma biblioteca pesada de gráficos foi adicionada;
+- nenhuma nova variável de ambiente foi criada.
 
 ## Próxima versão planejada
 
-**v0.5.0 — Histórico de preços e dashboard**
+**v0.6.0 — Operação familiar**
 
 Escopo sugerido:
 
-- histórico por produto;
-- variação de preços;
-- resumo mensal;
-- top produtos;
-- gastos por categoria;
-- gastos por supermercado;
-- cards e gráficos leves para o iPhone.
+- membros da família;
+- convites;
+- configurações da família;
+- perfil e permissões;
+- experiência de administração mobile.
 
 ## Regra de continuidade
 

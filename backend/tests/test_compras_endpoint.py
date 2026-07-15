@@ -155,12 +155,12 @@ def test_listar_compras_exige_login() -> None:
 def test_listar_compras_retorna_apenas_contexto_autenticado(monkeypatch) -> None:
     captured = {}
 
-    def fake_list(access_token, limite, offset, busca, mes):
+    def fake_list(access_token, limite, offset, supermercado_id, mes):
         captured.update(
             access_token=access_token,
             limite=limite,
             offset=offset,
-            busca=busca,
+            supermercado_id=supermercado_id,
             mes=mes,
         )
         return {
@@ -179,7 +179,7 @@ def test_listar_compras_retorna_apenas_contexto_autenticado(monkeypatch) -> None
         assert response.json()["compras"][0]["supermercado_nome"] == "Mercado Teste"
         assert captured["access_token"] == "token-123"
         assert captured["limite"] == 20
-        assert captured["busca"] == ""
+        assert captured["supermercado_id"] is None
         assert captured["mes"] is None
     finally:
         app.dependency_overrides.clear()
@@ -226,12 +226,12 @@ def test_detalhar_compra_de_outra_familia_retorna_404(monkeypatch) -> None:
 def test_listar_compras_encaminha_filtros(monkeypatch) -> None:
     captured = {}
 
-    def fake_list(access_token, limite, offset, busca, mes):
+    def fake_list(access_token, limite, offset, supermercado_id, mes):
         captured.update(
             access_token=access_token,
             limite=limite,
             offset=offset,
-            busca=busca,
+            supermercado_id=supermercado_id,
             mes=mes,
         )
         return {
@@ -246,10 +246,10 @@ def test_listar_compras_encaminha_filtros(monkeypatch) -> None:
     app.dependency_overrides[get_current_family_context] = _context
     try:
         response = client.get(
-            "/api/v1/compras?busca=Mercado&mes=2026-07-01&limite=10&offset=0"
+            "/api/v1/compras?supermercado_id=22222222-2222-4222-8222-222222222222&mes=2026-07-01&limite=10&offset=0"
         )
         assert response.status_code == 200
-        assert captured["busca"] == "Mercado"
+        assert captured["supermercado_id"] == "22222222-2222-4222-8222-222222222222"
         assert captured["mes"].isoformat() == "2026-07-01"
     finally:
         app.dependency_overrides.clear()

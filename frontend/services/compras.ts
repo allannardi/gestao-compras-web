@@ -64,7 +64,7 @@ export async function fetchPurchases(
   accessToken: string,
   offset = 0,
   limit = 20,
-  search = "",
+  supermarketId = "",
   month = "",
   signal?: AbortSignal,
 ): Promise<CompraLista> {
@@ -73,9 +73,8 @@ export async function fetchPurchases(
     offset: String(offset),
   });
 
-  const normalizedSearch = search.trim();
-  if (normalizedSearch) {
-    query.set("busca", normalizedSearch);
+  if (supermarketId) {
+    query.set("supermercado_id", supermarketId);
   }
 
   if (/^\d{4}-\d{2}$/.test(month)) {

@@ -1,0 +1,40 @@
+Gestão de Compras Web v0.5.0 — Dashboard e histórico de preços
+
+Checkpoint de origem: v0.4.0 — Produtos e classificação (validada)
+
+Arquivos alterados/adicionados:
+- backend/app/api/v1/endpoints/compras.py
+- backend/app/api/v1/endpoints/dashboard.py
+- backend/app/api/v1/router.py
+- backend/app/core/version.py
+- backend/app/repositories/compras.py
+- backend/app/repositories/dashboard.py
+- backend/app/schemas/dashboard.py
+- backend/tests/test_compras_endpoint.py
+- backend/tests/test_compras_repository.py
+- backend/tests/test_dashboard_endpoint.py
+- backend/tests/test_dashboard_repository.py
+- database/migrations/006_dashboard_historico_precos.sql
+- frontend/app/globals.css
+- frontend/components/api-availability.tsx
+- frontend/components/dashboard-view.tsx
+- frontend/components/purchases-view.tsx
+- frontend/package.json
+- frontend/public/sw.js
+- frontend/services/compras.ts
+- frontend/services/dashboard.ts
+- frontend/types/dashboard.ts
+- readme/CHANGELOG.md
+- readme/COMO_APLICAR_V0_5_0.md
+- readme/CONTINUIDADE_GESTAO_COMPRAS_WEB.md
+- readme/README.md
+- readme/ROADMAP.md
+- readme/VALIDACAO_V0_5_0.md
+
+Arquivos preservados/não incluídos:
+- backend/.env
+- backend/.venv
+- frontend/.env.local
+- frontend/node_modules
+- frontend/package-lock.json
+- caches e artefatos de build

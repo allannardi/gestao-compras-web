@@ -114,7 +114,7 @@ def listar_compras_familia(
     access_token: str,
     limite: int = 20,
     offset: int = 0,
-    busca: str = "",
+    supermercado_id: str | None = None,
     mes: date | None = None,
 ) -> dict[str, Any]:
     requested_limit = max(1, min(limite, 100))
@@ -126,7 +126,7 @@ def listar_compras_familia(
         {
             "p_limite": requested_limit + 1,
             "p_offset": requested_offset,
-            "p_busca": busca.strip() or None,
+            "p_supermercado_id": supermercado_id,
             "p_mes": mes.isoformat() if mes else None,
         },
     )

@@ -1,6 +1,24 @@
 # Changelog — Gestão de Compras Web
 
-## v0.4.0 — Produtos e classificação
+## v0.5.0 — Dashboard e histórico de preços
+
+- nova opção **Resumo** na navegação principal;
+- resumo mensal com total gasto, quantidade de compras, itens e ticket médio;
+- comparação com o mês anterior;
+- ranking dos produtos com maior valor total;
+- gastos por categoria;
+- gastos por supermercado;
+- visualização em cards e barras leves, sem biblioteca pesada de gráficos;
+- busca de produtos com histórico de preços;
+- indicadores de menor, maior, primeiro e último valor unitário;
+- variação percentual por produto;
+- gráfico leve em SVG para evolução do preço;
+- lista dos registros por data e supermercado;
+- filtro de supermercado na tela Compras alterado para seleção de uma opção existente;
+- campo **Mês da compra** ajustado para permanecer dentro do card no mobile;
+- isolamento de todos os indicadores e históricos por `familia_id`.
+
+## v0.4.0 — Produtos e classificação — validada
 
 - nova navegação **Produtos**;
 - catálogo da família em cards mobile;
@@ -12,31 +30,20 @@
 - criação de categorias personalizadas;
 - categorias padrão criadas para famílias existentes e futuras;
 - classificação automática por palavras-chave;
-- regra de Alimentos secundários para salgadinhos, bolachas, biscoitos, chips, snacks, doces, chocolates, pipoca e amendoim;
+- regra de Alimentos secundários;
 - botão **Reclassificar pendentes**;
-- categorias revisadas manualmente são preservadas;
-- novos produtos tentam classificação automática no primeiro cadastro;
-- histórico de compras e preços continua vinculado ao mesmo produto;
-- isolamento de todas as operações por `familia_id`.
+- categorias revisadas manualmente preservadas;
+- isolamento das operações por `familia_id`.
 
 ## v0.3.3 — Operação do histórico — validada
 
-- itens da conferência ordenados por valor total decrescente;
-- itens dos detalhes ordenados por valor total decrescente;
-- filtro por nome do supermercado;
-- filtro por mês da compra;
-- paginação preservando os filtros aplicados;
+- itens da conferência e dos detalhes por valor total decrescente;
+- filtros mobile;
 - exclusão controlada de compras de teste;
-- confirmação obrigatória digitando `EXCLUIR`;
-- exclusão disponível somente para administradores;
-- atualização imediata da listagem após a exclusão;
-- itens e histórico de preços relacionados removidos por cascade;
-- produtos, categorias e supermercados preservados;
 - documentação centralizada na pasta `readme`.
 
 ## v0.3.2 — Compras e detalhes — validada
 
-- navegação Adicionar / Compras;
 - listagem em cards mobile;
 - paginação;
 - detalhes na própria página;

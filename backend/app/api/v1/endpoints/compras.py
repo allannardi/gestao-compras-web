@@ -32,7 +32,7 @@ def _raise_http_error(exc: SupabasePurchaseError) -> None:
 async def list_purchases(
     limite: int = Query(default=20, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
-    busca: str = Query(default="", max_length=80),
+    supermercado_id: UUID | None = Query(default=None),
     mes: date | None = Query(default=None),
     context: FamilyContext = Depends(get_current_family_context),
 ) -> CompraListaResponse:
@@ -42,7 +42,7 @@ async def list_purchases(
             context.access_token,
             limite,
             offset,
-            busca,
+            str(supermercado_id) if supermercado_id else None,
             mes,
         )
     except SupabasePurchaseError as exc:

@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+import { DashboardView } from "@/components/dashboard-view";
 import { NfceCapture } from "@/components/nfce-capture";
 import { PurchasesView } from "@/components/purchases-view";
 import { ProductsView } from "@/components/products-view";
 import type { FamilyContext } from "@/types/auth";
 
 type ApiState = "checking" | "online" | "offline";
-type AppView = "add" | "purchases" | "products";
+type AppView = "add" | "purchases" | "products" | "dashboard";
 
 type Props = {
   apiUrl: string;
@@ -126,6 +127,15 @@ export function ApiAvailability({
             <span aria-hidden="true">▦</span>
             Produtos
           </button>
+          <button
+            type="button"
+            className={view === "dashboard" ? "active" : ""}
+            aria-current={view === "dashboard" ? "page" : undefined}
+            onClick={() => setView("dashboard")}
+          >
+            <span aria-hidden="true">◫</span>
+            Resumo
+          </button>
         </nav>
       )}
 
@@ -137,14 +147,18 @@ export function ApiAvailability({
               ? "Registre uma compra"
               : view === "purchases"
                 ? "Suas compras"
-                : "Seus produtos"}
+                : view === "products"
+                  ? "Seus produtos"
+                  : "Resumo da família"}
           </h1>
           <p className="subtitle">
             {view === "add"
               ? "Capture o QR Code, confira os itens e salve a compra no espaço seguro da sua família."
               : view === "purchases"
                 ? "Consulte o histórico e abra os itens de cada compra sem sair da página."
-                : "Revise nomes, marcas e categorias sem perder o histórico já registrado."}
+                : view === "products"
+                  ? "Revise nomes, marcas e categorias sem perder o histórico já registrado."
+                  : "Acompanhe gastos mensais, rankings e a evolução dos preços dos produtos."}
           </p>
         </div>
 
@@ -197,6 +211,14 @@ export function ApiAvailability({
         />
       )}
 
+      {apiState === "online" && view === "dashboard" && (
+        <DashboardView
+          apiUrl={apiUrl}
+          accessToken={accessToken}
+          onAddPurchase={() => setView("add")}
+        />
+      )}
+
       {apiState === "offline" && (
         <section className="feedback-card error-card api-warning" role="alert">
           <strong>Não consegui acessar o backend</strong>
@@ -220,11 +242,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.4.0 — Produtos e classificação</strong>
+          <strong>v0.5.0 — Dashboard e histórico de preços</strong>
         </div>
         <div>
           <span>Dados</span>
-          <strong>Catálogo, categorias e revisão mobile</strong>
+          <strong>Resumo mensal, rankings e evolução de preços</strong>
         </div>
       </section>
     </>
