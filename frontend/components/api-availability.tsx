@@ -5,16 +5,18 @@ import { useEffect, useState } from "react";
 import { DashboardView } from "@/components/dashboard-view";
 import { NfceCapture } from "@/components/nfce-capture";
 import { PurchasesView } from "@/components/purchases-view";
+import { SettingsView } from "@/components/settings-view";
 import { ProductsView } from "@/components/products-view";
 import type { FamilyContext } from "@/types/auth";
 
 type ApiState = "checking" | "online" | "offline";
-type AppView = "add" | "purchases" | "products" | "dashboard";
+type AppView = "add" | "purchases" | "products" | "dashboard" | "settings";
 
 type Props = {
   apiUrl: string;
   accessToken: string;
   context: FamilyContext;
+  onContextRefresh: () => Promise<FamilyContext>;
   onLogout: () => Promise<void>;
 };
 
@@ -28,6 +30,7 @@ export function ApiAvailability({
   apiUrl,
   accessToken,
   context,
+  onContextRefresh,
   onLogout,
 }: Props) {
   const [apiState, setApiState] = useState<ApiState>("checking");
@@ -86,16 +89,25 @@ export function ApiAvailability({
             {context.nome} · {context.papel === "administrador" ? "Administrador" : "Membro"}
           </small>
         </div>
-        <button
-          type="button"
-          disabled={loggingOut}
-          onClick={async () => {
-            setLoggingOut(true);
-            await onLogout();
-          }}
-        >
-          {loggingOut ? "Saindo…" : "Sair"}
-        </button>
+        <div className="family-session-actions">
+          <button
+            type="button"
+            className={view === "settings" ? "active" : ""}
+            onClick={() => setView("settings")}
+          >
+            Ajustes
+          </button>
+          <button
+            type="button"
+            disabled={loggingOut}
+            onClick={async () => {
+              setLoggingOut(true);
+              await onLogout();
+            }}
+          >
+            {loggingOut ? "Saindo…" : "Sair"}
+          </button>
+        </div>
       </section>
 
       {apiState === "online" && (
@@ -149,7 +161,9 @@ export function ApiAvailability({
                 ? "Suas compras"
                 : view === "products"
                   ? "Seus produtos"
-                  : "Resumo da família"}
+                  : view === "dashboard"
+                    ? "Resumo da família"
+                    : "Configurações da família"}
           </h1>
           <p className="subtitle">
             {view === "add"
@@ -158,7 +172,9 @@ export function ApiAvailability({
                 ? "Consulte o histórico e abra os itens de cada compra sem sair da página."
                 : view === "products"
                   ? "Revise nomes, marcas e categorias sem perder o histórico já registrado."
-                  : "Acompanhe gastos mensais, rankings e a evolução dos preços dos produtos."}
+                  : view === "dashboard"
+                    ? "Acompanhe gastos mensais, rankings e a evolução dos preços dos produtos."
+                    : "Atualize seus dados, gerencie membros e compartilhe o acesso da família."}
           </p>
         </div>
 
@@ -219,6 +235,16 @@ export function ApiAvailability({
         />
       )}
 
+      {apiState === "online" && view === "settings" && (
+        <SettingsView
+          apiUrl={apiUrl}
+          accessToken={accessToken}
+          context={context}
+          onContextRefresh={onContextRefresh}
+          onClose={() => setView("dashboard")}
+        />
+      )}
+
       {apiState === "offline" && (
         <section className="feedback-card error-card api-warning" role="alert">
           <strong>Não consegui acessar o backend</strong>
@@ -242,11 +268,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.5.2 — Seletor de mês no iPhone</strong>
+          <strong>v0.6.0 — Família, membros e convites</strong>
         </div>
         <div>
           <span>Dados</span>
-          <strong>Filtro e resumo mensal compatíveis com Safari/iPhone</strong>
+          <strong>Configurações compartilhadas e convites por e-mail</strong>
         </div>
       </section>
     </>

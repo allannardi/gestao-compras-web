@@ -24,7 +24,7 @@ function friendlyAuthError(message: string): string {
     return "E-mail ou senha incorretos.";
   }
   if (normalized.includes("email not confirmed")) {
-    return "Confirme o e-mail recebido antes de entrar.";
+    return "A confirmação de e-mail ainda está ativa no Supabase. Desative Confirm email para liberar o acesso imediato.";
   }
   if (normalized.includes("user already registered")) {
     return "Este e-mail já possui uma conta.";
@@ -140,7 +140,7 @@ export function AuthGate({ apiUrl }: Props) {
       setMessage(friendlyAuthError(result.error.message));
     } else if (mode === "signup" && !result.data.session) {
       setMessage(
-        "Família criada. Confirme o e-mail recebido e depois entre no aplicativo.",
+        "A família foi criada, mas o Supabase ainda exige confirmação por e-mail. Desative Confirm email nas configurações de autenticação.",
       );
       setMode("login");
       setPassword("");
@@ -357,6 +357,14 @@ export function AuthGate({ apiUrl }: Props) {
       apiUrl={apiUrl}
       accessToken={session.access_token}
       context={context}
+      onContextRefresh={async () => {
+        const nextContext = await fetchFamilyContext(
+          apiUrl,
+          session.access_token,
+        );
+        setContext(nextContext);
+        return nextContext;
+      }}
       onLogout={async () => {
         await supabase?.auth.signOut();
       }}

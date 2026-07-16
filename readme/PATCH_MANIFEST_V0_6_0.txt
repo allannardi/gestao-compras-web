@@ -1,0 +1,33 @@
+Gestão de Compras Web v0.6.0 — Manifesto do patch
+
+Banco:
+- database/migrations/007_configuracoes_familia_membros.sql
+
+Backend:
+- app/api/v1/endpoints/configuracoes.py
+- app/api/v1/router.py
+- app/core/version.py
+- app/repositories/configuracoes.py
+- app/schemas/configuracoes.py
+- tests/test_configuracoes_endpoint.py
+- tests/test_configuracoes_repository.py
+
+Frontend:
+- app/globals.css
+- components/api-availability.tsx
+- components/auth-gate.tsx
+- components/dashboard-view.tsx
+- components/settings-view.tsx
+- services/configuracoes.ts
+- types/configuracoes.ts
+- package.json
+- public/sw.js
+
+Documentação:
+- readme/CHANGELOG_V0_6_0.md
+- readme/COMO_APLICAR_V0_6_0.md
+- readme/CONTINUIDADE_V0_6_0.md
+- readme/PATCH_MANIFEST_V0_6_0.txt
+- readme/README.md
+- readme/ROADMAP.md
+- readme/VALIDACAO_V0_6_0.md

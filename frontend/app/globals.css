@@ -2379,3 +2379,269 @@ h2 {
     font-size: 0.84rem;
   }
 }
+
+/* v0.6.0 — configurações da família, membros e convites */
+.family-session-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 7px;
+}
+
+.family-session-actions button {
+  min-width: 70px;
+}
+
+.family-session-actions button.active {
+  color: white;
+  background: #0f4c81;
+}
+
+.settings-section {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.settings-title-row,
+.settings-card-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-title-row {
+  padding: 2px 2px 0;
+}
+
+.settings-title-row h2,
+.settings-card-heading h3 {
+  margin: 0;
+}
+
+.settings-title-row h2 {
+  font-size: 1.25rem;
+}
+
+.settings-close-button,
+.settings-card button:not(.capture-button),
+.family-switch-list button,
+.sent-invitation-list button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 11px;
+  padding: 8px 11px;
+  color: #0f4c81;
+  background: #edf5fb;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.settings-card {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 18px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 10px 26px rgba(30, 48, 64, 0.07);
+}
+
+.settings-card-heading > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.settings-card-heading span,
+.settings-card-heading small,
+.settings-help-copy,
+.member-copy span,
+.member-copy small,
+.invitation-card span,
+.invitation-card small,
+.sent-invitation-list span,
+.family-switch-list span {
+  color: #6d7a85;
+  font-size: 0.7rem;
+}
+
+.settings-card-heading > div > span {
+  color: #0f4c81;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.settings-card-heading h3 {
+  overflow-wrap: anywhere;
+  font-size: 1rem;
+}
+
+.settings-card-heading > small {
+  flex: 0 0 auto;
+  max-width: 48%;
+  text-align: right;
+}
+
+.settings-form,
+.invite-form {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+}
+
+.settings-form label,
+.invite-form label {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  color: #34424e;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.settings-form input,
+.invite-form input,
+.invite-form select,
+.member-actions select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 1px solid #ccd7df;
+  border-radius: 12px;
+  padding: 9px 11px;
+  color: #17212b;
+  background: white;
+  outline: none;
+}
+
+.settings-form input:focus,
+.invite-form input:focus,
+.invite-form select:focus,
+.member-actions select:focus {
+  border-color: #0f4c81;
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1);
+}
+
+.settings-form .capture-button,
+.invite-form .capture-button {
+  min-height: 46px;
+}
+
+.settings-help-copy {
+  margin: -3px 0 0;
+  line-height: 1.5;
+}
+
+.member-list,
+.settings-list,
+.sent-invitation-list,
+.family-switch-list {
+  display: grid;
+  gap: 8px;
+}
+
+.member-card,
+.invitation-card,
+.sent-invitation-list article,
+.family-switch-list article {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+  background: #fbfcfd;
+}
+
+.member-copy,
+.invitation-card > div,
+.sent-invitation-list article > div,
+.family-switch-list article > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.member-copy strong,
+.member-copy span,
+.invitation-card strong,
+.invitation-card span,
+.sent-invitation-list b,
+.sent-invitation-list span,
+.family-switch-list b,
+.family-switch-list span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member-actions {
+  display: grid;
+  flex: 0 0 116px;
+  gap: 5px;
+}
+
+.member-actions select {
+  min-height: 38px;
+  padding: 7px 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.member-actions .danger-text-button {
+  color: #973b30;
+  background: #fcefeb;
+  font-size: 0.68rem;
+}
+
+.member-role-badge,
+.family-switch-list small {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 5px 8px;
+  color: #0f4c81;
+  background: #edf5fb;
+  font-size: 0.66rem;
+  font-weight: 850;
+}
+
+.invitation-received-card {
+  border-color: rgba(23, 98, 59, 0.2);
+  background: #f7fcf9;
+}
+
+.compact-button {
+  flex: 0 0 auto;
+  min-height: 40px;
+  padding: 8px 12px;
+}
+
+.history-record-count {
+  margin-top: 2px;
+  border-radius: 999px;
+  padding: 3px 7px;
+  color: #0f4c81;
+  background: #edf5fb;
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .settings-form,
+  .invite-form {
+    grid-template-columns: minmax(0, 1fr) 190px;
+    align-items: end;
+  }
+
+  .invite-form {
+    grid-template-columns: minmax(0, 1fr) 170px 190px;
+  }
+}

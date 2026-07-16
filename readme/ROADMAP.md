@@ -30,21 +30,30 @@
 - regras automáticas;
 - edição mobile.
 
-## v0.5.0 — Dashboard e histórico de preços — patch atual
+## v0.5.0 — Dashboard e histórico — validada
 
 - resumo mensal;
-- comparação com mês anterior;
-- top produtos, categorias e supermercados;
-- histórico por produto;
-- variação de preços;
-- gráfico leve mobile;
-- filtro de supermercado por seleção.
+- rankings;
+- histórico e gráfico de preços.
 
-## v0.6.0 — Operação familiar
+## v0.5.2 — Seletor de mês no iPhone — validada
 
-- membros e convites;
+- substituição do campo nativo incompatível com Safari.
+
+## v0.6.0 — Operação familiar — patch atual
+
 - configurações da família;
-- ajustes de perfil e permissões.
+- perfil;
+- membros e papéis;
+- convites;
+- troca de família;
+- cadastro sem confirmação por e-mail mediante configuração do Supabase.
+
+## v0.6.1 — Categorias e supermercados
+
+- gestão completa de categorias;
+- gestão de supermercados;
+- correção e união de duplicidades.
 
 ## v0.7.0 — Backup e exportação
 

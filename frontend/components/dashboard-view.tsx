@@ -505,6 +505,9 @@ export function DashboardView({ apiUrl, accessToken, onAddPurchase }: Props) {
                       : moneyFormatter.format(product.ultimo_valor_unitario)}
                   </b>
                   <small>{formatDate(product.ultima_compra)}</small>
+                  <em className="history-record-count">
+                    {product.registros_count} {product.registros_count === 1 ? "registro" : "registros"}
+                  </em>
                 </div>
               </button>
             ))}

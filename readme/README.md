@@ -4,7 +4,7 @@ Aplicação mobile/PWA para registrar e acompanhar compras domésticas por NFC-e
 
 ## Checkpoint deste patch
 
-**v0.5.0 — Dashboard e histórico de preços**
+**v0.6.0 — Família, membros e convites**
 
 ## Stack
 
@@ -24,19 +24,20 @@ Aplicação mobile/PWA para registrar e acompanhar compras domésticas por NFC-e
 - produtos e categorias;
 - classificação automática;
 - dashboard mensal;
-- rankings de gastos;
-- histórico e variação de preços.
+- histórico e variação de preços;
+- configurações da família;
+- membros, papéis, convites e troca de família.
 
 ## Aplicação
 
 Leia:
 
 ```text
-readme\COMO_APLICAR_V0_5_0.md
+readme\COMO_APLICAR_V0_6_0.md
 ```
 
 Antes do deploy, execute:
 
 ```text
-database\migrations\006_dashboard_historico_precos.sql
+database\migrations\007_configuracoes_familia_membros.sql
 ```
