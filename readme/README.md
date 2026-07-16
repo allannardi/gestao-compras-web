@@ -2,42 +2,35 @@
 
 Aplicação mobile/PWA para registrar e acompanhar compras domésticas por NFC-e.
 
-## Checkpoint deste patch
+## Patch atual
 
-**v0.6.0 — Família, membros e convites**
+**v0.6.1 — Entrada por link de convite**
 
-## Stack
+## Checkpoint de origem
+
+**v0.6.0 — Família, membros e convites**, validada.
+
+## Recursos consolidados
 
 - Next.js, React e TypeScript;
 - FastAPI e Python;
 - Supabase PostgreSQL e Auth;
-- Vercel;
-- Render;
-- uso principal pelo Safari/PWA no iPhone.
-
-## Recursos consolidados
-
+- Vercel e Render;
 - famílias isoladas por `familia_id`;
-- login e sessão;
-- câmera, foto e NFC-e;
-- gravação, listagem e detalhes de compras;
-- produtos e categorias;
-- classificação automática;
-- dashboard mensal;
-- histórico e variação de preços;
-- configurações da família;
-- membros, papéis, convites e troca de família.
+- NFC-e, compras, produtos, resumo e histórico;
+- membros, papéis e convites;
+- links de convite para usuários novos e existentes.
 
 ## Aplicação
 
 Leia:
 
 ```text
-readme\COMO_APLICAR_V0_6_0.md
+readme\COMO_APLICAR_V0_6_1.md
 ```
 
-Antes do deploy, execute:
+Execute antes do deploy:
 
 ```text
-database\migrations\007_configuracoes_familia_membros.sql
+database\migrations\008_fluxo_convite_com_link.sql
 ```

@@ -89,6 +89,7 @@ class ConviteCriadoResponse(MensagemResponse):
     email: str
     papel: str
     status: str
+    token: str
     expira_em: datetime
 
 

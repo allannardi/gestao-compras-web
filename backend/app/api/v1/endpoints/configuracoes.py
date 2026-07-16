@@ -12,6 +12,7 @@ from app.repositories.configuracoes import (
     atualizar_nome_familia,
     cancelar_convite_familia,
     criar_convite_familia,
+    gerar_link_convite_familia,
     obter_configuracoes_familia,
     remover_membro_familia,
     selecionar_familia_atual,
@@ -90,6 +91,22 @@ async def create_invitation(
             criar_convite_familia,
             payload.email,
             payload.papel,
+            context.access_token,
+        )
+    except SupabaseConfiguracoesError as exc:
+        _raise_http_error(exc)
+    return ConviteCriadoResponse(**result)
+
+
+@router.post("/convites/{convite_id}/link", response_model=ConviteCriadoResponse)
+async def regenerate_invitation_link(
+    convite_id: UUID,
+    context: FamilyContext = Depends(get_current_family_context),
+) -> ConviteCriadoResponse:
+    try:
+        result = await run_in_threadpool(
+            gerar_link_convite_familia,
+            str(convite_id),
             context.access_token,
         )
     except SupabaseConfiguracoesError as exc:

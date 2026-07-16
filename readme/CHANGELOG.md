@@ -1,3 +1,11 @@
+# v0.6.1 — Entrada por link de convite
+
+- link copiável para convite;
+- página dedicada para usuário novo ou existente;
+- criação de senha sem família paralela;
+- token com hash, expiração e uso controlado;
+- aceitação automática ou autenticada.
+
 # v0.5.1 — Correção mobile do filtro de mês
 
 - Corrige overflow do campo Mês da compra no Safari/iPhone.

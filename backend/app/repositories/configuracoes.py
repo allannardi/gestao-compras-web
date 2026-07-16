@@ -117,6 +117,19 @@ def criar_convite_familia(
     )
 
 
+def gerar_link_convite_familia(
+    convite_id: str,
+    access_token: str,
+) -> dict[str, Any]:
+    return _ensure_dict(
+        _rpc_post(
+            "gerar_link_convite_familia",
+            access_token,
+            {"p_convite_id": convite_id},
+        ),
+    )
+
+
 def cancelar_convite_familia(convite_id: str, access_token: str) -> dict[str, Any]:
     return _ensure_dict(
         _rpc_post(

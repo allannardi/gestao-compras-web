@@ -91,6 +91,7 @@ def test_criar_e_aceitar_convite(monkeypatch) -> None:
             "email": email,
             "papel": papel,
             "status": "pendente",
+            "token": "a" * 64,
             "expira_em": "2026-07-23T10:00:00Z",
             "mensagem": "Convite criado.",
         },
@@ -136,5 +137,30 @@ def test_selecionar_familia(monkeypatch) -> None:
         )
         assert response.status_code == 200
         assert response.json()["familia_nome"] == "Família Compartilhada"
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_regenerar_link_convite(monkeypatch) -> None:
+    monkeypatch.setattr(
+        endpoint,
+        "gerar_link_convite_familia",
+        lambda convite_id, token: {
+            "id": convite_id,
+            "email": "vanessa@example.com",
+            "papel": "membro",
+            "status": "pendente",
+            "token": "b" * 64,
+            "expira_em": "2026-07-23T10:00:00Z",
+            "mensagem": "Novo link de convite gerado.",
+        },
+    )
+    app.dependency_overrides[get_current_family_context] = _context
+    try:
+        response = client.post(
+            "/api/v1/configuracoes/convites/33333333-3333-4333-8333-333333333333/link"
+        )
+        assert response.status_code == 200
+        assert response.json()["token"] == "b" * 64
     finally:
         app.dependency_overrides.clear()

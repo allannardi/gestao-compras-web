@@ -1,0 +1,18 @@
+Gestão de Compras Web v0.6.1 — Entrada por link de convite
+
+Arquivos principais:
+- database/migrations/008_fluxo_convite_com_link.sql
+- backend/app/api/v1/endpoints/convites.py
+- backend/app/repositories/convites.py
+- backend/app/schemas/convites.py
+- frontend/app/convite/[token]/page.tsx
+- frontend/components/invitation-access.tsx
+- frontend/services/convites.ts
+- frontend/types/convites.ts
+- readme/COMO_APLICAR_V0_6_1.md
+
+Não incluir no patch:
+- .env / .env.local
+- .venv / node_modules
+- package-lock.json
+- caches

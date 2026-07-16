@@ -7,6 +7,7 @@ import {
   cancelInvitation,
   createInvitation,
   fetchSettings,
+  generateInvitationLink,
   removeMember,
   selectFamily,
   updateFamily,
@@ -59,6 +60,7 @@ export function SettingsView({
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("membro");
   const [busyAction, setBusyAction] = useState("");
+  const [generatedLinks, setGeneratedLinks] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     setState("loading");
@@ -80,7 +82,8 @@ export function SettingsView({
   }, [accessToken, apiUrl]);
 
   useEffect(() => {
-    void load();
+    const timer = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timer);
   }, [load]);
 
   const isAdmin = data?.familia.papel === "administrador";
@@ -143,20 +146,48 @@ export function SettingsView({
     );
   };
 
-  const submitInvitation = (event: FormEvent<HTMLFormElement>) => {
+  const copyInvitationLink = async (invitationId: string, token: string) => {
+    const link = `${window.location.origin}/convite/${token}`;
+    try {
+      await navigator.clipboard.writeText(link);
+    } catch {
+      const input = document.createElement("textarea");
+      input.value = link;
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      input.remove();
+    }
+    setGeneratedLinks((current) => ({ ...current, [invitationId]: link }));
+    setMessage("Link do convite copiado. Envie pelo WhatsApp ou outro meio.");
+  };
+
+  const submitInvitation = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    void runAction(
-      "invite",
-      () =>
-        createInvitation(
-          apiUrl,
-          accessToken,
-          inviteEmail.trim(),
-          inviteRole,
-        ),
-    ).then((success) => {
-      if (success) setInviteEmail("");
-    });
+    setBusyAction("invite");
+    setMessage("");
+    setError("");
+    try {
+      const result = await createInvitation(
+        apiUrl,
+        accessToken,
+        inviteEmail.trim(),
+        inviteRole,
+      );
+      await copyInvitationLink(result.id, result.token);
+      setInviteEmail("");
+      await load();
+    } catch (actionError: unknown) {
+      setError(
+        actionError instanceof Error
+          ? actionError.message
+          : "Não foi possível criar o convite.",
+      );
+    } finally {
+      setBusyAction("");
+    }
   };
 
   const changeMemberRole = (member: MembroFamilia, nextRole: string) => {
@@ -412,7 +443,7 @@ export function SettingsView({
             <small>{availableSlots} vaga{availableSlots === 1 ? "" : "s"}</small>
           </div>
           <p className="settings-help-copy">
-            Cadastre o e-mail exato. O convite aparecerá quando a pessoa criar ou acessar a conta com esse e-mail.
+            Cadastre o e-mail exato e envie o link gerado. A pessoa poderá criar a própria senha sem criar uma família paralela.
           </p>
           <form className="invite-form" onSubmit={submitInvitation}>
             <label>
@@ -451,17 +482,42 @@ export function SettingsView({
                     <b>{invitation.email}</b>
                     <span>{roleLabel(invitation.papel)} · expira em {formatDateTime(invitation.expira_em)}</span>
                   </div>
-                  <button
-                    type="button"
-                    disabled={busyAction === `cancel-${invitation.id}`}
-                    onClick={() =>
-                      void runAction(`cancel-${invitation.id}`, () =>
-                        cancelInvitation(apiUrl, accessToken, invitation.id),
-                      )
-                    }
-                  >
-                    {busyAction === `cancel-${invitation.id}` ? "Cancelando…" : "Cancelar"}
-                  </button>
+                  <div className="sent-invitation-actions">
+                    <button
+                      type="button"
+                      disabled={busyAction === `link-${invitation.id}`}
+                      onClick={() => {
+                        setBusyAction(`link-${invitation.id}`);
+                        setError("");
+                        void generateInvitationLink(apiUrl, accessToken, invitation.id)
+                          .then((result) => copyInvitationLink(result.id, result.token))
+                          .catch((linkError: unknown) =>
+                            setError(
+                              linkError instanceof Error
+                                ? linkError.message
+                                : "Não foi possível gerar o link.",
+                            ),
+                          )
+                          .finally(() => setBusyAction(""));
+                      }}
+                    >
+                      {busyAction === `link-${invitation.id}` ? "Gerando…" : "Copiar link"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busyAction === `cancel-${invitation.id}`}
+                      onClick={() =>
+                        void runAction(`cancel-${invitation.id}`, () =>
+                          cancelInvitation(apiUrl, accessToken, invitation.id),
+                        )
+                      }
+                    >
+                      {busyAction === `cancel-${invitation.id}` ? "Cancelando…" : "Cancelar"}
+                    </button>
+                  </div>
+                  {generatedLinks[invitation.id] && (
+                    <small className="invitation-link-preview">Link copiado e pronto para envio.</small>
+                  )}
                 </article>
               ))}
             </div>

@@ -1,5 +1,6 @@
 import type {
   ConfiguracoesData,
+  ConviteCriadoResponse,
   MensagemResponse,
 } from "@/types/configuracoes";
 
@@ -28,11 +29,11 @@ function authHeaders(accessToken: string, json = false): HeadersInit {
   };
 }
 
-async function requestMessage(
+async function requestMessage<T extends MensagemResponse = MensagemResponse>(
   url: string,
   accessToken: string,
   init: RequestInit,
-): Promise<MensagemResponse> {
+): Promise<T> {
   const response = await fetch(url, {
     ...init,
     cache: "no-store",
@@ -42,7 +43,7 @@ async function requestMessage(
   if (!response.ok) {
     throw new Error(getApiError(payload, "Não foi possível concluir a ação."));
   }
-  return payload as MensagemResponse;
+  return payload as T;
 }
 
 export async function fetchSettings(
@@ -96,11 +97,23 @@ export function createInvitation(
   accessToken: string,
   email: string,
   papel: string,
-): Promise<MensagemResponse> {
-  return requestMessage(
+): Promise<ConviteCriadoResponse> {
+  return requestMessage<ConviteCriadoResponse>(
     `${normalizeApiUrl(apiUrl)}/api/v1/configuracoes/convites`,
     accessToken,
     { method: "POST", body: JSON.stringify({ email, papel }) },
+  );
+}
+
+export function generateInvitationLink(
+  apiUrl: string,
+  accessToken: string,
+  invitationId: string,
+): Promise<ConviteCriadoResponse> {
+  return requestMessage<ConviteCriadoResponse>(
+    `${normalizeApiUrl(apiUrl)}/api/v1/configuracoes/convites/${encodeURIComponent(invitationId)}/link`,
+    accessToken,
+    { method: "POST" },
   );
 }
 

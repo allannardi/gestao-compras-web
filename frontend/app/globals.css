@@ -2645,3 +2645,111 @@ h2 {
     grid-template-columns: minmax(0, 1fr) 170px 190px;
   }
 }
+
+/* v0.6.1 — fluxo de entrada por convite */
+.invitation-page-shell {
+  width: min(100%, 680px);
+}
+
+.invitation-shell {
+  display: grid;
+  gap: 16px;
+}
+
+.invitation-summary-card,
+.invitation-session-card {
+  padding: 22px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 12px 32px rgba(30, 48, 64, 0.08);
+}
+
+.invitation-summary-card h1 {
+  max-width: 16ch;
+  margin-bottom: 12px;
+}
+
+.invitation-summary-card > p:not(.eyebrow) {
+  margin-bottom: 16px;
+  color: #5b6874;
+  line-height: 1.55;
+}
+
+.invitation-meta {
+  display: grid;
+  gap: 4px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: #f2f6f9;
+}
+
+.invitation-meta span {
+  overflow-wrap: anywhere;
+  font-weight: 750;
+}
+
+.invitation-meta small {
+  color: #687682;
+}
+
+.invitation-tabs button {
+  min-height: 52px;
+  line-height: 1.15;
+}
+
+.invitation-session-card {
+  display: grid;
+  gap: 12px;
+}
+
+.invitation-session-card p {
+  margin-bottom: 0;
+  color: #5b6874;
+  line-height: 1.5;
+}
+
+.invitation-home-link {
+  display: grid;
+  place-items: center;
+  margin-top: 14px;
+  text-decoration: none;
+}
+
+.success-inline {
+  color: #17623b;
+  background: #e9f7ef;
+}
+
+.sent-invitation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.invitation-link-preview {
+  grid-column: 1 / -1;
+  color: #17623b !important;
+  font-weight: 700;
+}
+
+@media (max-width: 520px) {
+  .invitation-summary-card,
+  .invitation-session-card {
+    padding: 18px;
+  }
+
+  .invitation-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .sent-invitation-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .sent-invitation-actions button {
+    flex: 1 1 130px;
+  }
+}

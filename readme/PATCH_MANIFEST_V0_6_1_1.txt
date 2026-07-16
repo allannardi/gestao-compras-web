@@ -1,0 +1,5 @@
+v0.6.1.1 — Correção da migration de convite
+
+Arquivos:
+- database/migrations/008_fluxo_convite_com_link.sql
+- readme/COMO_APLICAR_V0_6_1_1.md

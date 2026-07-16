@@ -61,3 +61,12 @@ export type ConfiguracoesData = {
 export type MensagemResponse = {
   mensagem: string;
 };
+
+export type ConviteCriadoResponse = MensagemResponse & {
+  id: string;
+  email: string;
+  papel: "administrador" | "membro" | string;
+  status: string;
+  token: string;
+  expira_em: string;
+};
