@@ -1,7 +1,7 @@
 {
   "name": "Gestão de Compras",
   "short_name": "Compras",
-  "description": "Gestão de compras e histórico de preços",
+  "description": "Gestão de compras, histórico de preços e backup familiar",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

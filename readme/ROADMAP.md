@@ -12,26 +12,21 @@
 - v0.6.0 — família, membros e convites;
 - v0.6.1.1 — convite por link;
 - v0.6.2 — senhas e segurança;
-- v0.6.3 — UX, histórico compacto e base Premium.
+- v0.6.3 — UX, histórico compacto e base Premium;
+- v0.6.4 — categorias e supermercados.
 
-## v0.6.4 — Categorias e supermercados — patch atual
+## v0.7.0 — Exportação e backup — patch atual
 
-- gestão completa de categorias personalizadas;
-- gestão de supermercados;
-- correção e união segura de duplicidades.
-
-## v0.7.0 — Exportação e backup
-
-- exportação completa por família;
-- planilhas de compras, itens, produtos e histórico;
-- backup manual;
-- preparação de restauração.
+- exportação Excel completa por família;
+- backup manual em JSON;
+- resumo antes do download;
+- preparação de futura restauração.
 
 ## v0.8.0 — Refinamentos mobile/PWA
 
-- navegação para mais módulos;
-- sessão expirada;
-- atualização de cache;
+- navegação preparada para mais módulos;
+- sessão expirada e reconexão;
+- atualização do cache;
 - onboarding e instalação.
 
 ## v0.9.0 — Preparação para beta

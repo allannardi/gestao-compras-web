@@ -6,6 +6,7 @@ from app.api.v1.endpoints.compras import router as compras_router
 from app.api.v1.endpoints.convites import router as convites_router
 from app.api.v1.endpoints.configuracoes import router as configuracoes_router
 from app.api.v1.endpoints.dashboard import router as dashboard_router
+from app.api.v1.endpoints.exportacoes import router as exportacoes_router
 from app.api.v1.endpoints.nfce import router as nfce_router
 from app.api.v1.endpoints.produtos import router as produtos_router
 from app.core.version import APP_VERSION
@@ -17,6 +18,7 @@ router.include_router(compras_router)
 router.include_router(convites_router)
 router.include_router(configuracoes_router)
 router.include_router(dashboard_router)
+router.include_router(exportacoes_router)
 router.include_router(nfce_router)
 router.include_router(produtos_router)
 
@@ -25,6 +27,6 @@ router.include_router(produtos_router)
 def status() -> dict[str, str]:
     return {
         "api": "ready",
-        "next_step": "registries-management-validation",
+        "next_step": "export-and-backup-validation",
         "version": APP_VERSION,
     }

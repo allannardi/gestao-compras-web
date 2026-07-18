@@ -3209,3 +3209,159 @@ h2 {
     width: 100%;
   }
 }
+
+/* ============================================================
+   v0.7.0 — Exportação e backup
+   ============================================================ */
+.exports-settings-card {
+  gap: 15px;
+}
+
+.exports-loading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 62px;
+  color: #65727d;
+  font-size: 0.82rem;
+}
+
+.exports-loading .spinner {
+  width: 23px;
+  height: 23px;
+}
+
+.export-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.export-kpi-grid > span,
+.export-period-card > span {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  background: #f3f7fa;
+}
+
+.export-kpi-grid small,
+.export-period-card small {
+  color: #71808b;
+  font-size: 0.67rem;
+}
+
+.export-kpi-grid strong,
+.export-period-card strong {
+  overflow-wrap: anywhere;
+  color: #20303c;
+  font-size: 0.86rem;
+}
+
+.export-period-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.export-action-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.export-action-card {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #dde6ec;
+  border-radius: 15px;
+  background: #fbfdfe;
+}
+
+.export-action-card > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.export-action-card > div > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 10px;
+  color: #0f4c81;
+  background: #eaf3fa;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.export-action-card p {
+  margin: 0;
+  color: #65727d;
+  font-size: 0.77rem;
+  line-height: 1.46;
+}
+
+.export-action-card button {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 12px;
+}
+
+.export-action-card button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.exports-inline-feedback {
+  display: grid;
+  gap: 7px;
+  padding: 13px;
+  border: 1px solid rgba(157, 57, 44, 0.16);
+  border-radius: 13px;
+}
+
+.exports-inline-feedback span,
+.exports-message {
+  color: #5f6d78;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.exports-inline-feedback button {
+  width: fit-content;
+}
+
+.exports-message {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 11px;
+  color: #17623b;
+  background: #eaf7ef;
+}
+
+.exports-message-error {
+  color: #8a3a31;
+  background: #fff0ed;
+}
+
+.exports-privacy-note {
+  margin-bottom: 0;
+}
+
+@media (min-width: 640px) {
+  .export-action-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .export-period-card {
+    grid-template-columns: 1fr;
+  }
+}

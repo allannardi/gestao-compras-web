@@ -1,0 +1,21 @@
+v0.7.0 — Exportação e backup
+
+Backend:
+- endpoint e repositório de exportação
+- geração de Excel e JSON
+- openpyxl
+- testes automatizados
+
+Frontend:
+- card de exportação em Ajustes
+- resumo de dados
+- downloads autenticados
+
+Banco:
+- migration 012_exportacao_backup.sql
+
+Documentação:
+- readme/CHANGELOG_V0_7_0.md
+- readme/COMO_APLICAR_V0_7_0.md
+- readme/VALIDACAO_V0_7_0.md
+- readme/CONTINUIDADE_V0_7_0.md

@@ -289,11 +289,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.6.4 — Categorias e supermercados</strong>
+          <strong>v0.7.0 — Exportação e backup</strong>
         </div>
         <div>
           <span>Dados</span>
-          <strong>Cadastros mobile, nomes corrigidos e união segura de mercados</strong>
+          <strong>Excel completo e backup JSON por família</strong>
         </div>
       </section>
     </>

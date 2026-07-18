@@ -4,31 +4,30 @@ Aplicação mobile/PWA para registrar e acompanhar compras domésticas por NFC-e
 
 ## Patch atual
 
-**v0.6.4 — Categorias e supermercados**
+**v0.7.0 — Exportação e backup**
 
 ## Checkpoint de origem
 
-**v0.6.3 — UX, histórico e fundação Premium**, validada.
+**v0.6.4 — Categorias e supermercados**, validada.
 
 ## Novidades
 
-- nova área `Cadastros`;
-- gestão mobile de categorias;
-- transferência de produtos antes de desativar categoria;
-- gestão e correção de supermercados;
-- união segura de cadastros duplicados;
-- isolamento por família preservado.
+- Excel completo da família;
+- backup técnico em JSON;
+- resumo de registros antes do download;
+- exportação disponível somente para administradores;
+- geração segura a partir da família ativa.
 
 ## Aplicação
 
 Leia:
 
 ```text
-readme\COMO_APLICAR_V0_6_4.md
+readme\COMO_APLICAR_V0_7_0.md
 ```
 
 Execute antes do deploy:
 
 ```text
-database\migrations\011_categorias_supermercados.sql
+database\migrations\012_exportacao_backup.sql
 ```

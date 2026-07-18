@@ -8,3 +8,10 @@
 - união segura de duplicidades;
 - 72 testes backend;
 - TypeScript, ESLint e build aprovados.
+
+## v0.7.0 — Exportação e backup
+
+- Excel completo com abas de compras, itens, produtos, histórico, cadastros e membros;
+- backup JSON da família;
+- downloads restritos aos administradores;
+- resumo dos dados antes da geração.

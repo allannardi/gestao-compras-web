@@ -16,6 +16,7 @@ import {
   updateProfile,
 } from "@/services/configuracoes";
 import { changePasswordWithCurrentPassword } from "@/lib/supabase";
+import { ExportsCard } from "@/components/exports-card";
 import type { FamilyContext } from "@/types/auth";
 import type {
   ConfiguracoesData,
@@ -599,6 +600,10 @@ export function SettingsView({
             </div>
           )}
         </section>
+      )}
+
+      {isAdmin && (
+        <ExportsCard apiUrl={apiUrl} accessToken={accessToken} />
       )}
 
       <section className="settings-card settings-security-card">
