@@ -1,39 +1,45 @@
 # Continuidade — Gestão de Compras Web
 
-## Estado atual
+## Último checkpoint validado
 
-Último checkpoint validado: **v0.6.0 — Família, membros e convites**.
+**v0.6.2 — Senhas e segurança**
 
-Patch preparado: **v0.6.1 — Entrada por link de convite**.
+Validado:
 
-## Funcionalidades validadas até a v0.6.0
+- alteração da própria senha;
+- redefinição segura da senha de membros;
+- mensagem completa do convite;
+- famílias, convites e isolamento;
+- compras, produtos, resumo e histórico;
+- uso online no iPhone.
 
-- frontend Next.js na Vercel;
-- backend FastAPI no Render;
-- Supabase Auth e PostgreSQL;
-- famílias isoladas por `familia_id`;
-- câmera, foto, QR Code e NFC-e no iPhone;
-- gravação, histórico e detalhes de compras;
-- ordenação de itens por valor total;
-- filtros, exclusão controlada e paginação;
-- produtos, categorias e classificação;
-- dashboard e histórico de preços;
-- seletor de mês compatível com Safari;
-- configurações, membros, papéis e convites;
-- contador de registros no histórico dos produtos.
+## Patch atual
 
-## Alteração da v0.6.1
+**v0.6.3 — UX, histórico e fundação Premium**
 
-O convite agora gera um link que pode ser enviado pelo WhatsApp. Uma pessoa sem conta cria nome e senha diretamente no convite, sem criar família paralela. Uma pessoa com conta entra com a senha existente e aceita o convite.
+Pendente de aplicação e validação.
 
-## Banco
+## Alterações da v0.6.3
 
-Migration obrigatória:
+- card de Segurança movido para o final de Ajustes;
+- produtos do histórico concentrados em um seletor;
+- busca textual preservada;
+- cada opção mostra último valor, registros e categoria;
+- limite ampliado para até 200 produtos no seletor;
+- fundação interna das licenças Free e Premium;
+- Free permanece com dois membros;
+- Premium preparado com cinco membros por padrão e limite customizável;
+- nenhuma tela de cobrança ou alteração de licença.
+
+## Migration obrigatória
 
 ```text
-database/migrations/008_fluxo_convite_com_link.sql
+database/migrations/010_premium_historico_filtro.sql
 ```
 
 ## Regra de continuidade
 
-Toda nova versão deve partir do último checkpoint validado e gerar patch ZIP real. Documentos `.md` e `.txt` permanecem na pasta `readme`.
+- toda evolução parte do último checkpoint validado;
+- todo patch deve ser real e incremental;
+- arquivos `.md` e `.txt` novos permanecem na pasta `readme`;
+- a v0.6.3 só vira baseline após validação do usuário.

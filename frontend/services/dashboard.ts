@@ -87,7 +87,7 @@ export async function searchHistoryProducts(
   search: string,
   signal?: AbortSignal,
 ): Promise<HistoricoProdutoOpcao[]> {
-  const query = new URLSearchParams({ limite: "20" });
+  const query = new URLSearchParams({ limite: "200" });
   const normalizedSearch = search.trim();
   if (normalizedSearch) {
     query.set("busca", normalizedSearch);

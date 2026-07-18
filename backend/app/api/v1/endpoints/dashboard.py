@@ -64,7 +64,7 @@ async def get_dashboard(
 )
 async def search_price_history_products(
     busca: str = Query(default="", max_length=100),
-    limite: int = Query(default=20, ge=1, le=50),
+    limite: int = Query(default=200, ge=1, le=200),
     context: FamilyContext = Depends(get_current_family_context),
 ) -> list[HistoricoProdutoOpcao]:
     try:

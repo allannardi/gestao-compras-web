@@ -119,9 +119,9 @@ def obter_dashboard_familia(
 def buscar_produtos_historico_familia(
     access_token: str,
     busca: str = "",
-    limite: int = 20,
+    limite: int = 200,
 ) -> list[dict[str, Any]]:
-    requested_limit = max(1, min(limite, 50))
+    requested_limit = max(1, min(limite, 200))
     payload = _rpc_post(
         "buscar_produtos_historico_familia",
         access_token,

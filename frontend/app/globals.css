@@ -2043,6 +2043,54 @@ h2 {
   padding-top: 17px;
 }
 
+.history-product-filter-card {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 15px;
+  padding: 13px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 8px 20px rgba(30, 48, 64, 0.05);
+}
+
+.history-product-filter-card label {
+  display: grid;
+  min-width: 0;
+  gap: 7px;
+  color: #344550;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.history-product-filter-card select {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  box-sizing: border-box;
+  border: 1px solid #ccd7df;
+  border-radius: 12px;
+  padding: 10px 36px 10px 12px;
+  color: #17212b;
+  background-color: white;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  outline: none;
+  text-overflow: ellipsis;
+}
+
+.history-product-filter-card select:focus {
+  border-color: #0f4c81;
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.12);
+}
+
+.history-product-filter-card small {
+  color: #74818b;
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+
 .history-product-list {
   display: grid;
   gap: 8px;

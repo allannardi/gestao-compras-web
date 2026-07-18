@@ -138,6 +138,7 @@ def test_buscar_produtos_com_historico(monkeypatch) -> None:
         assert response.status_code == 200
         assert response.json()[0]["registros_count"] == 2
         assert captured["busca"] == "arroz"
+        assert captured["limite"] == 200
     finally:
         app.dependency_overrides.clear()
 

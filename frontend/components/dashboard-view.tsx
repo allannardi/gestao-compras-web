@@ -54,6 +54,23 @@ function formatDate(value: string | null): string {
   return new Intl.DateTimeFormat("pt-BR").format(new Date(year, month - 1, day));
 }
 
+function historyProductOptionLabel(product: HistoricoProdutoOpcao): string {
+  const value =
+    product.ultimo_valor_unitario === null
+      ? "Sem valor"
+      : moneyFormatter.format(product.ultimo_valor_unitario);
+  const records = `${product.registros_count} ${
+    product.registros_count === 1 ? "registro" : "registros"
+  }`;
+
+  return [
+    product.nome,
+    value,
+    records,
+    product.categoria_nome || "Não classificado",
+  ].join(" · ");
+}
+
 function variationCopy(value: number | null, previousTotal: number): string {
   if (value === null) {
     return previousTotal === 0
@@ -273,6 +290,10 @@ export function DashboardView({ apiUrl, accessToken, onAddPurchase }: Props) {
     event.preventDefault();
     setProductsState("loading");
     setProductsError("");
+    setSelectedProduct(null);
+    setHistory(null);
+    setHistoryError("");
+    setHistoryState("ready");
     const normalizedSearch = searchDraft.trim();
     if (normalizedSearch === appliedSearch) {
       setProductsReload((value) => value + 1);
@@ -302,6 +323,21 @@ export function DashboardView({ apiUrl, accessToken, onAddPurchase }: Props) {
           : "Não foi possível abrir o histórico do produto.",
       );
       setHistoryState("error");
+    }
+  };
+
+  const selectHistoryProduct = (productId: string) => {
+    if (!productId) {
+      setSelectedProduct(null);
+      setHistory(null);
+      setHistoryError("");
+      setHistoryState("ready");
+      return;
+    }
+
+    const product = productResults.find((item) => item.id === productId);
+    if (product) {
+      void openHistory(product);
     }
   };
 
@@ -482,36 +518,29 @@ export function DashboardView({ apiUrl, accessToken, onAddPurchase }: Props) {
         )}
 
         {productsState === "ready" && productResults.length > 0 && (
-          <div className="history-product-list">
-            {productResults.map((product) => (
-              <button
-                type="button"
-                key={product.id}
-                className={selectedProduct?.id === product.id ? "active" : ""}
-                onClick={() => void openHistory(product)}
+          <section className="history-product-filter-card">
+            <label>
+              Escolha um produto
+              <select
+                value={selectedProduct?.id ?? ""}
+                onChange={(event) => selectHistoryProduct(event.target.value)}
               >
-                <div>
-                  <strong>{product.nome}</strong>
-                  <span>
-                    {[product.marca, product.categoria_nome]
-                      .filter(Boolean)
-                      .join(" · ")}
-                  </span>
-                </div>
-                <div>
-                  <b>
-                    {product.ultimo_valor_unitario === null
-                      ? "—"
-                      : moneyFormatter.format(product.ultimo_valor_unitario)}
-                  </b>
-                  <small>{formatDate(product.ultima_compra)}</small>
-                  <em className="history-record-count">
-                    {product.registros_count} {product.registros_count === 1 ? "registro" : "registros"}
-                  </em>
-                </div>
-              </button>
-            ))}
-          </div>
+                <option value="">Selecione para analisar o histórico</option>
+                {productResults.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {historyProductOptionLabel(product)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <small>
+              {productResults.length}{" "}
+              {productResults.length === 1
+                ? "produto encontrado"
+                : "produtos encontrados"}
+              . Cada opção mostra último valor, quantidade de registros e categoria.
+            </small>
+          </section>
         )}
 
         {selectedProduct && historyState === "loading" && (

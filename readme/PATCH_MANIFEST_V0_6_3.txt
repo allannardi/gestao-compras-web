@@ -1,0 +1,20 @@
+v0.6.3 — UX, histórico e fundação Premium
+
+Arquivos principais:
+- backend/app/api/v1/endpoints/dashboard.py
+- backend/app/core/version.py
+- backend/app/repositories/dashboard.py
+- backend/tests/test_dashboard_endpoint.py
+- database/migrations/010_premium_historico_filtro.sql
+- frontend/app/globals.css
+- frontend/components/api-availability.tsx
+- frontend/components/dashboard-view.tsx
+- frontend/components/settings-view.tsx
+- frontend/package.json
+- frontend/public/sw.js
+- frontend/services/dashboard.ts
+- readme/CHANGELOG_V0_6_3.md
+- readme/COMO_APLICAR_V0_6_3.md
+- readme/CONTINUIDADE_V0_6_3.md
+- readme/PATCH_MANIFEST_V0_6_3.txt
+- readme/VALIDACAO_V0_6_3.md

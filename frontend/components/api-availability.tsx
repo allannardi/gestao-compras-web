@@ -268,7 +268,7 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.6.2 — Senhas e segurança</strong>
+          <strong>v0.6.3 — UX, histórico e base Premium</strong>
         </div>
         <div>
           <span>Dados</span>

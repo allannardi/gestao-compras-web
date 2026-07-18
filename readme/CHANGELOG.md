@@ -1,3 +1,11 @@
+# v0.6.3 — UX, histórico e fundação Premium
+
+- card de segurança movido para o fim de Ajustes;
+- histórico com busca e seletor compacto;
+- valor, registros e categoria dentro das opções;
+- fundação interna para licenças Free e Premium;
+- limite Premium configurável sem tela pública.
+
 # v0.6.1 — Entrada por link de convite
 
 - link copiável para convite;

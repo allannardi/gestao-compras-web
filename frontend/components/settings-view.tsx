@@ -378,61 +378,6 @@ export function SettingsView({
       <section className="settings-card">
         <div className="settings-card-heading">
           <div>
-            <span>Segurança</span>
-            <h3>Minha senha</h3>
-          </div>
-          <small>Mínimo de 8 caracteres</small>
-        </div>
-        <p className="settings-help-copy">
-          Confirme a senha atual e escolha uma nova senha para o seu acesso.
-        </p>
-        <form className="settings-password-form" onSubmit={submitPassword}>
-          <label>
-            Senha atual
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(event) => setCurrentPassword(event.target.value)}
-              autoComplete="current-password"
-              minLength={8}
-              required
-            />
-          </label>
-          <label>
-            Nova senha
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(event) => setNewPassword(event.target.value)}
-              autoComplete="new-password"
-              minLength={8}
-              required
-            />
-          </label>
-          <label>
-            Confirmar nova senha
-            <input
-              type="password"
-              value={confirmNewPassword}
-              onChange={(event) => setConfirmNewPassword(event.target.value)}
-              autoComplete="new-password"
-              minLength={8}
-              required
-            />
-          </label>
-          <button
-            className="capture-button"
-            type="submit"
-            disabled={busyAction === "password"}
-          >
-            {busyAction === "password" ? "Alterando…" : "Alterar minha senha"}
-          </button>
-        </form>
-      </section>
-
-      <section className="settings-card">
-        <div className="settings-card-heading">
-          <div>
             <span>Família atual</span>
             <h3>{data.familia.nome}</h3>
           </div>
@@ -655,6 +600,61 @@ export function SettingsView({
           )}
         </section>
       )}
+
+      <section className="settings-card settings-security-card">
+        <div className="settings-card-heading">
+          <div>
+            <span>Segurança</span>
+            <h3>Minha senha</h3>
+          </div>
+          <small>Mínimo de 8 caracteres</small>
+        </div>
+        <p className="settings-help-copy">
+          Confirme a senha atual e escolha uma nova senha para o seu acesso.
+        </p>
+        <form className="settings-password-form" onSubmit={submitPassword}>
+          <label>
+            Senha atual
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              autoComplete="current-password"
+              minLength={8}
+              required
+            />
+          </label>
+          <label>
+            Nova senha
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </label>
+          <label>
+            Confirmar nova senha
+            <input
+              type="password"
+              value={confirmNewPassword}
+              onChange={(event) => setConfirmNewPassword(event.target.value)}
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </label>
+          <button
+            className="capture-button"
+            type="submit"
+            disabled={busyAction === "password"}
+          >
+            {busyAction === "password" ? "Alterando…" : "Alterar minha senha"}
+          </button>
+        </form>
+      </section>
     </section>
   );
 }
