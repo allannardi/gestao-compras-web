@@ -10,7 +10,6 @@ import { ProductsView } from "@/components/products-view";
 import { PurchasesView } from "@/components/purchases-view";
 import { RegistriesView } from "@/components/registries-view";
 import { SettingsView } from "@/components/settings-view";
-import { APP_VERSION } from "@/lib/version";
 import type { FamilyContext } from "@/types/auth";
 
 type ApiState = "checking" | "online" | "offline";
@@ -492,13 +491,6 @@ export function ApiAvailability({
               <small>Encerrar a sessão neste aparelho</small>
             </div>
           </button>
-          <div className="more-version-row">
-            <span>Versão do aplicativo</span>
-            <strong>
-              v{APP_VERSION}
-              {apiVersion ? ` · API v${apiVersion}` : ""}
-            </strong>
-          </div>
         </section>
       )}
 
@@ -519,16 +511,6 @@ export function ApiAvailability({
         </section>
       )}
 
-      <section className="checkpoint-card">
-        <div>
-          <span>Checkpoint</span>
-          <strong>v0.9.0 — Preparação para beta</strong>
-        </div>
-        <div>
-          <span>Aplicativo</span>
-          <strong>Onboarding, privacidade, versão e exclusão segura</strong>
-        </div>
-      </section>
     </>
   );
 }

@@ -1,0 +1,14 @@
+v1.0.1 — Limpeza visual e padronização da versão
+
+Arquivos alterados:
+- frontend/components/api-availability.tsx
+- frontend/app/globals.css
+- frontend/lib/version.ts
+- frontend/package.json
+- frontend/public/sw.js
+- backend/app/core/version.py
+- readme/README.md
+- readme/CHANGELOG.md
+- readme/CHANGELOG_V1_0_1.md
+- readme/COMO_APLICAR_V1_0_1.md
+- readme/PATCH_MANIFEST_V1_0_1.txt

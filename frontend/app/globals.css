@@ -53,7 +53,6 @@ code {
 .item-card,
 .empty-card,
 .not-saved-card,
-.checkpoint-card,
 .primary-action,
 .secondary-action {
   border: 1px solid rgba(23, 33, 43, 0.08);
@@ -339,7 +338,6 @@ h2 {
 
 .summary-card span,
 .summary-card small,
-.checkpoint-card span,
 .item-metrics small {
   color: #6a7782;
   font-size: 0.73rem;
@@ -431,23 +429,6 @@ h2 {
   font-size: 0.82rem;
 }
 
-.checkpoint-card {
-  display: grid;
-  gap: 14px;
-  margin-top: 16px;
-  padding: 16px 18px;
-  background: rgba(255, 255, 255, 0.82);
-}
-
-.checkpoint-card div {
-  display: grid;
-  gap: 3px;
-}
-
-.checkpoint-card strong {
-  font-size: 0.85rem;
-}
-
 @media (min-width: 640px) {
   .hero-card {
     grid-template-columns: 1fr auto;
@@ -467,9 +448,6 @@ h2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .checkpoint-card {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 /* v0.2.1 — inicialização confiável da câmera */
@@ -3810,23 +3788,6 @@ h2 {
   line-height: 1.42;
 }
 
-.more-version-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 11px 13px;
-  border-radius: 13px;
-  color: #66747f;
-  background: rgba(238, 242, 245, 0.9);
-  font-size: 0.69rem;
-}
-
-.more-version-row strong {
-  color: #344651;
-  font-size: 0.69rem;
-}
-
 .privacy-section {
   display: grid;
   gap: 14px;
@@ -4114,9 +4075,6 @@ h2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .more-version-row {
-    grid-column: 1 / -1;
-  }
 }
 
 /* ==========================================================

@@ -43,3 +43,11 @@
 - diagnóstico e códigos de suporte;
 - resiliência de rede;
 - CORS permanente no Render.
+
+## v1.0.1 — Limpeza visual e padronização da versão
+
+- remoção do card antigo de checkpoint;
+- versão visível centralizada em Privacidade;
+- aplicativo, API e cache da PWA atualizados para v1.0.1;
+- nenhuma migration ou configuração nova.
+
