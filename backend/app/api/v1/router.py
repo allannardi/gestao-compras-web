@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1.endpoints.auth import router as auth_router
+from app.api.v1.endpoints.cadastros import router as cadastros_router
 from app.api.v1.endpoints.compras import router as compras_router
 from app.api.v1.endpoints.convites import router as convites_router
 from app.api.v1.endpoints.configuracoes import router as configuracoes_router
@@ -11,6 +12,7 @@ from app.core.version import APP_VERSION
 
 router = APIRouter(prefix="/api/v1")
 router.include_router(auth_router)
+router.include_router(cadastros_router)
 router.include_router(compras_router)
 router.include_router(convites_router)
 router.include_router(configuracoes_router)
@@ -23,6 +25,6 @@ router.include_router(produtos_router)
 def status() -> dict[str, str]:
     return {
         "api": "ready",
-        "next_step": "password-security-validation",
+        "next_step": "registries-management-validation",
         "version": APP_VERSION,
     }

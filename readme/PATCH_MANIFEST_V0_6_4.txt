@@ -1,0 +1,13 @@
+v0.6.4 — Categorias e supermercados
+
+Principais arquivos:
+- backend/app/api/v1/endpoints/cadastros.py
+- backend/app/repositories/cadastros.py
+- backend/app/schemas/cadastros.py
+- backend/tests/test_cadastros_endpoint.py
+- backend/tests/test_cadastros_repository.py
+- frontend/components/registries-view.tsx
+- frontend/services/cadastros.ts
+- frontend/types/cadastros.ts
+- database/migrations/011_categorias_supermercados.sql
+- readme/COMO_APLICAR_V0_6_4.md

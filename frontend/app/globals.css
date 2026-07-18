@@ -2895,3 +2895,317 @@ h2 {
     flex-basis: 132px;
   }
 }
+
+/* ============================================================
+   v0.6.4 — Categorias e supermercados
+   ============================================================ */
+
+.registries-section {
+  display: grid;
+  gap: 14px;
+}
+
+.registry-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 5px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 24px rgba(30, 48, 64, 0.06);
+}
+
+.registry-tabs button {
+  min-width: 0;
+  min-height: 42px;
+  border: 0;
+  border-radius: 12px;
+  color: #52606c;
+  background: transparent;
+  font-weight: 800;
+}
+
+.registry-tabs button.active {
+  color: #fff;
+  background: #0f4c81;
+}
+
+.registry-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.registry-kpi-grid article {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 14px 12px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 24px rgba(30, 48, 64, 0.05);
+}
+
+.registry-kpi-grid span {
+  color: #66737f;
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
+.registry-kpi-grid strong {
+  color: #0f4c81;
+  font-size: 1.35rem;
+}
+
+.registry-kpi-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.registry-create-card,
+.registry-info-card,
+.registry-card {
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 10px 28px rgba(30, 48, 64, 0.06);
+}
+
+.registry-create-card {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.registry-create-card label,
+.registry-inline-form label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  color: #34424e;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.registry-create-card input,
+.registry-inline-form input,
+.registry-inline-form select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 1px solid #ccd7df;
+  border-radius: 12px;
+  padding: 9px 11px;
+  color: #17212b;
+  background: white;
+  outline: none;
+}
+
+.registry-create-card input:focus,
+.registry-inline-form input:focus,
+.registry-inline-form select:focus {
+  border-color: #0f4c81;
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1);
+}
+
+.registry-info-card {
+  display: grid;
+  gap: 6px;
+  padding: 15px 16px;
+}
+
+.registry-info-card strong {
+  color: #0f4c81;
+}
+
+.registry-info-card p {
+  margin: 0;
+  color: #66737f;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.registry-list {
+  display: grid;
+  gap: 10px;
+}
+
+.registry-card {
+  display: grid;
+  gap: 13px;
+  padding: 16px;
+}
+
+.registry-card-inactive {
+  opacity: 0.72;
+  background: #f6f8fa;
+}
+
+.registry-card-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.registry-card-heading > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.registry-card-heading strong {
+  overflow-wrap: anywhere;
+  color: #17212b;
+  font-size: 0.98rem;
+}
+
+.registry-card-heading span,
+.registry-card-heading small {
+  color: #66737f;
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.registry-card-heading small {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: #0f4c81;
+  background: #edf5fb;
+  font-weight: 800;
+}
+
+.registry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.registry-actions button,
+.registry-reactivate-button,
+.registry-inline-actions button {
+  min-height: 38px;
+  border: 1px solid #d5dfe6;
+  border-radius: 10px;
+  padding: 8px 11px;
+  color: #0f4c81;
+  background: #f7fafc;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.registry-actions .danger-text-button {
+  color: #9b352b;
+  background: #fff7f5;
+}
+
+.registry-reactivate-button {
+  width: fit-content;
+}
+
+.registry-inline-form {
+  display: grid;
+  gap: 11px;
+  padding: 13px;
+  border-radius: 14px;
+  background: #f6f9fb;
+}
+
+.registry-warning-form {
+  border: 1px solid #f0d4cc;
+  background: #fff8f5;
+}
+
+.registry-warning-form p {
+  margin: 0;
+  color: #6b4a43;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.registry-inline-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.registry-inline-actions .capture-button,
+.registry-inline-actions .danger-action-button {
+  color: white;
+  border-color: transparent;
+}
+
+.registry-inline-actions .capture-button {
+  background: #0f4c81;
+}
+
+.registry-inline-actions .danger-action-button {
+  background: #a53b30;
+}
+
+.registry-supermarket-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.registry-supermarket-stats > span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px 11px;
+  border-radius: 12px;
+  background: #f4f7f9;
+}
+
+.registry-supermarket-stats small {
+  color: #72808c;
+  font-size: 0.68rem;
+}
+
+.registry-supermarket-stats strong {
+  overflow-wrap: anywhere;
+  color: #263540;
+  font-size: 0.82rem;
+}
+
+.family-session-actions {
+  flex-wrap: wrap;
+}
+
+@media (min-width: 640px) {
+  .registry-create-card {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+
+  .registry-create-card .capture-button {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 420px) {
+  .registry-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .registry-kpi-two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .registry-card-heading {
+    align-items: start;
+  }
+
+  .registry-inline-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .registry-inline-actions button {
+    width: 100%;
+  }
+}

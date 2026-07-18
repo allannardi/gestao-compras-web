@@ -1,62 +1,42 @@
 # Roadmap — Gestão de Compras Web
 
-## v0.3.0 — Fundação SaaS por Famílias — validada
+## Núcleo validado
 
-- autenticação;
-- famílias;
-- isolamento por `familia_id`.
+- v0.3.0 — famílias e autenticação;
+- v0.3.1 — gravação real;
+- v0.3.2 — compras e detalhes;
+- v0.3.3 — operação do histórico;
+- v0.4.0 — produtos e classificação;
+- v0.5.0 — dashboard e histórico de preços;
+- v0.5.2 — seletor de mês para iPhone;
+- v0.6.0 — família, membros e convites;
+- v0.6.1.1 — convite por link;
+- v0.6.2 — senhas e segurança;
+- v0.6.3 — UX, histórico compacto e base Premium.
 
-## v0.3.1 — Primeira gravação — validada
+## v0.6.4 — Categorias e supermercados — patch atual
 
-- gravação de compras, itens e histórico;
-- identidade visual no login.
-
-## v0.3.2 — Compras e detalhes — validada
-
-- listagem mobile;
-- detalhes sem modal;
-- paginação.
-
-## v0.3.3 — Operação do histórico — validada
-
-- itens por valor total decrescente;
-- filtros mobile;
-- exclusão controlada.
-
-## v0.4.0 — Produtos e classificação — validada
-
-- produtos para revisar;
-- categorias;
-- regras automáticas;
-- edição mobile.
-
-## v0.5.0 — Dashboard e histórico — validada
-
-- resumo mensal;
-- rankings;
-- histórico e gráfico de preços.
-
-## v0.5.2 — Seletor de mês no iPhone — validada
-
-- substituição do campo nativo incompatível com Safari.
-
-## v0.6.0 — Operação familiar — patch atual
-
-- configurações da família;
-- perfil;
-- membros e papéis;
-- convites;
-- troca de família;
-- cadastro sem confirmação por e-mail mediante configuração do Supabase.
-
-## v0.6.1 — Categorias e supermercados
-
-- gestão completa de categorias;
+- gestão completa de categorias personalizadas;
 - gestão de supermercados;
-- correção e união de duplicidades.
+- correção e união segura de duplicidades.
 
-## v0.7.0 — Backup e exportação
+## v0.7.0 — Exportação e backup
 
-- exportação Excel;
+- exportação completa por família;
+- planilhas de compras, itens, produtos e histórico;
 - backup manual;
 - preparação de restauração.
+
+## v0.8.0 — Refinamentos mobile/PWA
+
+- navegação para mais módulos;
+- sessão expirada;
+- atualização de cache;
+- onboarding e instalação.
+
+## v0.9.0 — Preparação para beta
+
+- privacidade;
+- exclusão de conta e família;
+- revisão de segurança;
+- testes com famílias externas.

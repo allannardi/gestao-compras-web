@@ -7,10 +7,11 @@ import { NfceCapture } from "@/components/nfce-capture";
 import { PurchasesView } from "@/components/purchases-view";
 import { SettingsView } from "@/components/settings-view";
 import { ProductsView } from "@/components/products-view";
+import { RegistriesView } from "@/components/registries-view";
 import type { FamilyContext } from "@/types/auth";
 
 type ApiState = "checking" | "online" | "offline";
-type AppView = "add" | "purchases" | "products" | "dashboard" | "settings";
+type AppView = "add" | "purchases" | "products" | "dashboard" | "registries" | "settings";
 
 type Props = {
   apiUrl: string;
@@ -92,6 +93,13 @@ export function ApiAvailability({
         <div className="family-session-actions">
           <button
             type="button"
+            className={view === "registries" ? "active" : ""}
+            onClick={() => setView("registries")}
+          >
+            Cadastros
+          </button>
+          <button
+            type="button"
             className={view === "settings" ? "active" : ""}
             onClick={() => setView("settings")}
           >
@@ -163,7 +171,9 @@ export function ApiAvailability({
                   ? "Seus produtos"
                   : view === "dashboard"
                     ? "Resumo da família"
-                    : "Configurações da família"}
+                    : view === "registries"
+                      ? "Seus cadastros"
+                      : "Configurações da família"}
           </h1>
           <p className="subtitle">
             {view === "add"
@@ -174,7 +184,9 @@ export function ApiAvailability({
                   ? "Revise nomes, marcas e categorias sem perder o histórico já registrado."
                   : view === "dashboard"
                     ? "Acompanhe gastos mensais, rankings e a evolução dos preços dos produtos."
-                    : "Atualize seus dados, gerencie membros e compartilhe o acesso da família."}
+                    : view === "registries"
+                      ? "Organize categorias e corrija os nomes dos supermercados da sua família."
+                      : "Atualize seus dados, gerencie membros e compartilhe o acesso da família."}
           </p>
         </div>
 
@@ -235,6 +247,15 @@ export function ApiAvailability({
         />
       )}
 
+
+      {apiState === "online" && view === "registries" && (
+        <RegistriesView
+          apiUrl={apiUrl}
+          accessToken={accessToken}
+          onClose={() => setView("dashboard")}
+        />
+      )}
+
       {apiState === "online" && view === "settings" && (
         <SettingsView
           apiUrl={apiUrl}
@@ -268,11 +289,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.6.3 — UX, histórico e base Premium</strong>
+          <strong>v0.6.4 — Categorias e supermercados</strong>
         </div>
         <div>
           <span>Dados</span>
-          <strong>Alteração de senha, recuperação segura e convite por WhatsApp</strong>
+          <strong>Cadastros mobile, nomes corrigidos e união segura de mercados</strong>
         </div>
       </section>
     </>
