@@ -36,3 +36,10 @@
 - limpeza de famílias órfãs;
 - nova chave administrativa somente no backend;
 - 93 testes de backend aprovados.
+## v1.0.0 — Beta controlado
+
+- documentos públicos e aceite versionado;
+- telemetria técnica mínima;
+- diagnóstico e códigos de suporte;
+- resiliência de rede;
+- CORS permanente no Render.

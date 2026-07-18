@@ -1,14 +1,19 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import type { Session } from "@supabase/supabase-js";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { ApiAvailability } from "@/components/api-availability";
-import { SESSION_EXPIRED_EVENT } from "@/lib/api-client";
+import { LegalAcceptance } from "@/components/legal-acceptance";
+import { ApiRequestError, SESSION_EXPIRED_EVENT } from "@/lib/api-client";
 import { supabase, supabaseConfigured } from "@/lib/supabase";
+import { APP_VERSION } from "@/lib/version";
 import { fetchFamilyContext } from "@/services/auth-context";
+import { fetchLegalAcceptance, reportTechnicalEvent } from "@/services/beta";
 import type { FamilyContext } from "@/types/auth";
+import type { AceiteLegalStatus } from "@/types/beta";
 
 type Props = {
   apiUrl: string;
@@ -41,14 +46,19 @@ export function AuthGate({ apiUrl }: Props) {
   const [session, setSession] = useState<Session | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const [context, setContext] = useState<FamilyContext | null>(null);
+  const [legalStatus, setLegalStatus] = useState<AceiteLegalStatus | null>(null);
+  const [legalError, setLegalError] = useState("");
+  const [legalAttempt, setLegalAttempt] = useState(0);
   const [contextAttempt, setContextAttempt] = useState(0);
   const [contextError, setContextError] = useState("");
+  const [contextSupportCode, setContextSupportCode] = useState("");
   const [mode, setMode] = useState<AuthMode>("login");
   const [familyName, setFamilyName] = useState("");
   const [adminName, setAdminName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [signupLegalAccepted, setSignupLegalAccepted] = useState(false);
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const sessionExpiredRef = useRef(false);
@@ -71,6 +81,9 @@ export function AuthGate({ apiUrl }: Props) {
       setSession(nextSession);
       setContext(null);
       setContextError("");
+      setContextSupportCode("");
+      setLegalStatus(null);
+      setLegalError("");
       setSessionLoading(false);
     });
 
@@ -98,6 +111,27 @@ export function AuthGate({ apiUrl }: Props) {
     }
 
     const controller = new AbortController();
+    void fetchLegalAcceptance(apiUrl, session.access_token, controller.signal)
+      .then((status) => setLegalStatus(status))
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setLegalError(
+          error instanceof Error
+            ? error.message
+            : "Não foi possível verificar os documentos do beta.",
+        );
+      })
+;
+
+    return () => controller.abort();
+  }, [apiUrl, legalAttempt, session]);
+
+  useEffect(() => {
+    if (!session || !legalStatus?.aceito) {
+      return;
+    }
+
+    const controller = new AbortController();
     const timeout = window.setTimeout(
       () => controller.abort(),
       CONTEXT_TIMEOUT_MS,
@@ -113,11 +147,23 @@ export function AuthGate({ apiUrl }: Props) {
           return;
         }
 
-        setContextError(
+        const message =
           error instanceof Error
             ? error.message
-            : "Não foi possível preparar o acesso da família.",
-        );
+            : "Não foi possível preparar o acesso da família.";
+        const supportCode =
+          error instanceof ApiRequestError ? error.requestId : "";
+        setContextError(message);
+        setContextSupportCode(supportCode);
+
+        void reportTechnicalEvent(apiUrl, session.access_token, {
+          evento: "contexto_familia_falhou",
+          pagina: "/",
+          app_version: APP_VERSION,
+          codigo:
+            error instanceof ApiRequestError ? error.code : "CONTEXT_UNKNOWN",
+          ...(supportCode ? { request_id: supportCode } : {}),
+        }).catch(() => undefined);
       })
       .finally(() => {
         window.clearTimeout(timeout);
@@ -127,7 +173,7 @@ export function AuthGate({ apiUrl }: Props) {
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [apiUrl, contextAttempt, session]);
+  }, [apiUrl, contextAttempt, legalStatus?.aceito, session]);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -138,6 +184,12 @@ export function AuthGate({ apiUrl }: Props) {
 
     if (mode === "signup" && password !== confirmPassword) {
       setMessage("As senhas informadas não são iguais.");
+      setSubmitting(false);
+      return;
+    }
+
+    if (mode === "signup" && !signupLegalAccepted) {
+      setMessage("Leia e confirme os Termos e o Aviso de Privacidade para criar a conta.");
       setSubmitting(false);
       return;
     }
@@ -235,6 +287,7 @@ export function AuthGate({ apiUrl }: Props) {
               onClick={() => {
                 setMode("login");
                 setMessage("");
+                setSignupLegalAccepted(false);
               }}
             >
               Entrar
@@ -322,6 +375,21 @@ export function AuthGate({ apiUrl }: Props) {
             </label>
           )}
 
+          {mode === "signup" && (
+            <label className="legal-checkbox-row auth-legal-checkbox">
+              <input
+                type="checkbox"
+                checked={signupLegalAccepted}
+                onChange={(event) => setSignupLegalAccepted(event.target.checked)}
+                required
+              />
+              <span>
+                Li e aceito os <Link href="/termos" target="_blank">Termos do beta</Link>{" "}
+                e o <Link href="/politica-de-privacidade" target="_blank">Aviso de Privacidade</Link>.
+              </span>
+            </label>
+          )}
+
           {message && <p className="auth-message">{message}</p>}
 
           <button className="capture-button auth-submit" type="submit" disabled={submitting}>
@@ -332,7 +400,63 @@ export function AuthGate({ apiUrl }: Props) {
                 : "Criar minha família"}
           </button>
         </form>
+        <div className="auth-legal-links">
+          <Link href="/termos">Termos do beta</Link>
+          <span>·</span>
+          <Link href="/politica-de-privacidade">Privacidade</Link>
+        </div>
       </section>
+    );
+  }
+
+  if (!legalStatus && !legalError) {
+    return (
+      <section className="processing-card" role="status">
+        <span className="spinner" aria-hidden="true" />
+        <div>
+          <strong>Preparando o beta controlado</strong>
+          <p>Verificando termos, privacidade e segurança da conta…</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (legalError || !legalStatus) {
+    return (
+      <section className="feedback-card error-card" role="alert">
+        <strong>Não foi possível verificar os documentos do beta</strong>
+        <p>{legalError || "Status de aceite não encontrado."}</p>
+        <div className="button-row">
+          <button className="ghost-action" type="button" onClick={() => void supabase?.auth.signOut()}>
+            Sair
+          </button>
+          <button
+            className="capture-button"
+            type="button"
+            onClick={() => {
+              setLegalError("");
+              setLegalAttempt((value) => value + 1);
+            }}
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (!legalStatus.aceito) {
+    return (
+      <LegalAcceptance
+        apiUrl={apiUrl}
+        accessToken={session.access_token}
+        status={legalStatus}
+        onAccepted={setLegalStatus}
+        onLogout={async () => {
+          setLegalStatus(null);
+          await supabase?.auth.signOut();
+        }}
+      />
     );
   }
 
@@ -353,6 +477,7 @@ export function AuthGate({ apiUrl }: Props) {
       <section className="feedback-card error-card" role="alert">
         <strong>Não foi possível preparar sua família</strong>
         <p>{contextError || "Contexto familiar não encontrado."}</p>
+        {contextSupportCode && <small>Código de suporte: {contextSupportCode}</small>}
         <div className="button-row">
           <button
             className="ghost-action"
@@ -366,6 +491,7 @@ export function AuthGate({ apiUrl }: Props) {
             type="button"
             onClick={() => {
               setContextError("");
+              setContextSupportCode("");
               setContextAttempt((value) => value + 1);
             }}
           >
@@ -392,12 +518,14 @@ export function AuthGate({ apiUrl }: Props) {
       onLogout={async () => {
         sessionExpiredRef.current = false;
         setMessage("");
+        setLegalStatus(null);
         await supabase?.auth.signOut();
       }}
       onAccountDeleted={async (successMessage) => {
         sessionExpiredRef.current = false;
         setContext(null);
         setContextError("");
+        setLegalStatus(null);
         setSession(null);
         setMessage(successMessage);
         try {

@@ -14,7 +14,7 @@ services:
       - key: APP_ENV
         value: production
       - key: CORS_ORIGINS
-        value: http://localhost:3000
+        value: https://gestao-compras-web.vercel.app,http://localhost:3000
       - key: CORS_ORIGIN_REGEX
         value: ""
       - key: SUPABASE_URL

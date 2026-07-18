@@ -1,5 +1,13 @@
-import { apiFetch } from "@/lib/api-client";
+import {
+  ApiRequestError,
+  apiErrorMessage,
+  apiFetch,
+  apiRequestId,
+} from "@/lib/api-client";
 import type {
+  AceiteLegalRegistrado,
+  AceiteLegalStatus,
+  EventoTecnico,
   OnboardingBeta,
   OnboardingConcluido,
   PrivacidadeRegistrada,
@@ -7,14 +15,6 @@ import type {
 
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
-}
-
-function getApiError(payload: unknown, fallback: string): string {
-  if (payload && typeof payload === "object" && "detail" in payload) {
-    const detail = payload.detail;
-    if (typeof detail === "string" && detail.trim()) return detail;
-  }
-  return fallback;
 }
 
 async function request<T>(
@@ -32,11 +32,65 @@ async function request<T>(
   });
   const payload: unknown = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new Error(
-      getApiError(payload, "Não foi possível carregar a preparação para beta."),
+    throw new ApiRequestError(
+      apiErrorMessage(payload, "Não foi possível carregar a preparação para beta."),
+      {
+        status: response.status,
+        requestId: apiRequestId(response),
+        code: `HTTP_${response.status}`,
+      },
     );
   }
   return payload as T;
+}
+
+export function fetchLegalAcceptance(
+  apiUrl: string,
+  accessToken: string,
+  signal?: AbortSignal,
+): Promise<AceiteLegalStatus> {
+  return request<AceiteLegalStatus>(
+    `${normalizeApiUrl(apiUrl)}/api/v1/beta/aceite-legal`,
+    accessToken,
+    { signal },
+  );
+}
+
+export function acceptLegalDocuments(
+  apiUrl: string,
+  accessToken: string,
+  termosVersao: string,
+  privacidadeVersao: string,
+): Promise<AceiteLegalRegistrado> {
+  return request<AceiteLegalRegistrado>(
+    `${normalizeApiUrl(apiUrl)}/api/v1/beta/aceite-legal`,
+    accessToken,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        termos_versao: termosVersao,
+        privacidade_versao: privacidadeVersao,
+      }),
+    },
+  );
+}
+
+export function reportTechnicalEvent(
+  apiUrl: string,
+  accessToken: string,
+  payload: {
+    evento: EventoTecnico;
+    pagina: string;
+    app_version: string;
+    codigo: string;
+    request_id?: string;
+  },
+): Promise<{ recebido: boolean }> {
+  return request<{ recebido: boolean }>(
+    `${normalizeApiUrl(apiUrl)}/api/v1/beta/telemetria`,
+    accessToken,
+    { method: "POST", body: JSON.stringify(payload) },
+  );
 }
 
 export function fetchOnboardingBeta(

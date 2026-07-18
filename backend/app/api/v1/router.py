@@ -11,6 +11,7 @@ from app.api.v1.endpoints.dashboard import router as dashboard_router
 from app.api.v1.endpoints.exportacoes import router as exportacoes_router
 from app.api.v1.endpoints.nfce import router as nfce_router
 from app.api.v1.endpoints.produtos import router as produtos_router
+from app.core.legal import PRIVACY_VERSION, TERMS_VERSION
 from app.core.version import APP_VERSION
 
 router = APIRouter(prefix="/api/v1")
@@ -31,6 +32,8 @@ router.include_router(produtos_router)
 def status() -> dict[str, str]:
     return {
         "api": "ready",
-        "next_step": "beta-validation",
+        "next_step": "controlled-beta",
         "version": APP_VERSION,
+        "terms_version": TERMS_VERSION,
+        "privacy_version": PRIVACY_VERSION,
     }

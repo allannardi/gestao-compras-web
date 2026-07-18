@@ -51,3 +51,10 @@ def test_supabase_admin_accepts_current_and_legacy_secret_names() -> None:
     assert current.supabase_secret_key == "sb_secret_example"
     assert legacy.supabase_admin_configured is True
     assert legacy.supabase_secret_key == "legacy-service-role"
+
+
+def test_default_cors_contains_public_and_local_origins() -> None:
+    settings = Settings()
+
+    assert "https://gestao-compras-web.vercel.app" in settings.cors_origins
+    assert "http://localhost:3000" in settings.cors_origins

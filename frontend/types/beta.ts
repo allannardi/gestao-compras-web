@@ -21,3 +21,25 @@ export type PrivacidadeRegistrada = {
   mensagem: string;
   visto_em: string;
 };
+
+export type AceiteLegalStatus = {
+  aceito: boolean;
+  termos_versao_atual: string;
+  privacidade_versao_atual: string;
+  termos_versao_aceita: string | null;
+  privacidade_versao_aceita: string | null;
+  aceito_em: string | null;
+};
+
+export type AceiteLegalRegistrado = {
+  mensagem: string;
+  termos_versao: string;
+  privacidade_versao: string;
+  aceito_em: string;
+};
+
+export type EventoTecnico =
+  | "frontend_error"
+  | "api_indisponivel"
+  | "pwa_atualizacao_falhou"
+  | "contexto_familia_falhou";

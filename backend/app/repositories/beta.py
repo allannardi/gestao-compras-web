@@ -29,7 +29,11 @@ def _error_message(payload: Any, fallback: str) -> str:
     return fallback
 
 
-def _rpc(function_name: str, access_token: str) -> dict[str, Any]:
+def _rpc(
+    function_name: str,
+    access_token: str,
+    params: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     if not settings.supabase_configured:
         raise SupabaseBetaError(
             "Supabase ainda não foi configurado no backend.",
@@ -40,7 +44,7 @@ def _rpc(function_name: str, access_token: str) -> dict[str, Any]:
         response = requests.post(
             f"{settings.supabase_url.rstrip('/')}/rest/v1/rpc/{function_name}",
             headers=_headers(access_token),
-            json={},
+            json=params or {},
             timeout=settings.supabase_request_timeout_seconds,
         )
     except requests.RequestException as exc:
@@ -88,3 +92,22 @@ def concluir_onboarding_beta(access_token: str) -> dict[str, Any]:
 
 def registrar_visualizacao_privacidade(access_token: str) -> dict[str, Any]:
     return _rpc("registrar_visualizacao_privacidade", access_token)
+
+
+def obter_status_aceite_legal(access_token: str) -> dict[str, Any]:
+    return _rpc("obter_status_aceite_legal", access_token)
+
+
+def registrar_aceite_legal(
+    access_token: str,
+    termos_versao: str,
+    privacidade_versao: str,
+) -> dict[str, Any]:
+    return _rpc(
+        "registrar_aceite_legal",
+        access_token,
+        {
+            "p_termos_versao": termos_versao,
+            "p_privacidade_versao": privacidade_versao,
+        },
+    )

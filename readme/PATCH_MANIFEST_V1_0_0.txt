@@ -1,0 +1,24 @@
+v1.0.0 — Beta controlado
+
+Backend:
+- aceite legal versionado;
+- telemetria técnica mínima;
+- request ID e tempo de resposta;
+- endpoint /ready;
+- versão 1.0.0;
+- testes adicionais.
+
+Frontend:
+- tela de aceite;
+- Termos e Aviso de Privacidade públicos;
+- checkbox no cadastro;
+- diagnóstico copiável;
+- erro global;
+- novas tentativas automáticas;
+- versão/PWA 1.0.0.
+
+Banco:
+- migration 014_beta_controlado.sql.
+
+Infraestrutura:
+- correção permanente de CORS no render.yaml.

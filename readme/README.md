@@ -39,3 +39,8 @@ Configure no Render:
 ```text
 SUPABASE_SECRET_KEY
 ```
+
+
+## Patch atual
+
+**v1.0.0 — Beta controlado**. Consulte `COMO_APLICAR_V1_0_0.md`.

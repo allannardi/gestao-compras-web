@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     app_name: str = "Gestão de Compras API"
     api_v1_prefix: str = "/api/v1"
     cors_origins_raw: str = Field(
-        default="http://localhost:3000",
+        default="https://gestao-compras-web.vercel.app,http://localhost:3000",
         validation_alias="CORS_ORIGINS",
     )
     cors_origin_regex_raw: str = Field(

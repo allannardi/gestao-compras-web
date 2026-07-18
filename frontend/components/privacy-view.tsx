@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { APP_VERSION } from "@/lib/version";
 import { registerPrivacyView } from "@/services/beta";
@@ -20,9 +21,30 @@ export function PrivacyView({
   onOpenSettings,
   onClose,
 }: Props) {
+  const [diagnosticMessage, setDiagnosticMessage] = useState("");
+
   useEffect(() => {
     void registerPrivacyView(apiUrl, accessToken).catch(() => undefined);
   }, [accessToken, apiUrl]);
+
+  const copyDiagnostic = async () => {
+    const standalone = window.matchMedia("(display-mode: standalone)").matches;
+    const lines = [
+      "Gestão de Compras — Diagnóstico técnico",
+      `Aplicativo: v${APP_VERSION}`,
+      `API: ${apiVersion ? `v${apiVersion}` : "não identificada"}`,
+      `Conexão: ${navigator.onLine ? "online" : "offline"}`,
+      `Instalação: ${standalone ? "PWA instalada" : "navegador"}`,
+      `Data: ${new Date().toISOString()}`,
+    ];
+
+    try {
+      await navigator.clipboard.writeText(lines.join("\n"));
+      setDiagnosticMessage("Diagnóstico copiado. Nenhum dado de compra foi incluído.");
+    } catch {
+      setDiagnosticMessage("Não foi possível copiar automaticamente neste navegador.");
+    }
+  };
 
   return (
     <section className="privacy-section">
@@ -95,6 +117,18 @@ export function PrivacyView({
 
       <section className="privacy-actions-card">
         <div>
+          <span>Documentos públicos</span>
+          <h3>Termos e privacidade</h3>
+          <p>Consulte a versão aceita durante o beta controlado.</p>
+          <div className="privacy-legal-links">
+            <Link href="/termos" target="_blank">Termos do beta</Link>
+            <Link href="/politica-de-privacidade" target="_blank">Aviso de Privacidade</Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="privacy-actions-card">
+        <div>
           <span>Ações da conta</span>
           <h3>Exportar ou excluir</h3>
           <p>
@@ -104,6 +138,21 @@ export function PrivacyView({
         </div>
         <button className="capture-button compact-button" type="button" onClick={onOpenSettings}>
           Abrir Ajustes
+        </button>
+      </section>
+
+      <section className="privacy-actions-card diagnostic-card">
+        <div>
+          <span>Suporte do beta</span>
+          <h3>Diagnóstico técnico</h3>
+          <p>
+            Copia versões, conexão e modo de instalação. Produtos, compras,
+            valores e identificação da família não são incluídos.
+          </p>
+          {diagnosticMessage && <small>{diagnosticMessage}</small>}
+        </div>
+        <button className="secondary-action compact-button" type="button" onClick={() => void copyDiagnostic()}>
+          Copiar diagnóstico
         </button>
       </section>
 
@@ -118,7 +167,7 @@ export function PrivacyView({
         </div>
         <div>
           <span>Estágio</span>
-          <strong>Preparação para beta</strong>
+          <strong>Beta controlado</strong>
         </div>
       </section>
     </section>

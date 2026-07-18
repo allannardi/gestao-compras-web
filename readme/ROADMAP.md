@@ -17,7 +17,7 @@
 - v0.7.0 — exportação e backup;
 - v0.8.0 — experiência mobile e PWA.
 
-## v0.9.0 — Preparação para beta — patch atual
+## v0.9.0 — Preparação para beta — validada
 
 - onboarding inicial;
 - privacidade;
@@ -25,7 +25,7 @@
 - identificação de versão;
 - revisão de segurança.
 
-## v1.0.0 — Beta controlado
+## v1.0.0 — Beta controlado — patch atual
 
 - termos e política publicados em endereço público;
 - auditoria final das migrations e permissões;
