@@ -5,6 +5,7 @@ import type {
   CompraSalva,
 } from "@/types/compras";
 import type { NfcePreview } from "@/types/nfce";
+import { apiFetch } from "@/lib/api-client";
 
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
@@ -32,7 +33,7 @@ export async function savePurchase(
   accessToken: string,
   preview: NfcePreview,
 ): Promise<CompraSalva> {
-  const response = await fetch(`${normalizeApiUrl(apiUrl)}/api/v1/compras`, {
+  const response = await apiFetch(`${normalizeApiUrl(apiUrl)}/api/v1/compras`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -81,7 +82,7 @@ export async function fetchPurchases(
     query.set("mes", `${month}-01`);
   }
 
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/compras?${query.toString()}`,
     {
       cache: "no-store",
@@ -108,7 +109,7 @@ export async function fetchPurchaseDetail(
   purchaseId: string,
   signal?: AbortSignal,
 ): Promise<CompraDetalhe> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/compras/${encodeURIComponent(purchaseId)}`,
     {
       cache: "no-store",
@@ -135,7 +136,7 @@ export async function deleteTestPurchase(
   purchaseId: string,
   confirmation: string,
 ): Promise<CompraExcluida> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/compras/${encodeURIComponent(purchaseId)}`,
     {
       method: "DELETE",

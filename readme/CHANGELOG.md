@@ -15,3 +15,13 @@
 - backup JSON da família;
 - downloads restritos aos administradores;
 - resumo dos dados antes da geração.
+
+## v0.8.0 — Experiência mobile e PWA
+
+- navegação fixa no iPhone;
+- área Mais;
+- recuperação de sessão expirada;
+- espera automática do Render;
+- atualização controlada da PWA;
+- orientação de instalação;
+- página offline aprimorada.

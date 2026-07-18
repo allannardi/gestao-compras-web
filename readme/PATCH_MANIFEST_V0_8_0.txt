@@ -1,0 +1,28 @@
+v0.8.0 — Experiência mobile e PWA
+
+Principais arquivos alterados/adicionados:
+- backend/app/core/version.py
+- frontend/package.json
+- frontend/app/globals.css
+- frontend/app/offline/page.tsx
+- frontend/components/api-availability.tsx
+- frontend/components/auth-gate.tsx
+- frontend/components/offline-retry.tsx
+- frontend/components/service-worker-register.tsx
+- frontend/lib/api-client.ts
+- frontend/public/manifest.webmanifest
+- frontend/public/sw.js
+- frontend/services/*.ts
+- readme/CHANGELOG_V0_8_0.md
+- readme/COMO_APLICAR_V0_8_0.md
+- readme/CONTINUIDADE_V0_8_0.md
+- readme/PATCH_MANIFEST_V0_8_0.txt
+- readme/VALIDACAO_V0_8_0.md
+
+Não inclui:
+- .env
+- .env.local
+- node_modules
+- package-lock.json
+- .venv
+- caches de build

@@ -4,14 +4,21 @@ import { useEffect, useState } from "react";
 
 import { DashboardView } from "@/components/dashboard-view";
 import { NfceCapture } from "@/components/nfce-capture";
-import { PurchasesView } from "@/components/purchases-view";
-import { SettingsView } from "@/components/settings-view";
 import { ProductsView } from "@/components/products-view";
+import { PurchasesView } from "@/components/purchases-view";
 import { RegistriesView } from "@/components/registries-view";
+import { SettingsView } from "@/components/settings-view";
 import type { FamilyContext } from "@/types/auth";
 
 type ApiState = "checking" | "online" | "offline";
-type AppView = "add" | "purchases" | "products" | "dashboard" | "registries" | "settings";
+type AppView =
+  | "add"
+  | "purchases"
+  | "products"
+  | "dashboard"
+  | "registries"
+  | "settings"
+  | "more";
 
 type Props = {
   apiUrl: string;
@@ -21,10 +28,40 @@ type Props = {
   onLogout: () => Promise<void>;
 };
 
-const HEALTH_TIMEOUT_MS = 75_000;
+const HEALTH_TOTAL_WAIT_MS = 75_000;
+const HEALTH_ATTEMPT_TIMEOUT_MS = 18_000;
+const HEALTH_RETRY_DELAY_MS = 3_500;
 
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
+}
+
+function wait(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+}
+
+function connectionCopy(elapsedMs: number): {
+  title: string;
+  detail: string;
+} {
+  if (elapsedMs < 8_000) {
+    return {
+      title: "Verificando o servidor",
+      detail: "Conectando ao ambiente seguro da sua família…",
+    };
+  }
+
+  if (elapsedMs < 32_000) {
+    return {
+      title: "O servidor está iniciando",
+      detail: "O Render pode precisar de alguns segundos para despertar.",
+    };
+  }
+
+  return {
+    title: "Ainda preparando o aplicativo",
+    detail: "Mantenha esta tela aberta. A conexão será tentada automaticamente.",
+  };
 }
 
 export function ApiAvailability({
@@ -36,49 +73,127 @@ export function ApiAvailability({
 }: Props) {
   const [apiState, setApiState] = useState<ApiState>("checking");
   const [attempt, setAttempt] = useState(0);
+  const [connectionTitle, setConnectionTitle] = useState(
+    "Verificando o servidor",
+  );
+  const [connectionDetail, setConnectionDetail] = useState(
+    "Conectando ao ambiente seguro da sua família…",
+  );
   const [loggingOut, setLoggingOut] = useState(false);
   const [view, setView] = useState<AppView>("add");
   const [purchaseRefreshKey, setPurchaseRefreshKey] = useState(0);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const timeout = window.setTimeout(
-      () => controller.abort(),
-      HEALTH_TIMEOUT_MS,
-    );
+    let cancelled = false;
+    let activeController: AbortController | null = null;
+    let activeTimeout: number | null = null;
+    const startedAt = Date.now();
 
-    fetch(`${normalizeApiUrl(apiUrl)}/health`, {
-      cache: "no-store",
-      signal: controller.signal,
-    })
-      .then(async (response) => {
-        if (!response.ok) {
-          setApiState("offline");
+    const checkApi = async () => {
+      setApiState("checking");
+
+      while (!cancelled && Date.now() - startedAt < HEALTH_TOTAL_WAIT_MS) {
+        if (!navigator.onLine) {
+          if (!cancelled) {
+            setConnectionTitle("Sem conexão com a internet");
+            setConnectionDetail(
+              "Reconecte o aparelho. O aplicativo tentará novamente automaticamente.",
+            );
+            setApiState("offline");
+          }
           return;
         }
 
-        const payload: unknown = await response.json().catch(() => null);
-        const isHealthy =
-          payload !== null &&
-          typeof payload === "object" &&
-          "status" in payload &&
-          payload.status === "ok";
+        const elapsed = Date.now() - startedAt;
+        const copy = connectionCopy(elapsed);
+        setConnectionTitle(copy.title);
+        setConnectionDetail(copy.detail);
 
-        setApiState(isHealthy ? "online" : "offline");
-      })
-      .catch(() => setApiState("offline"))
-      .finally(() => window.clearTimeout(timeout));
+        activeController = new AbortController();
+        activeTimeout = window.setTimeout(
+          () => activeController?.abort(),
+          HEALTH_ATTEMPT_TIMEOUT_MS,
+        );
+
+        try {
+          const response = await fetch(`${normalizeApiUrl(apiUrl)}/health`, {
+            cache: "no-store",
+            signal: activeController.signal,
+          });
+          const payload: unknown = await response.json().catch(() => null);
+          const isHealthy =
+            response.ok &&
+            payload !== null &&
+            typeof payload === "object" &&
+            "status" in payload &&
+            payload.status === "ok";
+
+          if (isHealthy) {
+            if (!cancelled) setApiState("online");
+            return;
+          }
+        } catch {
+          // A tentativa seguinte continua acordando o serviço do Render.
+        } finally {
+          if (activeTimeout !== null) window.clearTimeout(activeTimeout);
+          activeTimeout = null;
+          activeController = null;
+        }
+
+        if (!cancelled) await wait(HEALTH_RETRY_DELAY_MS);
+      }
+
+      if (!cancelled) {
+        setConnectionTitle("O servidor ainda não respondeu");
+        setConnectionDetail(
+          "A internet está ativa, mas o backend não ficou disponível dentro do tempo esperado.",
+        );
+        setApiState("offline");
+      }
+    };
+
+    void checkApi();
 
     return () => {
-      controller.abort();
-      window.clearTimeout(timeout);
+      cancelled = true;
+      activeController?.abort();
+      if (activeTimeout !== null) window.clearTimeout(activeTimeout);
     };
   }, [apiUrl, attempt]);
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setApiState("checking");
+      setAttempt((value) => value + 1);
+    };
+    const handleOffline = () => {
+      setConnectionTitle("Sem conexão com a internet");
+      setConnectionDetail(
+        "Reconecte o aparelho. O aplicativo tentará novamente automaticamente.",
+      );
+      setApiState("offline");
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
 
   const showPurchases = () => {
     setPurchaseRefreshKey((value) => value + 1);
     setView("purchases");
   };
+
+  const logout = async () => {
+    setLoggingOut(true);
+    await onLogout();
+  };
+
+  const moreActive =
+    view === "more" || view === "registries" || view === "settings";
 
   return (
     <>
@@ -90,7 +205,7 @@ export function ApiAvailability({
             {context.nome} · {context.papel === "administrador" ? "Administrador" : "Membro"}
           </small>
         </div>
-        <div className="family-session-actions">
+        <div className="family-session-actions desktop-session-actions">
           <button
             type="button"
             className={view === "registries" ? "active" : ""}
@@ -105,14 +220,7 @@ export function ApiAvailability({
           >
             Ajustes
           </button>
-          <button
-            type="button"
-            disabled={loggingOut}
-            onClick={async () => {
-              setLoggingOut(true);
-              await onLogout();
-            }}
-          >
+          <button type="button" disabled={loggingOut} onClick={() => void logout()}>
             {loggingOut ? "Saindo…" : "Sair"}
           </button>
         </div>
@@ -122,12 +230,12 @@ export function ApiAvailability({
         <nav className="app-navigation" aria-label="Navegação principal">
           <button
             type="button"
-            className={view === "add" ? "active" : ""}
-            aria-current={view === "add" ? "page" : undefined}
-            onClick={() => setView("add")}
+            className={view === "dashboard" ? "active" : ""}
+            aria-current={view === "dashboard" ? "page" : undefined}
+            onClick={() => setView("dashboard")}
           >
-            <span aria-hidden="true">＋</span>
-            Adicionar
+            <span aria-hidden="true">◫</span>
+            Resumo
           </button>
           <button
             type="button"
@@ -140,6 +248,15 @@ export function ApiAvailability({
           </button>
           <button
             type="button"
+            className={`nav-add ${view === "add" ? "active" : ""}`}
+            aria-current={view === "add" ? "page" : undefined}
+            onClick={() => setView("add")}
+          >
+            <span aria-hidden="true">＋</span>
+            Adicionar
+          </button>
+          <button
+            type="button"
             className={view === "products" ? "active" : ""}
             aria-current={view === "products" ? "page" : undefined}
             onClick={() => setView("products")}
@@ -149,12 +266,12 @@ export function ApiAvailability({
           </button>
           <button
             type="button"
-            className={view === "dashboard" ? "active" : ""}
-            aria-current={view === "dashboard" ? "page" : undefined}
-            onClick={() => setView("dashboard")}
+            className={moreActive ? "active" : ""}
+            aria-current={moreActive ? "page" : undefined}
+            onClick={() => setView("more")}
           >
-            <span aria-hidden="true">◫</span>
-            Resumo
+            <span aria-hidden="true">•••</span>
+            Mais
           </button>
         </nav>
       )}
@@ -173,7 +290,9 @@ export function ApiAvailability({
                     ? "Resumo da família"
                     : view === "registries"
                       ? "Seus cadastros"
-                      : "Configurações da família"}
+                      : view === "settings"
+                        ? "Configurações da família"
+                        : "Mais opções"}
           </h1>
           <p className="subtitle">
             {view === "add"
@@ -186,7 +305,9 @@ export function ApiAvailability({
                     ? "Acompanhe gastos mensais, rankings e a evolução dos preços dos produtos."
                     : view === "registries"
                       ? "Organize categorias e corrija os nomes dos supermercados da sua família."
-                      : "Atualize seus dados, gerencie membros e compartilhe o acesso da família."}
+                      : view === "settings"
+                        ? "Atualize seus dados, gerencie membros e compartilhe o acesso da família."
+                        : "Abra cadastros, ajustes ou encerre sua sessão com segurança."}
           </p>
         </div>
 
@@ -202,8 +323,8 @@ export function ApiAvailability({
         <section className="processing-card api-connection-card" role="status">
           <span className="spinner" aria-hidden="true" />
           <div>
-            <strong>Preparando o aplicativo</strong>
-            <p>O servidor online pode levar alguns segundos para responder.</p>
+            <strong>{connectionTitle}</strong>
+            <p>{connectionDetail}</p>
           </div>
         </section>
       )}
@@ -230,7 +351,6 @@ export function ApiAvailability({
         />
       )}
 
-
       {apiState === "online" && view === "products" && (
         <ProductsView
           apiUrl={apiUrl}
@@ -247,12 +367,11 @@ export function ApiAvailability({
         />
       )}
 
-
       {apiState === "online" && view === "registries" && (
         <RegistriesView
           apiUrl={apiUrl}
           accessToken={accessToken}
-          onClose={() => setView("dashboard")}
+          onClose={() => setView("more")}
         />
       )}
 
@@ -262,17 +381,55 @@ export function ApiAvailability({
           accessToken={accessToken}
           context={context}
           onContextRefresh={onContextRefresh}
-          onClose={() => setView("dashboard")}
+          onClose={() => setView("more")}
         />
+      )}
+
+      {apiState === "online" && view === "more" && (
+        <section className="more-options-section" aria-label="Mais opções">
+          <button type="button" onClick={() => setView("registries")}>
+            <span aria-hidden="true">▧</span>
+            <div>
+              <strong>Cadastros</strong>
+              <small>Categorias e supermercados</small>
+            </div>
+          </button>
+          <button type="button" onClick={() => setView("settings")}>
+            <span aria-hidden="true">⚙</span>
+            <div>
+              <strong>Ajustes</strong>
+              <small>Família, membros, segurança e backup</small>
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+          >
+            <span aria-hidden="true">↻</span>
+            <div>
+              <strong>Verificar atualizações</strong>
+              <small>Recarregar a versão instalada</small>
+            </div>
+          </button>
+          <button
+            type="button"
+            className="more-logout-button"
+            disabled={loggingOut}
+            onClick={() => void logout()}
+          >
+            <span aria-hidden="true">⇥</span>
+            <div>
+              <strong>{loggingOut ? "Saindo…" : "Sair"}</strong>
+              <small>Encerrar a sessão neste aparelho</small>
+            </div>
+          </button>
+        </section>
       )}
 
       {apiState === "offline" && (
         <section className="feedback-card error-card api-warning" role="alert">
-          <strong>Não consegui acessar o backend</strong>
-          <p>
-            Confirme o endereço da API ou aguarde o serviço iniciar. Depois,
-            tente novamente.
-          </p>
+          <strong>{connectionTitle}</strong>
+          <p>{connectionDetail}</p>
           <button
             className="capture-button retry-api-button"
             type="button"
@@ -289,11 +446,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.7.0 — Exportação e backup</strong>
+          <strong>v0.8.0 — Experiência mobile e PWA</strong>
         </div>
         <div>
-          <span>Dados</span>
-          <strong>Excel completo e backup JSON por família</strong>
+          <span>Aplicativo</span>
+          <strong>Navegação, atualização e recuperação de sessão</strong>
         </div>
       </section>
     </>

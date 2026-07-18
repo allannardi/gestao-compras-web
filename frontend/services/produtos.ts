@@ -6,6 +6,7 @@ import type {
   ProdutoUpdatePayload,
   ReclassificacaoResultado,
 } from "@/types/produtos";
+import { apiFetch } from "@/lib/api-client";
 
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
@@ -47,7 +48,7 @@ export async function fetchProducts(
   if (search.trim()) query.set("busca", search.trim());
   if (categoryId) query.set("categoria_id", categoryId);
 
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/produtos?${query.toString()}`,
     {
       cache: "no-store",
@@ -69,7 +70,7 @@ export async function fetchCategories(
   accessToken: string,
   signal?: AbortSignal,
 ): Promise<CategoriaResumo[]> {
-  const response = await fetch(`${normalizeApiUrl(apiUrl)}/api/v1/categorias`, {
+  const response = await apiFetch(`${normalizeApiUrl(apiUrl)}/api/v1/categorias`, {
     cache: "no-store",
     headers: { Authorization: `Bearer ${accessToken}` },
     signal,
@@ -89,7 +90,7 @@ export async function updateProduct(
   productId: string,
   payload: ProdutoUpdatePayload,
 ): Promise<ProdutoAtualizado> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/produtos/${encodeURIComponent(productId)}`,
     {
       method: "PATCH",
@@ -114,7 +115,7 @@ export async function createCategory(
   accessToken: string,
   name: string,
 ): Promise<CategoriaCriada> {
-  const response = await fetch(`${normalizeApiUrl(apiUrl)}/api/v1/categorias`, {
+  const response = await apiFetch(`${normalizeApiUrl(apiUrl)}/api/v1/categorias`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -135,7 +136,7 @@ export async function reclassifyProducts(
   apiUrl: string,
   accessToken: string,
 ): Promise<ReclassificacaoResultado> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/produtos/reclassificar`,
     {
       method: "POST",

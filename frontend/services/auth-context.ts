@@ -1,4 +1,5 @@
 import type { FamilyContext } from "@/types/auth";
+import { apiFetch } from "@/lib/api-client";
 
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
@@ -22,7 +23,7 @@ export async function fetchFamilyContext(
   accessToken: string,
   signal?: AbortSignal,
 ): Promise<FamilyContext> {
-  const response = await fetch(`${normalizeApiUrl(apiUrl)}/api/v1/auth/me`, {
+  const response = await apiFetch(`${normalizeApiUrl(apiUrl)}/api/v1/auth/me`, {
     cache: "no-store",
     headers: {
       Authorization: `Bearer ${accessToken}`,

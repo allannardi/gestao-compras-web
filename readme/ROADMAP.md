@@ -35,3 +35,18 @@
 - exclusão de conta e família;
 - revisão de segurança;
 - testes com famílias externas.
+
+## v0.8.0 — Experiência mobile e PWA
+
+- navegação mobile consolidada;
+- tratamento de atualização e instalação;
+- conexão resiliente com Render;
+- recuperação de sessão expirada.
+
+## v0.9.0 — Preparação para beta
+
+- onboarding;
+- privacidade;
+- exclusão de conta e família;
+- identificação de versão;
+- revisão de segurança e testes externos.

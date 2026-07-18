@@ -1,3 +1,4 @@
+import { apiFetch } from "@/lib/api-client";
 import type { ConviteAceito, ConvitePublico } from "@/types/convites";
 
 function normalizeApiUrl(value: string): string {
@@ -33,7 +34,7 @@ export async function acceptInvitationToken(
   accessToken: string,
   token: string,
 ): Promise<ConviteAceito> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/convites/aceitar`,
     {
       method: "POST",

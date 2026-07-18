@@ -3,6 +3,7 @@ import type {
   CategoriaAtualizada,
   SupermercadoAtualizado,
 } from "@/types/cadastros";
+import { apiFetch } from "@/lib/api-client";
 
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
@@ -31,7 +32,7 @@ async function apiRequest<T>(
   init: RequestInit = {},
   fallback: string,
 ): Promise<T> {
-  const response = await fetch(`${normalizeApiUrl(apiUrl)}${path}`, {
+  const response = await apiFetch(`${normalizeApiUrl(apiUrl)}${path}`, {
     ...init,
     cache: "no-store",
     headers: {

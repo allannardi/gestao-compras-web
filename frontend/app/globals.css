@@ -3365,3 +3365,268 @@ h2 {
     grid-template-columns: 1fr;
   }
 }
+
+/* v0.8.0 — experiência mobile, PWA e atualização segura */
+.page-shell {
+  padding-bottom: calc(112px + env(safe-area-inset-bottom));
+}
+
+.desktop-session-actions {
+  display: none;
+}
+
+.app-navigation {
+  position: fixed;
+  z-index: 80;
+  right: auto;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  left: 50%;
+  width: min(calc(100% - 16px), 744px);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  padding: 6px;
+  transform: translateX(-50%);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 38px rgba(24, 42, 57, 0.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.app-navigation button {
+  min-width: 0;
+  min-height: 54px;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 3px;
+  font-size: 0.66rem;
+  line-height: 1.05;
+}
+
+.app-navigation button span {
+  min-height: 18px;
+  font-size: 1.1rem;
+}
+
+.app-navigation button.nav-add:not(.active) {
+  color: #0f4c81;
+  background: #eaf3fa;
+}
+
+.more-options-section {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.more-options-section > button {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 13px;
+  padding: 15px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 16px;
+  color: #20303c;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 9px 24px rgba(30, 48, 64, 0.06);
+  cursor: pointer;
+}
+
+.more-options-section > button > span {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 13px;
+  color: #0f4c81;
+  background: #eaf3fa;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.more-options-section > button > div {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.more-options-section strong,
+.more-options-section small {
+  overflow-wrap: anywhere;
+}
+
+.more-options-section strong {
+  font-size: 0.9rem;
+}
+
+.more-options-section small {
+  color: #687680;
+  font-size: 0.73rem;
+  line-height: 1.38;
+}
+
+.more-options-section .more-logout-button > span {
+  color: #8a3a31;
+  background: #fff0ed;
+}
+
+.more-options-section button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.pwa-notice {
+  position: fixed;
+  z-index: 120;
+  left: 50%;
+  display: flex;
+  width: min(calc(100% - 20px), 720px);
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 14px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(23, 33, 43, 0.12);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 16px 42px rgba(24, 42, 57, 0.2);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.pwa-update-notice {
+  top: max(10px, env(safe-area-inset-top));
+}
+
+.pwa-install-notice {
+  bottom: calc(84px + env(safe-area-inset-bottom));
+}
+
+.pwa-notice > div:first-child {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.pwa-notice strong {
+  color: #20303c;
+  font-size: 0.83rem;
+}
+
+.pwa-notice span {
+  color: #64717c;
+  font-size: 0.71rem;
+  line-height: 1.38;
+}
+
+.pwa-notice button {
+  min-height: 38px;
+  flex: 0 0 auto;
+  padding: 8px 11px;
+  border: 0;
+  border-radius: 10px;
+  color: white;
+  background: #0f4c81;
+  font-size: 0.72rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.pwa-notice-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.pwa-notice button.pwa-dismiss {
+  color: #5f6d78;
+  background: #eef2f5;
+}
+
+.offline-page-shell {
+  display: grid;
+  place-items: center;
+}
+
+.offline-hero-card {
+  width: 100%;
+}
+
+.offline-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.offline-actions span {
+  color: #66747f;
+  font-size: 0.78rem;
+}
+
+.offline-actions button {
+  width: fit-content;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 12px;
+  color: white;
+  background: #0f4c81;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+@media (max-width: 420px) {
+  .pwa-notice {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pwa-notice-actions,
+  .pwa-notice button {
+    width: 100%;
+  }
+
+  .pwa-notice-actions button {
+    flex: 1 1 0;
+  }
+}
+
+@media (min-width: 640px) {
+  .page-shell {
+    padding-bottom: max(32px, env(safe-area-inset-bottom));
+  }
+
+  .desktop-session-actions {
+    display: flex;
+  }
+
+  .app-navigation {
+    position: sticky;
+    top: 10px;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: min(100%, 700px);
+    margin: 0 auto 16px;
+    transform: none;
+    border-radius: 16px;
+  }
+
+  .app-navigation button {
+    min-height: 48px;
+    flex-direction: row;
+    gap: 7px;
+    font-size: 0.78rem;
+  }
+
+  .pwa-install-notice {
+    bottom: 18px;
+  }
+
+  .more-options-section {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

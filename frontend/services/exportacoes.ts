@@ -1,4 +1,5 @@
 import type { ExportacaoResumo } from "@/types/exportacoes";
+import { apiFetch } from "@/lib/api-client";
 
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
@@ -35,7 +36,7 @@ export async function fetchExportSummary(
   accessToken: string,
   signal?: AbortSignal,
 ): Promise<ExportacaoResumo> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/exportacoes/resumo`,
     {
       cache: "no-store",
@@ -58,7 +59,7 @@ export async function downloadFamilyExport(
   kind: "excel" | "backup",
   familyName: string,
 ): Promise<string> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/exportacoes/${kind}`,
     {
       cache: "no-store",

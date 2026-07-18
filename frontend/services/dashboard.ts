@@ -4,6 +4,7 @@ import type {
   HistoricoProdutoOpcao,
   SupermercadoResumo,
 } from "@/types/dashboard";
+import { apiFetch } from "@/lib/api-client";
 
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
@@ -34,7 +35,7 @@ export async function fetchSupermarkets(
   accessToken: string,
   signal?: AbortSignal,
 ): Promise<SupermercadoResumo[]> {
-  const response = await fetch(`${normalizeApiUrl(apiUrl)}/api/v1/supermercados`, {
+  const response = await apiFetch(`${normalizeApiUrl(apiUrl)}/api/v1/supermercados`, {
     cache: "no-store",
     headers: authHeaders(accessToken),
     signal,
@@ -62,7 +63,7 @@ export async function fetchDashboard(
   }
 
   const suffix = query.size > 0 ? `?${query.toString()}` : "";
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/dashboard${suffix}`,
     {
       cache: "no-store",
@@ -93,7 +94,7 @@ export async function searchHistoryProducts(
     query.set("busca", normalizedSearch);
   }
 
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/historico-precos/produtos?${query.toString()}`,
     {
       cache: "no-store",
@@ -118,7 +119,7 @@ export async function fetchProductPriceHistory(
   productId: string,
   signal?: AbortSignal,
 ): Promise<HistoricoProdutoData> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/historico-precos/produtos/${encodeURIComponent(productId)}?limite=30`,
     {
       cache: "no-store",

@@ -5,6 +5,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { savePurchase } from "@/services/compras";
 import type { CompraSalva } from "@/types/compras";
 import type { NfcePreview } from "@/types/nfce";
+import { apiFetch } from "@/lib/api-client";
 
 type CaptureState = "idle" | "camera" | "processing" | "result" | "error";
 type SaveState = "idle" | "saving" | "saved";
@@ -185,7 +186,7 @@ export function NfceCapture({
     formData.append("file", file, filename);
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${normalizeApiUrl(apiUrl)}/api/v1/nfce/preview`,
         {
           method: "POST",

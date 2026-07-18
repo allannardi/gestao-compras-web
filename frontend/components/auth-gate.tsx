@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import type { Session } from "@supabase/supabase-js";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { ApiAvailability } from "@/components/api-availability";
+import { SESSION_EXPIRED_EVENT } from "@/lib/api-client";
 import { supabase, supabaseConfigured } from "@/lib/supabase";
 import { fetchFamilyContext } from "@/services/auth-context";
 import type { FamilyContext } from "@/types/auth";
@@ -50,6 +51,7 @@ export function AuthGate({ apiUrl }: Props) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const sessionExpiredRef = useRef(false);
 
   useEffect(() => {
     if (!supabase) {
@@ -61,7 +63,11 @@ export function AuthGate({ apiUrl }: Props) {
       setSessionLoading(false);
     });
 
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+        sessionExpiredRef.current = false;
+      }
+
       setSession(nextSession);
       setContext(null);
       setContextError("");
@@ -69,6 +75,21 @@ export function AuthGate({ apiUrl }: Props) {
     });
 
     return () => data.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      if (sessionExpiredRef.current) return;
+      sessionExpiredRef.current = true;
+      setMessage("Sua sessão expirou. Entre novamente para continuar.");
+      setContext(null);
+      setContextError("");
+      void supabase?.auth.signOut({ scope: "local" });
+    };
+
+    window.addEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
+    return () =>
+      window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
   }, []);
 
   useEffect(() => {
@@ -145,6 +166,9 @@ export function AuthGate({ apiUrl }: Props) {
       setMode("login");
       setPassword("");
       setConfirmPassword("");
+    } else {
+      sessionExpiredRef.current = false;
+      setMessage("");
     }
 
     setSubmitting(false);
@@ -366,6 +390,8 @@ export function AuthGate({ apiUrl }: Props) {
         return nextContext;
       }}
       onLogout={async () => {
+        sessionExpiredRef.current = false;
+        setMessage("");
         await supabase?.auth.signOut();
       }}
     />

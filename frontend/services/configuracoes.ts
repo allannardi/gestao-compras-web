@@ -3,6 +3,7 @@ import type {
   ConviteCriadoResponse,
   MensagemResponse,
 } from "@/types/configuracoes";
+import { apiFetch } from "@/lib/api-client";
 
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
@@ -34,7 +35,7 @@ async function requestMessage<T extends MensagemResponse = MensagemResponse>(
   accessToken: string,
   init: RequestInit,
 ): Promise<T> {
-  const response = await fetch(url, {
+  const response = await apiFetch(url, {
     ...init,
     cache: "no-store",
     headers: authHeaders(accessToken, Boolean(init.body)),
@@ -51,7 +52,7 @@ export async function fetchSettings(
   accessToken: string,
   signal?: AbortSignal,
 ): Promise<ConfiguracoesData> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${normalizeApiUrl(apiUrl)}/api/v1/configuracoes`,
     {
       cache: "no-store",
