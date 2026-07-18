@@ -16,6 +16,7 @@ import {
   updateProfile,
 } from "@/services/configuracoes";
 import { changePasswordWithCurrentPassword } from "@/lib/supabase";
+import { AccountPrivacyCard } from "@/components/account-privacy-card";
 import { ExportsCard } from "@/components/exports-card";
 import type { FamilyContext } from "@/types/auth";
 import type {
@@ -30,6 +31,8 @@ type Props = {
   accessToken: string;
   context: FamilyContext;
   onContextRefresh: () => Promise<FamilyContext>;
+  onAccountDeleted: (message: string) => Promise<void>;
+  onFamilyDeleted: (message: string) => Promise<void>;
   onClose: () => void;
 };
 
@@ -52,6 +55,8 @@ export function SettingsView({
   accessToken,
   context,
   onContextRefresh,
+  onAccountDeleted,
+  onFamilyDeleted,
   onClose,
 }: Props) {
   const [state, setState] = useState<LoadState>("loading");
@@ -605,6 +610,14 @@ export function SettingsView({
       {isAdmin && (
         <ExportsCard apiUrl={apiUrl} accessToken={accessToken} />
       )}
+
+      <AccountPrivacyCard
+        apiUrl={apiUrl}
+        context={context}
+        data={data}
+        onAccountDeleted={onAccountDeleted}
+        onFamilyDeleted={onFamilyDeleted}
+      />
 
       <section className="settings-card settings-security-card">
         <div className="settings-card-heading">

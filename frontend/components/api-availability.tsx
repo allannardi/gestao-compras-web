@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 
 import { DashboardView } from "@/components/dashboard-view";
 import { NfceCapture } from "@/components/nfce-capture";
+import { OnboardingCard } from "@/components/onboarding-card";
+import { PrivacyView } from "@/components/privacy-view";
 import { ProductsView } from "@/components/products-view";
 import { PurchasesView } from "@/components/purchases-view";
 import { RegistriesView } from "@/components/registries-view";
 import { SettingsView } from "@/components/settings-view";
+import { APP_VERSION } from "@/lib/version";
 import type { FamilyContext } from "@/types/auth";
 
 type ApiState = "checking" | "online" | "offline";
@@ -18,6 +21,7 @@ type AppView =
   | "dashboard"
   | "registries"
   | "settings"
+  | "privacy"
   | "more";
 
 type Props = {
@@ -26,6 +30,7 @@ type Props = {
   context: FamilyContext;
   onContextRefresh: () => Promise<FamilyContext>;
   onLogout: () => Promise<void>;
+  onAccountDeleted: (message: string) => Promise<void>;
 };
 
 const HEALTH_TOTAL_WAIT_MS = 75_000;
@@ -70,6 +75,7 @@ export function ApiAvailability({
   context,
   onContextRefresh,
   onLogout,
+  onAccountDeleted,
 }: Props) {
   const [apiState, setApiState] = useState<ApiState>("checking");
   const [attempt, setAttempt] = useState(0);
@@ -82,6 +88,8 @@ export function ApiAvailability({
   const [loggingOut, setLoggingOut] = useState(false);
   const [view, setView] = useState<AppView>("add");
   const [purchaseRefreshKey, setPurchaseRefreshKey] = useState(0);
+  const [onboardingOpenKey, setOnboardingOpenKey] = useState(0);
+  const [apiVersion, setApiVersion] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -129,7 +137,17 @@ export function ApiAvailability({
             payload.status === "ok";
 
           if (isHealthy) {
-            if (!cancelled) setApiState("online");
+            if (!cancelled) {
+              if (
+                payload &&
+                typeof payload === "object" &&
+                "version" in payload &&
+                typeof payload.version === "string"
+              ) {
+                setApiVersion(payload.version);
+              }
+              setApiState("online");
+            }
             return;
           }
         } catch {
@@ -193,7 +211,10 @@ export function ApiAvailability({
   };
 
   const moreActive =
-    view === "more" || view === "registries" || view === "settings";
+    view === "more" ||
+    view === "registries" ||
+    view === "settings" ||
+    view === "privacy";
 
   return (
     <>
@@ -292,6 +313,8 @@ export function ApiAvailability({
                       ? "Seus cadastros"
                       : view === "settings"
                         ? "Configurações da família"
+                        : view === "privacy"
+                          ? "Privacidade e dados"
                         : "Mais opções"}
           </h1>
           <p className="subtitle">
@@ -307,6 +330,8 @@ export function ApiAvailability({
                       ? "Organize categorias e corrija os nomes dos supermercados da sua família."
                       : view === "settings"
                         ? "Atualize seus dados, gerencie membros e compartilhe o acesso da família."
+                        : view === "privacy"
+                          ? "Entenda quais informações são armazenadas e como controlar sua conta."
                         : "Abra cadastros, ajustes ou encerre sua sessão com segurança."}
           </p>
         </div>
@@ -327,6 +352,17 @@ export function ApiAvailability({
             <p>{connectionDetail}</p>
           </div>
         </section>
+      )}
+
+      {apiState === "online" && (
+        <OnboardingCard
+          apiUrl={apiUrl}
+          accessToken={accessToken}
+          forceOpenKey={onboardingOpenKey}
+          onAddPurchase={() => setView("add")}
+          onOpenProducts={() => setView("products")}
+          onOpenSettings={() => setView("settings")}
+        />
       )}
 
       {apiState === "online" && view === "add" && (
@@ -381,6 +417,22 @@ export function ApiAvailability({
           accessToken={accessToken}
           context={context}
           onContextRefresh={onContextRefresh}
+          onAccountDeleted={onAccountDeleted}
+          onFamilyDeleted={async (message) => {
+            await onContextRefresh();
+            setView("dashboard");
+            window.alert(message);
+          }}
+          onClose={() => setView("more")}
+        />
+      )}
+
+      {apiState === "online" && view === "privacy" && (
+        <PrivacyView
+          apiUrl={apiUrl}
+          accessToken={accessToken}
+          apiVersion={apiVersion}
+          onOpenSettings={() => setView("settings")}
           onClose={() => setView("more")}
         />
       )}
@@ -399,6 +451,23 @@ export function ApiAvailability({
             <div>
               <strong>Ajustes</strong>
               <small>Família, membros, segurança e backup</small>
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setOnboardingOpenKey((value) => value + 1)}
+          >
+            <span aria-hidden="true">✓</span>
+            <div>
+              <strong>Guia de início</strong>
+              <small>Rever os primeiros passos</small>
+            </div>
+          </button>
+          <button type="button" onClick={() => setView("privacy")}>
+            <span aria-hidden="true">◇</span>
+            <div>
+              <strong>Privacidade</strong>
+              <small>Dados, exportação e exclusão</small>
             </div>
           </button>
           <button
@@ -423,6 +492,13 @@ export function ApiAvailability({
               <small>Encerrar a sessão neste aparelho</small>
             </div>
           </button>
+          <div className="more-version-row">
+            <span>Versão do aplicativo</span>
+            <strong>
+              v{APP_VERSION}
+              {apiVersion ? ` · API v${apiVersion}` : ""}
+            </strong>
+          </div>
         </section>
       )}
 
@@ -446,11 +522,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.8.0 — Experiência mobile e PWA</strong>
+          <strong>v0.9.0 — Preparação para beta</strong>
         </div>
         <div>
           <span>Aplicativo</span>
-          <strong>Navegação, atualização e recuperação de sessão</strong>
+          <strong>Onboarding, privacidade, versão e exclusão segura</strong>
         </div>
       </section>
     </>

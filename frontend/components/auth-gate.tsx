@@ -394,6 +394,18 @@ export function AuthGate({ apiUrl }: Props) {
         setMessage("");
         await supabase?.auth.signOut();
       }}
+      onAccountDeleted={async (successMessage) => {
+        sessionExpiredRef.current = false;
+        setContext(null);
+        setContextError("");
+        setSession(null);
+        setMessage(successMessage);
+        try {
+          await supabase?.auth.signOut({ scope: "local" });
+        } catch {
+          // A conta já foi removida do servidor; a sessão local é descartada acima.
+        }
+      }}
     />
   );
 }

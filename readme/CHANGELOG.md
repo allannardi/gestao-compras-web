@@ -25,3 +25,14 @@
 - atualização controlada da PWA;
 - orientação de instalação;
 - página offline aprimorada.
+
+## v0.9.0 — Preparação para beta
+
+- guia inicial por usuário;
+- área de privacidade;
+- versão do aplicativo e API visíveis;
+- exclusão segura da conta;
+- exclusão controlada da família;
+- limpeza de famílias órfãs;
+- nova chave administrativa somente no backend;
+- 93 testes de backend aprovados.

@@ -2,39 +2,42 @@
 
 ## Último checkpoint validado
 
-**v0.7.0 — Exportação e backup**
+**v0.8.0 — Experiência mobile e PWA**
 
-Validado pelo usuário após os testes de exportação Excel e backup JSON por família.
+Validado pelo usuário no ambiente online e no iPhone.
 
 ## Patch atual
 
-**v0.8.0 — Experiência mobile e PWA**
+**v0.9.0 — Preparação para beta**
 
 Pendente de aplicação e validação.
 
 ## Alterações
 
-- navegação mobile fixa com cinco ações;
-- área `Mais` para Cadastros, Ajustes, atualização e saída;
-- tentativas automáticas enquanto o Render desperta;
-- mensagens específicas para internet offline e backend indisponível;
-- retorno ao login quando a sessão expira;
-- aviso de nova versão da PWA;
-- orientação de instalação pelo Safari;
-- página offline aprimorada;
-- nenhuma migration e nenhuma alteração de banco.
+- guia inicial com progresso por família;
+- privacidade e controle dos dados;
+- identificação da versão do frontend e backend;
+- exclusão segura da conta com reautenticação;
+- exclusão controlada de família;
+- limpeza automática de famílias sem membros;
+- preservação de históricos compartilhados sem identificar conta removida;
+- nova migration 013;
+- nova variável `SUPABASE_SECRET_KEY` somente no Render.
 
 ## Validações técnicas
 
-- 82 testes de backend aprovados;
+- 93 testes de backend aprovados;
+- compilação Python aprovada;
 - TypeScript aprovado;
 - ESLint aprovado;
-- build Next.js aprovado.
+- build Next.js aprovado;
+- SQL analisado por parser PostgreSQL.
 
 ## Regra de continuidade
 
-A v0.8.0 somente passa a ser baseline depois da validação do usuário no iPhone e no ambiente online.
+A v0.9.0 somente passa a ser baseline depois da validação no Supabase, Render,
+Vercel e iPhone.
 
 ## Próximo marco recomendado
 
-**v0.9.0 — Preparação para beta**
+**v1.0.0 — Beta controlado**

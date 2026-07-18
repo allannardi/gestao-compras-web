@@ -35,3 +35,19 @@ def test_password_recovery_redirect_prefers_public_origin_in_production() -> Non
         settings.password_recovery_redirect_url
         == "https://gestao-compras-web.vercel.app/redefinir-senha"
     )
+
+
+def test_supabase_admin_accepts_current_and_legacy_secret_names() -> None:
+    current = Settings(
+        supabase_url="https://example.supabase.co",
+        SUPABASE_SECRET_KEY="sb_secret_example",
+    )
+    legacy = Settings(
+        supabase_url="https://example.supabase.co",
+        SUPABASE_SERVICE_ROLE_KEY="legacy-service-role",
+    )
+
+    assert current.supabase_admin_configured is True
+    assert current.supabase_secret_key == "sb_secret_example"
+    assert legacy.supabase_admin_configured is True
+    assert legacy.supabase_secret_key == "legacy-service-role"

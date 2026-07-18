@@ -1,0 +1,42 @@
+v0.9.0 — Preparação para beta
+
+Principais arquivos alterados/adicionados:
+- backend/.env.example
+- backend/app/core/config.py
+- backend/app/core/version.py
+- backend/app/api/v1/endpoints/beta.py
+- backend/app/api/v1/endpoints/conta.py
+- backend/app/repositories/beta.py
+- backend/app/repositories/conta.py
+- backend/app/schemas/beta.py
+- backend/app/schemas/conta.py
+- backend/tests/test_beta_*.py
+- backend/tests/test_conta_*.py
+- database/migrations/013_preparacao_beta_privacidade.sql
+- frontend/app/globals.css
+- frontend/components/account-privacy-card.tsx
+- frontend/components/api-availability.tsx
+- frontend/components/auth-gate.tsx
+- frontend/components/onboarding-card.tsx
+- frontend/components/privacy-view.tsx
+- frontend/lib/supabase.ts
+- frontend/lib/version.ts
+- frontend/services/beta.ts
+- frontend/services/conta.ts
+- frontend/types/beta.ts
+- frontend/types/conta.ts
+- frontend/package.json
+- frontend/public/sw.js
+- readme/CHANGELOG_V0_9_0.md
+- readme/COMO_APLICAR_V0_9_0.md
+- readme/CONTINUIDADE_V0_9_0.md
+- readme/PATCH_MANIFEST_V0_9_0.txt
+- readme/VALIDACAO_V0_9_0.md
+
+Não inclui:
+- .env
+- .env.local
+- node_modules
+- package-lock.json
+- .venv
+- caches de build

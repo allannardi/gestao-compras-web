@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +19,13 @@ class Settings(BaseSettings):
 
     supabase_url: str = ""
     supabase_publishable_key: str = ""
+    supabase_secret_key: str = Field(
+        default="",
+        validation_alias=AliasChoices(
+            "SUPABASE_SECRET_KEY",
+            "SUPABASE_SERVICE_ROLE_KEY",
+        ),
+    )
     supabase_request_timeout_seconds: float = 20.0
 
     model_config = SettingsConfigDict(
@@ -44,6 +51,10 @@ class Settings(BaseSettings):
     @property
     def supabase_configured(self) -> bool:
         return bool(self.supabase_url.strip() and self.supabase_publishable_key.strip())
+
+    @property
+    def supabase_admin_configured(self) -> bool:
+        return bool(self.supabase_url.strip() and self.supabase_secret_key.strip())
 
     @property
     def password_recovery_redirect_url(self) -> str:

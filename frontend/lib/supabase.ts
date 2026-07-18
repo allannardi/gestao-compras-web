@@ -22,6 +22,11 @@ type PasswordChangeResult = {
   error: string | null;
 };
 
+export type PasswordVerificationResult = {
+  accessToken: string | null;
+  error: string | null;
+};
+
 async function authErrorMessage(response: Response, fallback: string): Promise<string> {
   const payload: unknown = await response.json().catch(() => null);
   if (payload && typeof payload === "object") {
@@ -42,39 +47,9 @@ export async function changePasswordWithCurrentPassword(
   currentPassword: string,
   newPassword: string,
 ): Promise<PasswordChangeResult> {
-  if (!supabaseConfigured) {
-    return { error: "Supabase ainda não foi configurado." };
-  }
-
-  const tokenResponse = await fetch(
-    `${supabaseUrl.replace(/\/$/, "")}/auth/v1/token?grant_type=password`,
-    {
-      method: "POST",
-      headers: {
-        apikey: supabasePublishableKey,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password: currentPassword }),
-    },
-  );
-
-  if (!tokenResponse.ok) {
-    return {
-      error: await authErrorMessage(
-        tokenResponse,
-        "A senha atual não foi confirmada.",
-      ),
-    };
-  }
-
-  const tokenPayload: unknown = await tokenResponse.json().catch(() => null);
-  const accessToken =
-    tokenPayload && typeof tokenPayload === "object" && "access_token" in tokenPayload
-      ? String((tokenPayload as Record<string, unknown>).access_token ?? "")
-      : "";
-
-  if (!accessToken) {
-    return { error: "Não foi possível validar a senha atual." };
+  const verification = await verifyCurrentPassword(email, currentPassword);
+  if (verification.error || !verification.accessToken) {
+    return { error: verification.error ?? "Não foi possível validar a senha atual." };
   }
 
   const updateResponse = await fetch(
@@ -83,7 +58,7 @@ export async function changePasswordWithCurrentPassword(
       method: "PUT",
       headers: {
         apikey: supabasePublishableKey,
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${verification.accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ password: newPassword }),
@@ -100,4 +75,53 @@ export async function changePasswordWithCurrentPassword(
   }
 
   return { error: null };
+}
+
+export async function verifyCurrentPassword(
+  email: string,
+  currentPassword: string,
+): Promise<PasswordVerificationResult> {
+  if (!supabaseConfigured) {
+    return {
+      accessToken: null,
+      error: "Supabase ainda não foi configurado.",
+    };
+  }
+
+  const tokenResponse = await fetch(
+    `${supabaseUrl.replace(/\/$/, "")}/auth/v1/token?grant_type=password`,
+    {
+      method: "POST",
+      headers: {
+        apikey: supabasePublishableKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password: currentPassword }),
+    },
+  );
+
+  if (!tokenResponse.ok) {
+    return {
+      accessToken: null,
+      error: await authErrorMessage(
+        tokenResponse,
+        "A senha atual não foi confirmada.",
+      ),
+    };
+  }
+
+  const tokenPayload: unknown = await tokenResponse.json().catch(() => null);
+  const accessToken =
+    tokenPayload && typeof tokenPayload === "object" && "access_token" in tokenPayload
+      ? String((tokenPayload as Record<string, unknown>).access_token ?? "")
+      : "";
+
+  if (!accessToken) {
+    return {
+      accessToken: null,
+      error: "Não foi possível validar a senha atual.",
+    };
+  }
+
+  return { accessToken, error: null };
 }

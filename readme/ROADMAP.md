@@ -13,40 +13,30 @@
 - v0.6.1.1 — convite por link;
 - v0.6.2 — senhas e segurança;
 - v0.6.3 — UX, histórico compacto e base Premium;
-- v0.6.4 — categorias e supermercados.
+- v0.6.4 — categorias e supermercados;
+- v0.7.0 — exportação e backup;
+- v0.8.0 — experiência mobile e PWA.
 
-## v0.7.0 — Exportação e backup — patch atual
+## v0.9.0 — Preparação para beta — patch atual
 
-- exportação Excel completa por família;
-- backup manual em JSON;
-- resumo antes do download;
-- preparação de futura restauração.
-
-## v0.8.0 — Refinamentos mobile/PWA
-
-- navegação preparada para mais módulos;
-- sessão expirada e reconexão;
-- atualização do cache;
-- onboarding e instalação.
-
-## v0.9.0 — Preparação para beta
-
-- privacidade;
-- exclusão de conta e família;
-- revisão de segurança;
-- testes com famílias externas.
-
-## v0.8.0 — Experiência mobile e PWA
-
-- navegação mobile consolidada;
-- tratamento de atualização e instalação;
-- conexão resiliente com Render;
-- recuperação de sessão expirada.
-
-## v0.9.0 — Preparação para beta
-
-- onboarding;
+- onboarding inicial;
 - privacidade;
 - exclusão de conta e família;
 - identificação de versão;
-- revisão de segurança e testes externos.
+- revisão de segurança.
+
+## v1.0.0 — Beta controlado
+
+- termos e política publicados em endereço público;
+- auditoria final das migrations e permissões;
+- telemetria técnica mínima, sem dados de compras;
+- monitoramento de erros;
+- testes com as primeiras famílias externas;
+- checklist de suporte e recuperação.
+
+## Pós-beta
+
+- painel Admin Geral;
+- gestão comercial de licenças Premium;
+- restauração orientada de backup;
+- melhorias baseadas no uso real das famílias beta.

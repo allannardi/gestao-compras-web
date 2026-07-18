@@ -4,30 +4,38 @@ Aplicação mobile/PWA para registrar e acompanhar compras domésticas por NFC-e
 
 ## Patch atual
 
-**v0.7.0 — Exportação e backup**
+**v0.9.0 — Preparação para beta**
 
 ## Checkpoint de origem
 
-**v0.6.4 — Categorias e supermercados**, validada.
+**v0.8.0 — Experiência mobile e PWA**, validada.
 
 ## Novidades
 
-- Excel completo da família;
-- backup técnico em JSON;
-- resumo de registros antes do download;
-- exportação disponível somente para administradores;
-- geração segura a partir da família ativa.
+- guia inicial para administradores;
+- área de privacidade e controle dos dados;
+- versão visível do aplicativo e da API;
+- exclusão segura da própria conta;
+- exclusão controlada da família atual;
+- limpeza automática de famílias sem membros;
+- revisão adicional de segurança.
 
 ## Aplicação
 
 Leia:
 
 ```text
-readme\COMO_APLICAR_V0_7_0.md
+readme\COMO_APLICAR_V0_9_0.md
 ```
 
 Execute antes do deploy:
 
 ```text
-database\migrations\012_exportacao_backup.sql
+database\migrations\013_preparacao_beta_privacidade.sql
+```
+
+Configure no Render:
+
+```text
+SUPABASE_SECRET_KEY
 ```
