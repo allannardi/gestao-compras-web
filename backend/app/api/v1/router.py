@@ -23,6 +23,6 @@ router.include_router(produtos_router)
 def status() -> dict[str, str]:
     return {
         "api": "ready",
-        "next_step": "invitation-link-validation",
+        "next_step": "password-security-validation",
         "version": APP_VERSION,
     }

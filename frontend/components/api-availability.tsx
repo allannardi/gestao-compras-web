@@ -268,11 +268,11 @@ export function ApiAvailability({
       <section className="checkpoint-card">
         <div>
           <span>Checkpoint</span>
-          <strong>v0.6.0 — Família, membros e convites</strong>
+          <strong>v0.6.2 — Senhas e segurança</strong>
         </div>
         <div>
           <span>Dados</span>
-          <strong>Configurações compartilhadas e convites por e-mail</strong>
+          <strong>Alteração de senha, recuperação segura e convite por WhatsApp</strong>
         </div>
       </section>
     </>

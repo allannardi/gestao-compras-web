@@ -1,4 +1,4 @@
-const CACHE_NAME = "gestao-compras-shell-v0.6.1";
+const CACHE_NAME = "gestao-compras-shell-v0.6.2";
 const OFFLINE_URL = "/offline";
 
 self.addEventListener("install", (event) => {

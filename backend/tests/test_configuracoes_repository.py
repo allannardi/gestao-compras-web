@@ -132,3 +132,44 @@ def test_repository_mapeia_permissao(monkeypatch) -> None:
         assert exc.status_code == 403
     else:
         raise AssertionError("Era esperado erro de permissão.")
+
+
+def test_repository_envia_redefinicao_para_membro(monkeypatch) -> None:
+    calls = []
+
+    def fake_post(url, headers, json, timeout, params=None):
+        calls.append({"url": url, "json": json, "params": params, "headers": headers})
+        if url.endswith("/rest/v1/rpc/obter_email_redefinicao_membro"):
+            return FakeResponse(
+                200,
+                {
+                    "usuario_id": "55555555-5555-4555-8555-555555555555",
+                    "nome": "Vanessa",
+                    "email": "vanessa@example.com",
+                },
+            )
+        return FakeResponse(200, {})
+
+    monkeypatch.setattr(repository.requests, "post", fake_post)
+    _configure(monkeypatch)
+    monkeypatch.setattr(settings, "app_env", "production")
+    monkeypatch.setattr(
+        settings,
+        "cors_origins_raw",
+        "http://localhost:3000,https://gestao-compras-web.vercel.app",
+    )
+
+    result = repository.solicitar_redefinicao_senha_membro(
+        "55555555-5555-4555-8555-555555555555",
+        "token-123",
+    )
+
+    assert "Vanessa" in result["mensagem"]
+    assert calls[0]["json"] == {
+        "p_usuario_id": "55555555-5555-4555-8555-555555555555"
+    }
+    assert calls[1]["url"].endswith("/auth/v1/recover")
+    assert calls[1]["json"] == {"email": "vanessa@example.com"}
+    assert calls[1]["params"] == {
+        "redirect_to": "https://gestao-compras-web.vercel.app/redefinir-senha"
+    }

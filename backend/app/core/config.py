@@ -45,6 +45,22 @@ class Settings(BaseSettings):
     def supabase_configured(self) -> bool:
         return bool(self.supabase_url.strip() and self.supabase_publishable_key.strip())
 
+    @property
+    def password_recovery_redirect_url(self) -> str:
+        origins = self.cors_origins
+        if not origins:
+            return "http://localhost:3000/redefinir-senha"
+
+        if self.app_env.strip().lower() == "production":
+            public_origins = [
+                origin for origin in origins
+                if "localhost" not in origin and "127.0.0.1" not in origin
+            ]
+            if public_origins:
+                return f"{public_origins[0]}/redefinir-senha"
+
+        return f"{origins[0]}/redefinir-senha"
+
 
 @lru_cache
 def get_settings() -> Settings:

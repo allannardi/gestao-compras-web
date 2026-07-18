@@ -2753,3 +2753,97 @@ h2 {
     flex: 1 1 130px;
   }
 }
+
+/* v0.6.2 — senhas, recuperação e mensagem de convite */
+.settings-password-form {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+}
+
+.settings-password-form label {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  color: #34424e;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.settings-password-form input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  box-sizing: border-box;
+  border: 1px solid #ccd7df;
+  border-radius: 12px;
+  padding: 9px 11px;
+  color: #17212b;
+  background: white;
+  outline: none;
+}
+
+.settings-password-form input:focus {
+  border-color: #0f4c81;
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.1);
+}
+
+.settings-password-form .capture-button {
+  min-height: 46px;
+}
+
+.member-actions {
+  flex-basis: 142px;
+}
+
+.member-actions .member-reset-button {
+  color: #0f4c81;
+  background: #edf5fb;
+  font-size: 0.68rem;
+}
+
+.password-recovery-page {
+  width: min(100%, 680px);
+}
+
+.password-recovery-shell {
+  display: grid;
+  gap: 16px;
+}
+
+.password-recovery-card {
+  display: grid;
+  gap: 14px;
+}
+
+.password-home-link {
+  display: grid;
+  min-height: 48px;
+  place-items: center;
+  margin-top: 12px;
+  text-align: center;
+  text-decoration: none;
+}
+
+@media (min-width: 760px) {
+  .settings-password-form {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: end;
+  }
+
+  .settings-password-form .capture-button {
+    grid-column: 1 / -1;
+    justify-self: end;
+    width: min(100%, 260px);
+  }
+}
+
+@media (max-width: 520px) {
+  .member-card {
+    align-items: start;
+  }
+
+  .member-actions {
+    flex-basis: 132px;
+  }
+}

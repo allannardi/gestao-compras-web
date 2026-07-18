@@ -16,6 +16,7 @@ from app.repositories.configuracoes import (
     obter_configuracoes_familia,
     remover_membro_familia,
     selecionar_familia_atual,
+    solicitar_redefinicao_senha_membro,
 )
 from app.schemas.configuracoes import (
     AtualizarFamiliaRequest,
@@ -173,6 +174,25 @@ async def update_member_role(
             alterar_papel_membro_familia,
             str(usuario_id),
             payload.papel,
+            context.access_token,
+        )
+    except SupabaseConfiguracoesError as exc:
+        _raise_http_error(exc)
+    return MensagemResponse(**result)
+
+
+@router.post(
+    "/membros/{usuario_id}/redefinir-senha",
+    response_model=MensagemResponse,
+)
+async def reset_member_password(
+    usuario_id: UUID,
+    context: FamilyContext = Depends(get_current_family_context),
+) -> MensagemResponse:
+    try:
+        result = await run_in_threadpool(
+            solicitar_redefinicao_senha_membro,
+            str(usuario_id),
             context.access_token,
         )
     except SupabaseConfiguracoesError as exc:

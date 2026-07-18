@@ -1,0 +1,33 @@
+v0.6.2 — Senhas e segurança
+
+Backend:
+- backend/app/api/v1/endpoints/configuracoes.py
+- backend/app/api/v1/router.py
+- backend/app/core/config.py
+- backend/app/core/version.py
+- backend/app/repositories/configuracoes.py
+- backend/tests/test_config.py
+- backend/tests/test_configuracoes_endpoint.py
+- backend/tests/test_configuracoes_repository.py
+
+Banco:
+- database/migrations/009_senhas_seguranca.sql
+
+Frontend:
+- frontend/app/globals.css
+- frontend/app/redefinir-senha/page.tsx
+- frontend/components/api-availability.tsx
+- frontend/components/password-recovery.tsx
+- frontend/components/settings-view.tsx
+- frontend/lib/supabase.ts
+- frontend/package.json
+- frontend/public/sw.js
+- frontend/services/configuracoes.ts
+
+Documentação:
+- readme/CHANGELOG_V0_6_2.md
+- readme/COMO_APLICAR_V0_6_2.md
+- readme/CONTINUIDADE_V0_6_2.md
+- readme/PATCH_MANIFEST_V0_6_2.txt
+- readme/VALIDACAO_V0_6_2.md
+- readme/README.md

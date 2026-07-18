@@ -184,6 +184,66 @@ def remover_membro_familia(usuario_id: str, access_token: str) -> dict[str, Any]
     )
 
 
+
+def solicitar_redefinicao_senha_membro(
+    usuario_id: str,
+    access_token: str,
+) -> dict[str, Any]:
+    member = _ensure_dict(
+        _rpc_post(
+            "obter_email_redefinicao_membro",
+            access_token,
+            {"p_usuario_id": usuario_id},
+        ),
+    )
+
+    email = str(member.get("email") or "").strip().lower()
+    nome = str(member.get("nome") or "Membro").strip() or "Membro"
+    if not email:
+        raise SupabaseConfiguracoesError(
+            "O membro não possui um e-mail válido para redefinição.",
+            status_code=422,
+        )
+
+    try:
+        response = requests.post(
+            f"{settings.supabase_url.rstrip('/')}/auth/v1/recover",
+            headers={
+                "apikey": settings.supabase_publishable_key,
+                "Content-Type": "application/json",
+            },
+            params={"redirect_to": settings.password_recovery_redirect_url},
+            json={"email": email},
+            timeout=settings.supabase_request_timeout_seconds,
+        )
+    except requests.RequestException as exc:
+        raise SupabaseConfiguracoesError(
+            "Não foi possível enviar o e-mail de redefinição. Tente novamente em instantes.",
+            status_code=503,
+        ) from exc
+
+    try:
+        payload: Any = response.json()
+    except ValueError:
+        payload = None
+
+    if response.status_code == 429:
+        raise SupabaseConfiguracoesError(
+            "Muitas solicitações de redefinição foram feitas. Aguarde alguns minutos e tente novamente.",
+            status_code=429,
+        )
+
+    if response.status_code >= 400:
+        message = _error_message(payload)
+        raise SupabaseConfiguracoesError(
+            message or "Não foi possível enviar o e-mail de redefinição.",
+            status_code=422 if response.status_code < 500 else 503,
+        )
+
+    return {
+        "mensagem": f"E-mail de redefinição enviado para {nome} ({email}).",
+    }
+
 def _ensure_dict(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise SupabaseConfiguracoesError(

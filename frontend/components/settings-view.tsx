@@ -9,11 +9,13 @@ import {
   fetchSettings,
   generateInvitationLink,
   removeMember,
+  requestMemberPasswordReset,
   selectFamily,
   updateFamily,
   updateMemberRole,
   updateProfile,
 } from "@/services/configuracoes";
+import { changePasswordWithCurrentPassword } from "@/lib/supabase";
 import type { FamilyContext } from "@/types/auth";
 import type {
   ConfiguracoesData,
@@ -61,6 +63,9 @@ export function SettingsView({
   const [inviteRole, setInviteRole] = useState("membro");
   const [busyAction, setBusyAction] = useState("");
   const [generatedLinks, setGeneratedLinks] = useState<Record<string, string>>({});
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const load = useCallback(async () => {
     setState("loading");
@@ -146,13 +151,65 @@ export function SettingsView({
     );
   };
 
+  const submitPassword = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setMessage("");
+    setError("");
+
+    if (newPassword.length < 8) {
+      setError("A nova senha precisa ter pelo menos 8 caracteres.");
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setError("A confirmação da nova senha não confere.");
+      return;
+    }
+    if (currentPassword === newPassword) {
+      setError("A nova senha precisa ser diferente da senha atual.");
+      return;
+    }
+
+    setBusyAction("password");
+    try {
+      const result = await changePasswordWithCurrentPassword(
+        data?.perfil.email ?? context.email,
+        currentPassword,
+        newPassword,
+      );
+
+      if (result.error) {
+        const normalized = result.error.toLowerCase();
+        if (normalized.includes("invalid login credentials")) {
+          setError("A senha atual está incorreta.");
+        } else if (normalized.includes("password")) {
+          setError("Não foi possível alterar a senha. Verifique os requisitos e tente novamente.");
+        } else {
+          setError(result.error);
+        }
+        return;
+      }
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setMessage("Sua senha foi alterada com sucesso.");
+    } catch {
+      setError("Não foi possível alterar a senha. Tente novamente em instantes.");
+    } finally {
+      setBusyAction("");
+    }
+  };
+
   const copyInvitationLink = async (invitationId: string, token: string) => {
     const link = `${window.location.origin}/convite/${token}`;
+    const invitationMessage =
+      `Você foi convidado para participar do Gestão de Compras.\n\n` +
+      `Clique no link: ${link}`;
     try {
-      await navigator.clipboard.writeText(link);
+      await navigator.clipboard.writeText(invitationMessage);
     } catch {
       const input = document.createElement("textarea");
-      input.value = link;
+      input.value = invitationMessage;
       input.style.position = "fixed";
       input.style.opacity = "0";
       document.body.appendChild(input);
@@ -161,7 +218,7 @@ export function SettingsView({
       input.remove();
     }
     setGeneratedLinks((current) => ({ ...current, [invitationId]: link }));
-    setMessage("Link do convite copiado. Envie pelo WhatsApp ou outro meio.");
+    setMessage("Mensagem do convite copiada. Agora é só colar no WhatsApp.");
   };
 
   const submitInvitation = async (event: FormEvent<HTMLFormElement>) => {
@@ -321,6 +378,61 @@ export function SettingsView({
       <section className="settings-card">
         <div className="settings-card-heading">
           <div>
+            <span>Segurança</span>
+            <h3>Minha senha</h3>
+          </div>
+          <small>Mínimo de 8 caracteres</small>
+        </div>
+        <p className="settings-help-copy">
+          Confirme a senha atual e escolha uma nova senha para o seu acesso.
+        </p>
+        <form className="settings-password-form" onSubmit={submitPassword}>
+          <label>
+            Senha atual
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              autoComplete="current-password"
+              minLength={8}
+              required
+            />
+          </label>
+          <label>
+            Nova senha
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </label>
+          <label>
+            Confirmar nova senha
+            <input
+              type="password"
+              value={confirmNewPassword}
+              onChange={(event) => setConfirmNewPassword(event.target.value)}
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </label>
+          <button
+            className="capture-button"
+            type="submit"
+            disabled={busyAction === "password"}
+          >
+            {busyAction === "password" ? "Alterando…" : "Alterar minha senha"}
+          </button>
+        </form>
+      </section>
+
+      <section className="settings-card">
+        <div className="settings-card-heading">
+          <div>
             <span>Família atual</span>
             <h3>{data.familia.nome}</h3>
           </div>
@@ -413,6 +525,25 @@ export function SettingsView({
                   </select>
                   <button
                     type="button"
+                    className="member-reset-button"
+                    disabled={busyAction === `reset-${member.usuario_id}`}
+                    onClick={() => {
+                      if (!window.confirm(`Enviar um e-mail de redefinição de senha para ${member.nome}?`)) return;
+                      void runAction(`reset-${member.usuario_id}`, () =>
+                        requestMemberPasswordReset(
+                          apiUrl,
+                          accessToken,
+                          member.usuario_id,
+                        ),
+                      );
+                    }}
+                  >
+                    {busyAction === `reset-${member.usuario_id}`
+                      ? "Enviando…"
+                      : "Redefinir senha"}
+                  </button>
+                  <button
+                    type="button"
                     className="danger-text-button"
                     disabled={busyAction === `remove-${member.usuario_id}`}
                     onClick={() => {
@@ -501,7 +632,7 @@ export function SettingsView({
                           .finally(() => setBusyAction(""));
                       }}
                     >
-                      {busyAction === `link-${invitation.id}` ? "Gerando…" : "Copiar link"}
+                      {busyAction === `link-${invitation.id}` ? "Gerando…" : "Copiar mensagem"}
                     </button>
                     <button
                       type="button"
@@ -516,7 +647,7 @@ export function SettingsView({
                     </button>
                   </div>
                   {generatedLinks[invitation.id] && (
-                    <small className="invitation-link-preview">Link copiado e pronto para envio.</small>
+                    <small className="invitation-link-preview">Mensagem copiada e pronta para o WhatsApp.</small>
                   )}
                 </article>
               ))}

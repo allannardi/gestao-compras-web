@@ -177,3 +177,15 @@ export function removeMember(
     { method: "DELETE" },
   );
 }
+
+export function requestMemberPasswordReset(
+  apiUrl: string,
+  accessToken: string,
+  userId: string,
+): Promise<MensagemResponse> {
+  return requestMessage(
+    `${normalizeApiUrl(apiUrl)}/api/v1/configuracoes/membros/${encodeURIComponent(userId)}/redefinir-senha`,
+    accessToken,
+    { method: "POST" },
+  );
+}

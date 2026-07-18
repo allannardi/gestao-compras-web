@@ -23,3 +23,15 @@ def test_supabase_configured_requires_url_and_key() -> None:
 
     assert incomplete.supabase_configured is False
     assert complete.supabase_configured is True
+
+
+def test_password_recovery_redirect_prefers_public_origin_in_production() -> None:
+    settings = Settings(
+        app_env="production",
+        CORS_ORIGINS="http://localhost:3000,https://gestao-compras-web.vercel.app",
+    )
+
+    assert (
+        settings.password_recovery_redirect_url
+        == "https://gestao-compras-web.vercel.app/redefinir-senha"
+    )

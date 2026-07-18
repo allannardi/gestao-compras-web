@@ -164,3 +164,29 @@ def test_regenerar_link_convite(monkeypatch) -> None:
         assert response.json()["token"] == "b" * 64
     finally:
         app.dependency_overrides.clear()
+
+
+def test_administrador_solicita_redefinicao_de_senha(monkeypatch) -> None:
+    captured = {}
+
+    def fake_reset(usuario_id, access_token):
+        captured.update(usuario_id=usuario_id, access_token=access_token)
+        return {"mensagem": "E-mail de redefinição enviado."}
+
+    monkeypatch.setattr(
+        endpoint,
+        "solicitar_redefinicao_senha_membro",
+        fake_reset,
+    )
+    app.dependency_overrides[get_current_family_context] = _context
+    try:
+        response = client.post(
+            "/api/v1/configuracoes/membros/55555555-5555-4555-8555-555555555555/redefinir-senha"
+        )
+        assert response.status_code == 200
+        assert captured == {
+            "usuario_id": "55555555-5555-4555-8555-555555555555",
+            "access_token": "token-123",
+        }
+    finally:
+        app.dependency_overrides.clear()
