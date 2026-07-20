@@ -1,17 +1,28 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import type { Session } from "@supabase/supabase-js";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 import { ApiAvailability } from "@/components/api-availability";
 import { LegalAcceptance } from "@/components/legal-acceptance";
+import { LegalDocumentModal } from "@/components/legal-document";
 import { ApiRequestError, SESSION_EXPIRED_EVENT } from "@/lib/api-client";
 import { supabase, supabaseConfigured } from "@/lib/supabase";
-import { APP_VERSION } from "@/lib/version";
-import { fetchFamilyContext } from "@/services/auth-context";
-import { fetchLegalAcceptance, reportTechnicalEvent } from "@/services/beta";
+import {
+  APP_VERSION,
+  PRIVACY_VERSION,
+  TERMS_VERSION,
+} from "@/lib/version";
+import {
+  fetchFamilyContext,
+  fetchFamilyContextDirect,
+} from "@/services/auth-context";
+import {
+  acceptLegalDocumentsDirect,
+  fetchLegalAcceptanceDirect,
+  reportTechnicalEvent,
+} from "@/services/beta";
 import type { FamilyContext } from "@/types/auth";
 import type { AceiteLegalStatus } from "@/types/beta";
 
@@ -20,8 +31,11 @@ type Props = {
 };
 
 type AuthMode = "login" | "signup";
+type LegalModalType = "terms" | "privacy" | null;
 
-const CONTEXT_TIMEOUT_MS = 75_000;
+function normalizeApiUrl(value: string): string {
+  return value.replace(/\/$/, "");
+}
 
 function friendlyAuthError(message: string): string {
   const normalized = message.toLowerCase();
@@ -42,6 +56,21 @@ function friendlyAuthError(message: string): string {
   return message;
 }
 
+function acceptedStatus(result: {
+  termos_versao: string;
+  privacidade_versao: string;
+  aceito_em: string;
+}): AceiteLegalStatus {
+  return {
+    aceito: true,
+    termos_versao_atual: TERMS_VERSION,
+    privacidade_versao_atual: PRIVACY_VERSION,
+    termos_versao_aceita: result.termos_versao,
+    privacidade_versao_aceita: result.privacidade_versao,
+    aceito_em: result.aceito_em,
+  };
+}
+
 export function AuthGate({ apiUrl }: Props) {
   const [session, setSession] = useState<Session | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
@@ -59,14 +88,30 @@ export function AuthGate({ apiUrl }: Props) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [signupLegalAccepted, setSignupLegalAccepted] = useState(false);
+  const [legalModal, setLegalModal] = useState<LegalModalType>(null);
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const sessionExpiredRef = useRef(false);
+  const legalAcceptedLocallyRef = useRef(false);
+
+  // Acorda o Render enquanto a pessoa ainda está na tela de login. Essa
+  // tentativa não bloqueia o formulário nem o carregamento pelo Supabase.
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 60_000);
+    void fetch(`${normalizeApiUrl(apiUrl)}/health`, {
+      cache: "no-store",
+      signal: controller.signal,
+    }).catch(() => undefined);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeout);
+    };
+  }, [apiUrl]);
 
   useEffect(() => {
-    if (!supabase) {
-      return;
-    }
+    if (!supabase) return;
 
     void supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
@@ -79,6 +124,7 @@ export function AuthGate({ apiUrl }: Props) {
       }
 
       setSession(nextSession);
+      if (!nextSession) legalAcceptedLocallyRef.current = false;
       setContext(null);
       setContextError("");
       setContextSupportCode("");
@@ -105,75 +151,70 @@ export function AuthGate({ apiUrl }: Props) {
       window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired);
   }, []);
 
+  // O contexto e o aceite são consultados diretamente no Supabase e em
+  // paralelo. Assim a entrada da família não depende do cold start do Render.
   useEffect(() => {
-    if (!session) {
-      return;
-    }
+    if (!session) return;
 
     const controller = new AbortController();
-    void fetchLegalAcceptance(apiUrl, session.access_token, controller.signal)
-      .then((status) => setLegalStatus(status))
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
+    let cancelled = false;
+
+    const prepareAccess = async () => {
+      const [legalResult, contextResult] = await Promise.allSettled([
+        fetchLegalAcceptanceDirect(session.access_token, controller.signal),
+        fetchFamilyContextDirect(session.access_token, controller.signal),
+      ]);
+
+      if (cancelled) return;
+
+      if (legalResult.status === "fulfilled") {
+        if (!(legalAcceptedLocallyRef.current && !legalResult.value.aceito)) {
+          setLegalStatus(legalResult.value);
+          if (legalResult.value.aceito) legalAcceptedLocallyRef.current = false;
+        }
+      } else if (
+        !(legalResult.reason instanceof DOMException) ||
+        legalResult.reason.name !== "AbortError"
+      ) {
         setLegalError(
-          error instanceof Error
-            ? error.message
+          legalResult.reason instanceof Error
+            ? legalResult.reason.message
             : "Não foi possível verificar os documentos do beta.",
         );
-      })
-;
+      }
 
-    return () => controller.abort();
-  }, [apiUrl, legalAttempt, session]);
-
-  useEffect(() => {
-    if (!session || !legalStatus?.aceito) {
-      return;
-    }
-
-    const controller = new AbortController();
-    const timeout = window.setTimeout(
-      () => controller.abort(),
-      CONTEXT_TIMEOUT_MS,
-    );
-
-    void fetchFamilyContext(apiUrl, session.access_token, controller.signal)
-      .then((nextContext) => setContext(nextContext))
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") {
-          setContextError(
-            "O servidor demorou para responder. Aguarde alguns segundos e tente novamente.",
-          );
-          return;
-        }
-
-        const message =
+      if (contextResult.status === "fulfilled") {
+        setContext(contextResult.value);
+      } else if (
+        !(contextResult.reason instanceof DOMException) ||
+        contextResult.reason.name !== "AbortError"
+      ) {
+        const error = contextResult.reason;
+        const supportCode = error instanceof ApiRequestError ? error.requestId : "";
+        setContextError(
           error instanceof Error
             ? error.message
-            : "Não foi possível preparar o acesso da família.";
-        const supportCode =
-          error instanceof ApiRequestError ? error.requestId : "";
-        setContextError(message);
+            : "Não foi possível preparar o acesso da família.",
+        );
         setContextSupportCode(supportCode);
 
         void reportTechnicalEvent(apiUrl, session.access_token, {
           evento: "contexto_familia_falhou",
           pagina: "/",
           app_version: APP_VERSION,
-          codigo:
-            error instanceof ApiRequestError ? error.code : "CONTEXT_UNKNOWN",
+          codigo: error instanceof ApiRequestError ? error.code : "CONTEXT_DIRECT",
           ...(supportCode ? { request_id: supportCode } : {}),
         }).catch(() => undefined);
-      })
-      .finally(() => {
-        window.clearTimeout(timeout);
-      });
+      }
+    };
+
+    void prepareAccess();
 
     return () => {
+      cancelled = true;
       controller.abort();
-      window.clearTimeout(timeout);
     };
-  }, [apiUrl, contextAttempt, legalStatus?.aceito, session]);
+  }, [apiUrl, contextAttempt, legalAttempt, session]);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -189,7 +230,9 @@ export function AuthGate({ apiUrl }: Props) {
     }
 
     if (mode === "signup" && !signupLegalAccepted) {
-      setMessage("Leia e confirme os Termos e o Aviso de Privacidade para criar a conta.");
+      setMessage(
+        "Leia e confirme os Termos e o Aviso de Privacidade para criar a conta.",
+      );
       setSubmitting(false);
       return;
     }
@@ -211,13 +254,39 @@ export function AuthGate({ apiUrl }: Props) {
 
     if (result.error) {
       setMessage(friendlyAuthError(result.error.message));
-    } else if (mode === "signup" && !result.data.session) {
+      setSubmitting(false);
+      return;
+    }
+
+    if (mode === "signup" && !result.data.session) {
       setMessage(
         "A família foi criada, mas o Supabase ainda exige confirmação por e-mail. Desative Confirm email nas configurações de autenticação.",
       );
       setMode("login");
       setPassword("");
       setConfirmPassword("");
+      setSubmitting(false);
+      return;
+    }
+
+    if (mode === "signup" && result.data.session) {
+      try {
+        const registered = await acceptLegalDocumentsDirect(
+          result.data.session.access_token,
+          TERMS_VERSION,
+          PRIVACY_VERSION,
+        );
+        legalAcceptedLocallyRef.current = true;
+        setLegalStatus(acceptedStatus(registered));
+      } catch (error: unknown) {
+        // A conta continua válida. Em caso de falha transitória, o aceite pode
+        // ser concluído pela tela de recuperação já existente.
+        setMessage(
+          error instanceof Error
+            ? `A conta foi criada, mas o aceite não foi concluído: ${error.message}`
+            : "A conta foi criada, mas não foi possível registrar o aceite.",
+        );
+      }
     } else {
       sessionExpiredRef.current = false;
       setMessage("");
@@ -225,6 +294,10 @@ export function AuthGate({ apiUrl }: Props) {
 
     setSubmitting(false);
   };
+
+  const legalModalElement = legalModal ? (
+    <LegalDocumentModal type={legalModal} onClose={() => setLegalModal(null)} />
+  ) : null;
 
   if (!supabaseConfigured) {
     return (
@@ -252,160 +325,193 @@ export function AuthGate({ apiUrl }: Props) {
 
   if (!session) {
     return (
-      <section className="auth-shell">
-        <section className="auth-brand-card" aria-label="Gestão de Compras">
-          <div className="auth-brand-row">
-            <Image
-              className="auth-brand-logo"
-              src="/icons/app_icon.png"
-              alt="Logo do Gestão de Compras"
-              width={92}
-              height={92}
-              priority
-            />
-            <div className="auth-brand-name">
-              <span>GESTÃO DE</span>
-              <strong>COMPRAS</strong>
+      <>
+        <section className="auth-shell">
+          <section className="auth-brand-card" aria-label="Gestão de Compras">
+            <div className="auth-brand-row">
+              <Image
+                className="auth-brand-logo"
+                src="/icons/app_icon.png"
+                alt="Logo do Gestão de Compras"
+                width={92}
+                height={92}
+                priority
+              />
+              <div className="auth-brand-name">
+                <span>GESTÃO DE</span>
+                <strong>COMPRAS</strong>
+              </div>
             </div>
-          </div>
-          <p>ACESSE A SUA CONTA</p>
-        </section>
+            <p>ACESSE A SUA CONTA</p>
+          </section>
 
-        <form className="auth-card" onSubmit={submit}>
-          <div className="auth-mode-copy">
-            <strong>{mode === "login" ? "Bem-vindo de volta" : "Crie o espaço da sua família"}</strong>
-            <span>
-              {mode === "login"
-                ? "Entre para consultar e registrar as compras da sua família."
-                : "Cada família possui seus próprios membros e dados, separados das demais contas."}
-            </span>
-          </div>
-          <div className="auth-tabs">
-            <button
-              type="button"
-              className={mode === "login" ? "active" : ""}
-              onClick={() => {
-                setMode("login");
-                setMessage("");
-                setSignupLegalAccepted(false);
-              }}
-            >
-              Entrar
-            </button>
-            <button
-              type="button"
-              className={mode === "signup" ? "active" : ""}
-              onClick={() => {
-                setMode("signup");
-                setMessage("");
-              }}
-            >
-              Criar minha família
-            </button>
-          </div>
+          <form className="auth-card" onSubmit={submit}>
+            <div className="auth-mode-copy">
+              <strong>
+                {mode === "login"
+                  ? "Bem-vindo de volta"
+                  : "Crie o espaço da sua família"}
+              </strong>
+              <span>
+                {mode === "login"
+                  ? "Entre para consultar e registrar as compras da sua família."
+                  : "Cada família possui seus próprios membros e dados, separados das demais contas."}
+              </span>
+            </div>
+            <div className="auth-tabs">
+              <button
+                type="button"
+                className={mode === "login" ? "active" : ""}
+                onClick={() => {
+                  setMode("login");
+                  setMessage("");
+                  setSignupLegalAccepted(false);
+                }}
+              >
+                Entrar
+              </button>
+              <button
+                type="button"
+                className={mode === "signup" ? "active" : ""}
+                onClick={() => {
+                  setMode("signup");
+                  setMessage("");
+                }}
+              >
+                Criar minha família
+              </button>
+            </div>
 
-          {mode === "signup" && (
-            <>
-              <label>
-                Nome da família
-                <input
-                  type="text"
-                  value={familyName}
-                  onChange={(event) => setFamilyName(event.target.value)}
-                  autoComplete="organization"
-                  minLength={2}
-                  maxLength={80}
-                  placeholder="Ex.: Família Nardi"
-                  required
-                />
-              </label>
+            {mode === "signup" && (
+              <>
+                <label>
+                  Nome da família
+                  <input
+                    type="text"
+                    value={familyName}
+                    onChange={(event) => setFamilyName(event.target.value)}
+                    autoComplete="organization"
+                    minLength={2}
+                    maxLength={80}
+                    placeholder="Ex.: Família Nardi"
+                    required
+                  />
+                </label>
 
-              <label>
-                Nome do administrador
-                <input
-                  type="text"
-                  value={adminName}
-                  onChange={(event) => setAdminName(event.target.value)}
-                  autoComplete="name"
-                  minLength={2}
-                  maxLength={100}
-                  placeholder="Seu nome"
-                  required
-                />
-              </label>
-            </>
-          )}
+                <label>
+                  Nome do administrador
+                  <input
+                    type="text"
+                    value={adminName}
+                    onChange={(event) => setAdminName(event.target.value)}
+                    autoComplete="name"
+                    minLength={2}
+                    maxLength={100}
+                    placeholder="Seu nome"
+                    required
+                  />
+                </label>
+              </>
+            )}
 
-          <label>
-            E-mail
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
-              required
-            />
-          </label>
-
-          <label>
-            Senha
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete={
-                mode === "login" ? "current-password" : "new-password"
-              }
-              minLength={8}
-              required
-            />
-          </label>
-
-          {mode === "signup" && (
             <label>
-              Confirmar senha
+              E-mail
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                autoComplete="email"
+                required
+              />
+            </label>
+
+            <label>
+              Senha
               <input
                 type="password"
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
-                autoComplete="new-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                autoComplete={
+                  mode === "login" ? "current-password" : "new-password"
+                }
                 minLength={8}
                 required
               />
             </label>
-          )}
 
-          {mode === "signup" && (
-            <label className="legal-checkbox-row auth-legal-checkbox">
-              <input
-                type="checkbox"
-                checked={signupLegalAccepted}
-                onChange={(event) => setSignupLegalAccepted(event.target.checked)}
-                required
-              />
-              <span>
-                Li e aceito os <Link href="/termos" target="_blank">Termos do beta</Link>{" "}
-                e o <Link href="/politica-de-privacidade" target="_blank">Aviso de Privacidade</Link>.
-              </span>
-            </label>
-          )}
+            {mode === "signup" && (
+              <label>
+                Confirmar senha
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                />
+              </label>
+            )}
 
-          {message && <p className="auth-message">{message}</p>}
+            {mode === "signup" && (
+              <div className="legal-checkbox-row auth-legal-checkbox">
+                <input
+                  id="signup-legal-accepted"
+                  type="checkbox"
+                  checked={signupLegalAccepted}
+                  onChange={(event) =>
+                    setSignupLegalAccepted(event.target.checked)
+                  }
+                  required
+                />
+                <span>
+                  <label htmlFor="signup-legal-accepted">Li e aceito os </label>
+                  <button
+                    className="inline-legal-button"
+                    type="button"
+                    onClick={() => setLegalModal("terms")}
+                  >
+                    Termos do beta
+                  </button>{" "}
+                  e o{" "}
+                  <button
+                    className="inline-legal-button"
+                    type="button"
+                    onClick={() => setLegalModal("privacy")}
+                  >
+                    Aviso de Privacidade
+                  </button>
+                  .
+                </span>
+              </div>
+            )}
 
-          <button className="capture-button auth-submit" type="submit" disabled={submitting}>
-            {submitting
-              ? "Aguarde…"
-              : mode === "login"
-                ? "Entrar"
-                : "Criar minha família"}
-          </button>
-        </form>
-        <div className="auth-legal-links">
-          <Link href="/termos">Termos do beta</Link>
-          <span>·</span>
-          <Link href="/politica-de-privacidade">Privacidade</Link>
-        </div>
-      </section>
+            {message && <p className="auth-message">{message}</p>}
+
+            <button
+              className="capture-button auth-submit"
+              type="submit"
+              disabled={submitting}
+            >
+              {submitting
+                ? "Aguarde…"
+                : mode === "login"
+                  ? "Entrar"
+                  : "Criar minha família"}
+            </button>
+          </form>
+          <div className="auth-legal-links">
+            <button type="button" onClick={() => setLegalModal("terms")}>
+              Termos do beta
+            </button>
+            <span>·</span>
+            <button type="button" onClick={() => setLegalModal("privacy")}>
+              Privacidade
+            </button>
+          </div>
+        </section>
+        {legalModalElement}
+      </>
     );
   }
 
@@ -414,8 +520,8 @@ export function AuthGate({ apiUrl }: Props) {
       <section className="processing-card" role="status">
         <span className="spinner" aria-hidden="true" />
         <div>
-          <strong>Preparando o beta controlado</strong>
-          <p>Verificando termos, privacidade e segurança da conta…</p>
+          <strong>Abrindo o Gestão de Compras</strong>
+          <p>Carregando sua família diretamente no ambiente seguro…</p>
         </div>
       </section>
     );
@@ -427,7 +533,11 @@ export function AuthGate({ apiUrl }: Props) {
         <strong>Não foi possível verificar os documentos do beta</strong>
         <p>{legalError || "Status de aceite não encontrado."}</p>
         <div className="button-row">
-          <button className="ghost-action" type="button" onClick={() => void supabase?.auth.signOut()}>
+          <button
+            className="ghost-action"
+            type="button"
+            onClick={() => void supabase?.auth.signOut()}
+          >
             Sair
           </button>
           <button
@@ -447,16 +557,25 @@ export function AuthGate({ apiUrl }: Props) {
 
   if (!legalStatus.aceito) {
     return (
-      <LegalAcceptance
-        apiUrl={apiUrl}
-        accessToken={session.access_token}
-        status={legalStatus}
-        onAccepted={setLegalStatus}
-        onLogout={async () => {
-          setLegalStatus(null);
-          await supabase?.auth.signOut();
-        }}
-      />
+      <>
+        <LegalAcceptance
+          accessToken={session.access_token}
+          status={legalStatus}
+          onAccepted={(status) => {
+            setLegalStatus(status);
+            if (!context) {
+              setContextError("");
+              setContextAttempt((value) => value + 1);
+            }
+          }}
+          onLogout={async () => {
+            setLegalStatus(null);
+            await supabase?.auth.signOut();
+          }}
+          onOpenDocument={setLegalModal}
+        />
+        {legalModalElement}
+      </>
     );
   }
 
@@ -465,8 +584,8 @@ export function AuthGate({ apiUrl }: Props) {
       <section className="processing-card" role="status">
         <span className="spinner" aria-hidden="true" />
         <div>
-          <strong>Preparando sua família</strong>
-          <p>Validando a sessão e carregando o espaço compartilhado…</p>
+          <strong>Abrindo sua família</strong>
+          <p>Finalizando o acesso ao espaço compartilhado…</p>
         </div>
       </section>
     );
@@ -477,7 +596,9 @@ export function AuthGate({ apiUrl }: Props) {
       <section className="feedback-card error-card" role="alert">
         <strong>Não foi possível preparar sua família</strong>
         <p>{contextError || "Contexto familiar não encontrado."}</p>
-        {contextSupportCode && <small>Código de suporte: {contextSupportCode}</small>}
+        {contextSupportCode && (
+          <small>Código de suporte: {contextSupportCode}</small>
+        )}
         <div className="button-row">
           <button
             className="ghost-action"
@@ -508,12 +629,20 @@ export function AuthGate({ apiUrl }: Props) {
       accessToken={session.access_token}
       context={context}
       onContextRefresh={async () => {
-        const nextContext = await fetchFamilyContext(
-          apiUrl,
-          session.access_token,
-        );
-        setContext(nextContext);
-        return nextContext;
+        try {
+          const nextContext = await fetchFamilyContextDirect(
+            session.access_token,
+          );
+          setContext(nextContext);
+          return nextContext;
+        } catch {
+          const nextContext = await fetchFamilyContext(
+            apiUrl,
+            session.access_token,
+          );
+          setContext(nextContext);
+          return nextContext;
+        }
       }}
       onLogout={async () => {
         sessionExpiredRef.current = false;

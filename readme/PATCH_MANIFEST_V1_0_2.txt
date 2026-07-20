@@ -1,0 +1,20 @@
+v1.0.2 — Beta UX
+
+Arquivos principais alterados:
+- backend/app/core/version.py
+- frontend/app/globals.css
+- frontend/components/auth-gate.tsx
+- frontend/components/legal-acceptance.tsx
+- frontend/components/legal-document.tsx
+- frontend/lib/supabase.ts
+- frontend/lib/version.ts
+- frontend/services/auth-context.ts
+- frontend/services/beta.ts
+- frontend/services/dashboard.ts
+- frontend/package.json
+- frontend/public/sw.js
+- readme/CHANGELOG.md
+- readme/CHANGELOG_V1_0_2.md
+- readme/COMO_APLICAR_V1_0_2.md
+- readme/PATCH_MANIFEST_V1_0_2.txt
+- readme/README.md

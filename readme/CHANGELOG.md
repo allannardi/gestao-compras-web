@@ -51,3 +51,13 @@
 - aplicativo, API e cache da PWA atualizados para v1.0.1;
 - nenhuma migration ou configuração nova.
 
+
+## v1.0.2 — Beta UX
+
+- entrada da família sem depender do cold start do Render;
+- despertar do backend iniciado na tela de login;
+- aceite legal concluído no próprio cadastro;
+- documentos legais abertos em modal sem perda dos campos;
+- campos mobile sem zoom automático do Safari;
+- histórico ordenado por maior quantidade de registros;
+- nenhuma migration ou configuração nova.

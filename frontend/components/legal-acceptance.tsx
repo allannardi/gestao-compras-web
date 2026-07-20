@@ -1,25 +1,24 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 
-import { acceptLegalDocuments } from "@/services/beta";
+import { acceptLegalDocumentsDirect } from "@/services/beta";
 import type { AceiteLegalStatus } from "@/types/beta";
 
 type Props = {
-  apiUrl: string;
   accessToken: string;
   status: AceiteLegalStatus;
   onAccepted: (status: AceiteLegalStatus) => void;
   onLogout: () => Promise<void>;
+  onOpenDocument: (type: "terms" | "privacy") => void;
 };
 
 export function LegalAcceptance({
-  apiUrl,
   accessToken,
   status,
   onAccepted,
   onLogout,
+  onOpenDocument,
 }: Props) {
   const [confirmed, setConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -34,8 +33,7 @@ export function LegalAcceptance({
     setSubmitting(true);
     setError("");
     try {
-      const result = await acceptLegalDocuments(
-        apiUrl,
+      const result = await acceptLegalDocumentsDirect(
         accessToken,
         status.termos_versao_atual,
         status.privacidade_versao_atual,
@@ -68,12 +66,12 @@ export function LegalAcceptance({
       </p>
 
       <div className="legal-document-links">
-        <Link href="/termos" target="_blank" rel="noreferrer">
+        <button type="button" onClick={() => onOpenDocument("terms")}>
           Abrir Termos do beta
-        </Link>
-        <Link href="/politica-de-privacidade" target="_blank" rel="noreferrer">
+        </button>
+        <button type="button" onClick={() => onOpenDocument("privacy")}>
           Abrir Aviso de Privacidade
-        </Link>
+        </button>
       </div>
 
       <label className="legal-checkbox-row">

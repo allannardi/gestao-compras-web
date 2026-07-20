@@ -6,6 +6,24 @@ import type {
 } from "@/types/dashboard";
 import { apiFetch } from "@/lib/api-client";
 
+
+export function sortHistoryProducts(
+  products: HistoricoProdutoOpcao[],
+): HistoricoProdutoOpcao[] {
+  return [...products].sort((left, right) => {
+    const recordsDifference = right.registros_count - left.registros_count;
+    if (recordsDifference !== 0) return recordsDifference;
+
+    const leftDate = left.ultima_compra ? Date.parse(left.ultima_compra) : 0;
+    const rightDate = right.ultima_compra ? Date.parse(right.ultima_compra) : 0;
+    if (rightDate !== leftDate) return rightDate - leftDate;
+
+    return left.nome.localeCompare(right.nome, "pt-BR", {
+      sensitivity: "base",
+    });
+  });
+}
+
 function normalizeApiUrl(value: string): string {
   return value.replace(/\/$/, "");
 }
@@ -110,7 +128,7 @@ export async function searchHistoryProducts(
     );
   }
 
-  return payload as HistoricoProdutoOpcao[];
+  return sortHistoryProducts(payload as HistoricoProdutoOpcao[]);
 }
 
 export async function fetchProductPriceHistory(
