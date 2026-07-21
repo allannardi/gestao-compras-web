@@ -390,6 +390,7 @@ export function ApiAvailability({
         <ProductsView
           apiUrl={apiUrl}
           accessToken={accessToken}
+          canMergeProducts={context.papel === "administrador"}
           onAddPurchase={() => setView("add")}
         />
       )}

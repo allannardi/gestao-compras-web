@@ -61,3 +61,13 @@
 - campos mobile sem zoom automático do Safari;
 - histórico ordenado por maior quantidade de registros;
 - nenhuma migration ou configuração nova.
+
+## v1.1.0 — Mesclagem e aliases de produtos
+
+- mesclagem segura disponível para administradores;
+- transferência de itens e históricos para o produto principal;
+- aliases impedem a recriação dos duplicados em novas notas;
+- auditoria da operação e desativação do cadastro incorporado;
+- migration 015 obrigatória;
+- 108 testes backend e build frontend aprovados.
+

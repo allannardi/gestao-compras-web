@@ -1,0 +1,25 @@
+GESTÃO DE COMPRAS WEB — PATCH v1.1.0
+
+Checkpoint de origem: v1.0.2 validada
+Migration obrigatória: database/migrations/015_mesclagem_aliases_produtos.sql
+Dependências novas: nenhuma
+Variáveis novas: nenhuma
+
+Principais arquivos:
+- backend/app/api/v1/endpoints/produtos.py
+- backend/app/repositories/produtos.py
+- backend/app/schemas/produtos.py
+- backend/app/core/version.py
+- backend/tests/test_produtos_endpoint.py
+- backend/tests/test_produtos_repository.py
+- database/migrations/015_mesclagem_aliases_produtos.sql
+- frontend/components/api-availability.tsx
+- frontend/components/products-view.tsx
+- frontend/services/produtos.ts
+- frontend/types/produtos.ts
+- frontend/app/globals.css
+- frontend/lib/version.ts
+- frontend/public/sw.js
+- frontend/package.json
+- readme/COMO_APLICAR_V1_1_0.md
+- readme/CHANGELOG_V1_1_0.md

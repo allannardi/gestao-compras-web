@@ -5,18 +5,23 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
   createCategory,
   fetchCategories,
+  fetchMergeCandidates,
   fetchProducts,
+  mergeProducts,
   reclassifyProducts,
   updateProduct,
 } from "@/services/produtos";
 import type {
   CategoriaResumo,
+  ProdutoCandidatosMesclagem,
+  ProdutoMesclagemResumo,
   ProdutoResumo,
 } from "@/types/produtos";
 
 type Props = {
   apiUrl: string;
   accessToken: string;
+  canMergeProducts: boolean;
   onAddPurchase: () => void;
 };
 
@@ -27,6 +32,10 @@ const PAGE_SIZE = 20;
 const moneyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
   currency: "BRL",
+});
+
+const quantityFormatter = new Intl.NumberFormat("pt-BR", {
+  maximumFractionDigits: 3,
 });
 
 function formatDate(value: string | null): string {
@@ -40,7 +49,12 @@ function formatDate(value: string | null): string {
   );
 }
 
-export function ProductsView({ apiUrl, accessToken, onAddPurchase }: Props) {
+export function ProductsView({
+  apiUrl,
+  accessToken,
+  canMergeProducts,
+  onAddPurchase,
+}: Props) {
   const [products, setProducts] = useState<ProdutoResumo[]>([]);
   const [categories, setCategories] = useState<CategoriaResumo[]>([]);
   const [state, setState] = useState<LoadState>("loading");
@@ -71,6 +85,15 @@ export function ProductsView({ apiUrl, accessToken, onAddPurchase }: Props) {
   const [savingProduct, setSavingProduct] = useState(false);
   const [editError, setEditError] = useState("");
 
+  const [mergeProductId, setMergeProductId] = useState<string | null>(null);
+  const [mergeData, setMergeData] = useState<ProdutoCandidatosMesclagem | null>(null);
+  const [mergeSearch, setMergeSearch] = useState("");
+  const [mergeCandidateId, setMergeCandidateId] = useState("");
+  const [mergeConfirmed, setMergeConfirmed] = useState(false);
+  const [loadingMergeCandidates, setLoadingMergeCandidates] = useState(false);
+  const [mergingProducts, setMergingProducts] = useState(false);
+  const [mergeError, setMergeError] = useState("");
+
   const [categoryExpanded, setCategoryExpanded] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [creatingCategory, setCreatingCategory] = useState(false);
@@ -85,6 +108,14 @@ export function ProductsView({ apiUrl, accessToken, onAddPurchase }: Props) {
   const selectedCategoryName = useMemo(
     () => categories.find((category) => category.id === appliedCategory)?.nome,
     [appliedCategory, categories],
+  );
+
+  const selectedMergeCandidate = useMemo<ProdutoMesclagemResumo | null>(
+    () =>
+      mergeData?.candidatos.find(
+        (candidate) => candidate.id === mergeCandidateId,
+      ) ?? null,
+    [mergeCandidateId, mergeData],
   );
 
   useEffect(() => {
@@ -220,6 +251,100 @@ export function ProductsView({ apiUrl, accessToken, onAddPurchase }: Props) {
     setEditUnit(product.unidade_padrao || "un");
     setEditCategory(product.categoria_id || categories[0]?.id || "");
     setEditError("");
+  };
+
+  const loadMergeCandidates = async (productId: string, search = "") => {
+    setLoadingMergeCandidates(true);
+    setMergeError("");
+
+    try {
+      const result = await fetchMergeCandidates(
+        apiUrl,
+        accessToken,
+        productId,
+        search,
+      );
+      setMergeData(result);
+      setMergeCandidateId((current) =>
+        result.candidatos.some((candidate) => candidate.id === current)
+          ? current
+          : "",
+      );
+    } catch (loadError) {
+      setMergeData(null);
+      setMergeError(
+        loadError instanceof Error
+          ? loadError.message
+          : "Não foi possível carregar os produtos para mesclagem.",
+      );
+    } finally {
+      setLoadingMergeCandidates(false);
+    }
+  };
+
+  const startMerging = (product: ProdutoResumo) => {
+    setEditingId(null);
+    setEditError("");
+    setMergeProductId(product.id);
+    setMergeData(null);
+    setMergeSearch("");
+    setMergeCandidateId("");
+    setMergeConfirmed(false);
+    setMergeError("");
+    void loadMergeCandidates(product.id);
+  };
+
+  const cancelMerging = () => {
+    setMergeProductId(null);
+    setMergeData(null);
+    setMergeSearch("");
+    setMergeCandidateId("");
+    setMergeConfirmed(false);
+    setMergeError("");
+  };
+
+  const searchMergeCandidates = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!mergeProductId || loadingMergeCandidates) return;
+    setMergeCandidateId("");
+    setMergeConfirmed(false);
+    void loadMergeCandidates(mergeProductId, mergeSearch.trim());
+  };
+
+  const submitMerge = async () => {
+    if (
+      !mergeProductId ||
+      !mergeCandidateId ||
+      !mergeConfirmed ||
+      mergingProducts
+    ) {
+      return;
+    }
+
+    setMergingProducts(true);
+    setMergeError("");
+
+    try {
+      const result = await mergeProducts(
+        apiUrl,
+        accessToken,
+        mergeProductId,
+        mergeCandidateId,
+      );
+      cancelMerging();
+      setMessage(
+        `${result.mensagem} ${result.itens_transferidos} itens e ${result.historicos_transferidos} registros de preço foram reunidos em ${result.produto_principal_nome}.`,
+      );
+      reload();
+    } catch (mergeFailure) {
+      setMergeError(
+        mergeFailure instanceof Error
+          ? mergeFailure.message
+          : "Não foi possível mesclar os produtos.",
+      );
+    } finally {
+      setMergingProducts(false);
+    }
   };
 
   const saveProduct = async (event: FormEvent<HTMLFormElement>) => {
@@ -512,7 +637,7 @@ export function ProductsView({ apiUrl, accessToken, onAddPurchase }: Props) {
                 className={`product-card ${product.revisar ? "needs-review" : ""}`}
                 key={product.id}
               >
-                {editingId !== product.id ? (
+                {editingId !== product.id && mergeProductId !== product.id ? (
                   <>
                     <div className="product-card-heading">
                       <div>
@@ -546,15 +671,26 @@ export function ProductsView({ apiUrl, accessToken, onAddPurchase }: Props) {
                       </span>
                     </div>
 
-                    <button
-                      className="product-edit-button"
-                      type="button"
-                      onClick={() => startEditing(product)}
-                    >
-                      {product.revisar ? "Revisar produto" : "Editar produto"}
-                    </button>
+                    <div className="product-card-actions">
+                      <button
+                        className="product-edit-button"
+                        type="button"
+                        onClick={() => startEditing(product)}
+                      >
+                        {product.revisar ? "Revisar produto" : "Editar produto"}
+                      </button>
+                      {canMergeProducts && (
+                        <button
+                          className="product-merge-button"
+                          type="button"
+                          onClick={() => startMerging(product)}
+                        >
+                          Mesclar com outro produto
+                        </button>
+                      )}
+                    </div>
                   </>
-                ) : (
+                ) : editingId === product.id ? (
                   <form className="product-edit-form" onSubmit={saveProduct}>
                     <div>
                       <strong>Editar produto</strong>
@@ -610,6 +746,12 @@ export function ProductsView({ apiUrl, accessToken, onAddPurchase }: Props) {
                       </label>
                     </div>
                     {editError && <p className="inline-error">{editError}</p>}
+                    {editError.toLocaleLowerCase("pt-BR").includes("já existe") &&
+                      canMergeProducts && (
+                        <p className="product-merge-hint">
+                          O cadastro já existe. Cancele a edição e use a opção de mesclagem no produto que deseja manter.
+                        </p>
+                      )}
                     <div className="product-filter-actions">
                       <button
                         className="ghost-action"
@@ -631,6 +773,147 @@ export function ProductsView({ apiUrl, accessToken, onAddPurchase }: Props) {
                       </button>
                     </div>
                   </form>
+                ) : (
+                  <section className="product-merge-form" aria-label="Mesclar produtos">
+                    <div className="product-merge-heading">
+                      <strong>Mesclar produtos</strong>
+                      <span>
+                        <b>{product.nome}</b> será mantido. Escolha o cadastro duplicado que será incorporado.
+                      </span>
+                    </div>
+
+                    <div className="merge-main-product">
+                      <span>Produto principal</span>
+                      <strong>{mergeData?.produto_principal.nome ?? product.nome}</strong>
+                      <small>
+                        Unidade {mergeData?.produto_principal.unidade_padrao ?? product.unidade_padrao}
+                        {mergeData && ` · ${mergeData.produto_principal.compras_count} compras · ${mergeData.produto_principal.registros_precos_count} registros de preço`}
+                      </small>
+                    </div>
+
+                    <form className="merge-search-row" onSubmit={searchMergeCandidates}>
+                      <label>
+                        Buscar produto duplicado
+                        <input
+                          type="search"
+                          value={mergeSearch}
+                          onChange={(event) => setMergeSearch(event.target.value)}
+                          maxLength={100}
+                          placeholder="Digite parte do nome ou da marca"
+                        />
+                      </label>
+                      <button
+                        className="secondary-action-button"
+                        type="submit"
+                        disabled={loadingMergeCandidates}
+                      >
+                        {loadingMergeCandidates ? "Buscando…" : "Buscar"}
+                      </button>
+                    </form>
+
+                    {loadingMergeCandidates && (
+                      <div className="merge-loading" role="status">
+                        <span className="spinner" aria-hidden="true" />
+                        Carregando produtos compatíveis…
+                      </div>
+                    )}
+
+                    {!loadingMergeCandidates && mergeData && (
+                      <label className="merge-candidate-select">
+                        Produto que será incorporado
+                        <select
+                          value={mergeCandidateId}
+                          onChange={(event) => {
+                            setMergeCandidateId(event.target.value);
+                            setMergeConfirmed(false);
+                            setMergeError("");
+                          }}
+                        >
+                          <option value="">Selecione um produto</option>
+                          {mergeData.candidatos.map((candidate) => (
+                            <option value={candidate.id} key={candidate.id}>
+                              {candidate.nome} · {candidate.compras_count} compras · {candidate.registros_precos_count} registros
+                            </option>
+                          ))}
+                        </select>
+                        <small>
+                          Somente produtos ativos com unidade {mergeData.produto_principal.unidade_padrao} são exibidos.
+                        </small>
+                      </label>
+                    )}
+
+                    {!loadingMergeCandidates &&
+                      mergeData &&
+                      mergeData.candidatos.length === 0 && (
+                        <p className="merge-empty">
+                          Nenhum produto compatível foi encontrado. Altere a busca ou confirme se as unidades são iguais.
+                        </p>
+                      )}
+
+                    {selectedMergeCandidate && mergeData && (
+                      <div className="merge-preview">
+                        <article>
+                          <span>Será mantido</span>
+                          <strong>{mergeData.produto_principal.nome}</strong>
+                          <small>{mergeData.produto_principal.categoria_nome}</small>
+                          <p>
+                            {mergeData.produto_principal.compras_count} compras · {mergeData.produto_principal.registros_precos_count} preços · {quantityFormatter.format(mergeData.produto_principal.quantidade_total)} {mergeData.produto_principal.unidade_padrao}
+                          </p>
+                        </article>
+                        <span className="merge-arrow" aria-hidden="true">↓</span>
+                        <article className="incorporated">
+                          <span>Será incorporado</span>
+                          <strong>{selectedMergeCandidate.nome}</strong>
+                          <small>{selectedMergeCandidate.categoria_nome}</small>
+                          <p>
+                            {selectedMergeCandidate.compras_count} compras · {selectedMergeCandidate.registros_precos_count} preços · {quantityFormatter.format(selectedMergeCandidate.quantidade_total)} {selectedMergeCandidate.unidade_padrao}
+                          </p>
+                        </article>
+                      </div>
+                    )}
+
+                    {selectedMergeCandidate && (
+                      <label className="merge-confirm-row">
+                        <input
+                          type="checkbox"
+                          checked={mergeConfirmed}
+                          onChange={(event) => setMergeConfirmed(event.target.checked)}
+                        />
+                        <span>
+                          Confirmo que <b>{selectedMergeCandidate.nome}</b> é o mesmo produto e deve ser incorporado a <b>{product.nome}</b>.
+                        </span>
+                      </label>
+                    )}
+
+                    <p className="merge-warning">
+                      Compras e históricos serão reunidos. As descrições antigas virarão aliases para que o produto duplicado não seja recriado nas próximas notas.
+                    </p>
+
+                    {mergeError && <p className="inline-error">{mergeError}</p>}
+
+                    <div className="product-filter-actions">
+                      <button
+                        className="ghost-action"
+                        type="button"
+                        disabled={mergingProducts}
+                        onClick={cancelMerging}
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        className="capture-button"
+                        type="button"
+                        disabled={
+                          mergingProducts ||
+                          !selectedMergeCandidate ||
+                          !mergeConfirmed
+                        }
+                        onClick={() => void submitMerge()}
+                      >
+                        {mergingProducts ? "Mesclando…" : "Confirmar mesclagem"}
+                      </button>
+                    </div>
+                  </section>
                 )}
               </article>
             ))}

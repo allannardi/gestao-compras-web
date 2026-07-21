@@ -25,7 +25,7 @@
 - identificação de versão;
 - revisão de segurança.
 
-## v1.0.0 — Beta controlado — patch atual
+## v1.0.0 — Beta controlado — validada
 
 - termos e política publicados em endereço público;
 - auditoria final das migrations e permissões;
@@ -33,6 +33,21 @@
 - monitoramento de erros;
 - testes com as primeiras famílias externas;
 - checklist de suporte e recuperação.
+
+## v1.0.1 e v1.0.2 — Refinamentos do beta — validadas
+
+- limpeza visual e versão centralizada;
+- carregamento inicial mais rápido;
+- correções mobile no Safari;
+- termos sem perda do formulário;
+- histórico ordenado por quantidade de registros.
+
+## v1.1.0 — Mesclagem e aliases — patch atual
+
+- união segura de produtos duplicados;
+- transferência de compras e históricos;
+- aliases para reconhecer descrições antigas;
+- auditoria administrativa.
 
 ## Pós-beta
 

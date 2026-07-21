@@ -168,3 +168,100 @@ def test_repository_cria_categoria_e_reclassifica(monkeypatch) -> None:
 
     assert category["nome"] == "Congelados"
     assert result["classificados"] == 4
+
+
+def test_repository_lista_candidatos_mesclagem(monkeypatch) -> None:
+    captured = {}
+
+    def fake_post(url, headers, json, timeout):
+        captured.update(url=url, headers=headers, json=json, timeout=timeout)
+        return FakeResponse(
+            200,
+            {
+                "produto_principal": {
+                    "id": "11111111-1111-4111-8111-111111111111",
+                    "nome": "Leite Integral 1L",
+                    "marca": "Marca A",
+                    "unidade_padrao": "un",
+                    "categoria_nome": "Frios e laticínios",
+                    "compras_count": 4,
+                    "registros_precos_count": 4,
+                    "quantidade_total": 4,
+                    "ultima_compra": "2026-07-18",
+                    "aliases_count": 2,
+                },
+                "candidatos": [],
+                "limite": 50,
+                "busca": "leite",
+            },
+        )
+
+    monkeypatch.setattr(repository.requests, "post", fake_post)
+    _configure(monkeypatch)
+
+    result = repository.listar_candidatos_mesclagem_produto(
+        "11111111-1111-4111-8111-111111111111",
+        "token-123",
+        busca="leite",
+        limite=50,
+    )
+
+    assert result["produto_principal"]["nome"] == "Leite Integral 1L"
+    assert captured["json"]["p_busca"] == "leite"
+    assert captured["url"].endswith("/rpc/listar_candidatos_mesclagem_produto")
+
+
+def test_repository_mescla_produtos(monkeypatch) -> None:
+    captured = {}
+
+    def fake_post(url, headers, json, timeout):
+        captured.update(url=url, headers=headers, json=json, timeout=timeout)
+        return FakeResponse(
+            200,
+            {
+                "mesclagem_id": "44444444-4444-4444-8444-444444444444",
+                "produto_principal_id": "11111111-1111-4111-8111-111111111111",
+                "produto_incorporado_id": "33333333-3333-4333-8333-333333333333",
+                "produto_principal_nome": "Leite Integral 1L",
+                "produto_incorporado_nome": "LT INT MARCA A",
+                "itens_transferidos": 2,
+                "historicos_transferidos": 2,
+                "aliases_ativos": 4,
+                "mensagem": "Produtos mesclados com sucesso.",
+            },
+        )
+
+    monkeypatch.setattr(repository.requests, "post", fake_post)
+    _configure(monkeypatch)
+
+    result = repository.mesclar_produtos_familia(
+        "11111111-1111-4111-8111-111111111111",
+        "33333333-3333-4333-8333-333333333333",
+        "token-123",
+    )
+
+    assert result["aliases_ativos"] == 4
+    assert captured["json"]["p_produto_incorporado_id"].startswith("3333")
+    assert captured["url"].endswith("/rpc/mesclar_produtos_familia")
+
+
+def test_repository_mapeia_permissao_de_mesclagem(monkeypatch) -> None:
+    monkeypatch.setattr(
+        repository.requests,
+        "post",
+        lambda *args, **kwargs: FakeResponse(
+            403,
+            {"message": "Apenas administradores podem mesclar produtos."},
+        ),
+    )
+    _configure(monkeypatch)
+
+    try:
+        repository.listar_candidatos_mesclagem_produto(
+            "11111111-1111-4111-8111-111111111111",
+            "token-123",
+        )
+    except SupabaseProductError as exc:
+        assert exc.status_code == 403
+    else:
+        raise AssertionError("Era esperado erro de permissão para mesclagem.")

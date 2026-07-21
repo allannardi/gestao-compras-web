@@ -86,3 +86,38 @@ class ReclassificacaoResponse(BaseModel):
     classificados: int = Field(ge=0)
     pendentes: int = Field(ge=0)
     mensagem: str
+
+class ProdutoMesclagemResumo(BaseModel):
+    id: str
+    nome: str
+    marca: str = ""
+    unidade_padrao: str
+    categoria_nome: str
+    compras_count: int = Field(ge=0)
+    registros_precos_count: int = Field(ge=0)
+    quantidade_total: float = Field(ge=0)
+    ultima_compra: date | None = None
+    aliases_count: int = Field(ge=0)
+
+
+class ProdutoCandidatosMesclagemResponse(BaseModel):
+    produto_principal: ProdutoMesclagemResumo
+    candidatos: list[ProdutoMesclagemResumo]
+    limite: int = Field(ge=1, le=100)
+    busca: str = ""
+
+
+class ProdutoMesclagemRequest(BaseModel):
+    produto_incorporado_id: UUID
+
+
+class ProdutoMesclagemResponse(BaseModel):
+    mesclagem_id: str
+    produto_principal_id: str
+    produto_incorporado_id: str
+    produto_principal_nome: str
+    produto_incorporado_nome: str
+    itens_transferidos: int = Field(ge=0)
+    historicos_transferidos: int = Field(ge=0)
+    aliases_ativos: int = Field(ge=0)
+    mensagem: str

@@ -61,19 +61,30 @@ def _rpc_post(
     except ValueError:
         payload = None
 
-    if response.status_code in {401, 403}:
+    message = _error_message(payload)
+    normalized = message.casefold()
+
+    if response.status_code == 401:
+        raise SupabaseProductError(
+            "Sua sessão expirou ou não possui acesso à família.",
+            status_code=401,
+        )
+
+    if response.status_code == 403:
+        if "administrador" in normalized:
+            raise SupabaseProductError(message, status_code=403)
         raise SupabaseProductError(
             "Sua sessão expirou ou não possui acesso à família.",
             status_code=401,
         )
 
     if response.status_code >= 400:
-        message = _error_message(payload)
-        normalized = message.casefold()
         if "não encontrado nesta família" in normalized or "nao encontrado nesta familia" in normalized:
             raise SupabaseProductError(message, status_code=404)
         if "já existe" in normalized or "ja existe" in normalized:
             raise SupabaseProductError(message, status_code=409)
+        if "administrador" in normalized:
+            raise SupabaseProductError(message, status_code=403)
         if response.status_code in {400, 409, 422}:
             raise SupabaseProductError(message, status_code=422)
         raise SupabaseProductError(message, status_code=503)
@@ -189,3 +200,61 @@ def reclassificar_produtos_familia(access_token: str) -> dict[str, Any]:
         )
 
     return payload
+
+def listar_candidatos_mesclagem_produto(
+    produto_principal_id: str,
+    access_token: str,
+    busca: str = "",
+    limite: int = 50,
+) -> dict[str, Any]:
+    payload = _rpc_post(
+        "listar_candidatos_mesclagem_produto",
+        access_token,
+        {
+            "p_produto_principal_id": produto_principal_id,
+            "p_busca": busca.strip() or None,
+            "p_limite": max(1, min(limite, 100)),
+        },
+    )
+
+    if isinstance(payload, list):
+        payload = payload[0] if payload else None
+
+    if (
+        not isinstance(payload, dict)
+        or not isinstance(payload.get("produto_principal"), dict)
+        or not isinstance(payload.get("candidatos"), list)
+    ):
+        raise SupabaseProductError(
+            "O banco retornou candidatos de mesclagem inválidos.",
+            status_code=503,
+        )
+
+    return payload
+
+
+def mesclar_produtos_familia(
+    produto_principal_id: str,
+    produto_incorporado_id: str,
+    access_token: str,
+) -> dict[str, Any]:
+    payload = _rpc_post(
+        "mesclar_produtos_familia",
+        access_token,
+        {
+            "p_produto_principal_id": produto_principal_id,
+            "p_produto_incorporado_id": produto_incorporado_id,
+        },
+    )
+
+    if isinstance(payload, list):
+        payload = payload[0] if payload else None
+
+    if not isinstance(payload, dict) or not payload.get("mesclagem_id"):
+        raise SupabaseProductError(
+            "O banco não confirmou a mesclagem dos produtos.",
+            status_code=503,
+        )
+
+    return payload
+

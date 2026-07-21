@@ -2,7 +2,9 @@ import type {
   CategoriaCriada,
   CategoriaResumo,
   ProdutoAtualizado,
+  ProdutoCandidatosMesclagem,
   ProdutoLista,
+  ProdutoMesclagemResultado,
   ProdutoUpdatePayload,
   ReclassificacaoResultado,
 } from "@/types/produtos";
@@ -151,3 +153,59 @@ export async function reclassifyProducts(
 
   return payload as ReclassificacaoResultado;
 }
+
+export async function fetchMergeCandidates(
+  apiUrl: string,
+  accessToken: string,
+  productId: string,
+  search = "",
+  signal?: AbortSignal,
+): Promise<ProdutoCandidatosMesclagem> {
+  const query = new URLSearchParams({ limite: "100" });
+  if (search.trim()) query.set("busca", search.trim());
+
+  const response = await apiFetch(
+    `${normalizeApiUrl(apiUrl)}/api/v1/produtos/${encodeURIComponent(productId)}/candidatos-mesclagem?${query.toString()}`,
+    {
+      cache: "no-store",
+      headers: { Authorization: `Bearer ${accessToken}` },
+      signal,
+    },
+  );
+
+  const payload = await readJson(response);
+  if (!response.ok) {
+    throw new Error(
+      getApiError(payload, "Não foi possível carregar os produtos para mesclagem."),
+    );
+  }
+
+  return payload as ProdutoCandidatosMesclagem;
+}
+
+export async function mergeProducts(
+  apiUrl: string,
+  accessToken: string,
+  principalProductId: string,
+  incorporatedProductId: string,
+): Promise<ProdutoMesclagemResultado> {
+  const response = await apiFetch(
+    `${normalizeApiUrl(apiUrl)}/api/v1/produtos/${encodeURIComponent(principalProductId)}/mesclar`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ produto_incorporado_id: incorporatedProductId }),
+    },
+  );
+
+  const payload = await readJson(response);
+  if (!response.ok) {
+    throw new Error(getApiError(payload, "Não foi possível mesclar os produtos."));
+  }
+
+  return payload as ProdutoMesclagemResultado;
+}
+

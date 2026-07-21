@@ -4378,3 +4378,231 @@ h2 {
     text-align: center;
   }
 }
+
+/* ============================================================
+   v1.1.0 — Mesclagem e aliases de produtos
+   ============================================================ */
+
+.product-card-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.product-card-actions .product-edit-button,
+.product-card-actions .product-merge-button {
+  width: 100%;
+  min-height: 44px;
+}
+
+.product-merge-button {
+  border: 1px solid rgba(147, 98, 14, 0.28);
+  border-radius: 12px;
+  color: #7c520b;
+  background: #fff8e8;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.product-merge-button:hover,
+.product-merge-button:focus-visible {
+  border-color: rgba(147, 98, 14, 0.48);
+  background: #fff3d5;
+}
+
+.product-merge-hint {
+  margin: 0;
+  border-left: 3px solid #93620e;
+  padding: 8px 10px;
+  color: #6f4b0c;
+  background: #fff8e8;
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.product-merge-form {
+  display: grid;
+  gap: 12px;
+}
+
+.product-merge-heading {
+  display: grid;
+  gap: 4px;
+}
+
+.product-merge-heading > strong {
+  color: #17212b;
+  font-size: 1rem;
+}
+
+.product-merge-heading > span {
+  color: #66737e;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.merge-main-product {
+  display: grid;
+  gap: 4px;
+  border: 1px solid rgba(15, 76, 129, 0.18);
+  border-radius: 14px;
+  padding: 12px;
+  background: #edf5fb;
+}
+
+.merge-main-product > span,
+.merge-preview article > span {
+  color: #64737f;
+  font-size: 0.64rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.merge-main-product > strong,
+.merge-preview article > strong {
+  overflow-wrap: anywhere;
+  color: #17212b;
+  line-height: 1.3;
+}
+
+.merge-main-product > small,
+.merge-preview article > small {
+  color: #66737e;
+  font-size: 0.71rem;
+  line-height: 1.4;
+}
+
+.merge-search-row {
+  display: grid;
+  gap: 8px;
+}
+
+.merge-search-row label,
+.merge-candidate-select {
+  display: grid;
+  gap: 6px;
+  color: #34424e;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.merge-search-row input,
+.merge-candidate-select select {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid #ccd7df;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #17212b;
+  background: #fff;
+  font-size: 1rem;
+  outline: none;
+}
+
+.merge-search-row input:focus,
+.merge-candidate-select select:focus {
+  border-color: #0f4c81;
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.12);
+}
+
+.merge-candidate-select > small {
+  color: #74818b;
+  font-size: 0.7rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.merge-loading {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: #52616d;
+  background: #f4f7f9;
+  font-size: 0.76rem;
+  font-weight: 750;
+}
+
+.merge-empty,
+.merge-warning {
+  margin: 0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.merge-empty {
+  color: #52616d;
+  background: #f4f7f9;
+}
+
+.merge-warning {
+  border: 1px solid rgba(147, 98, 14, 0.18);
+  color: #6f4b0c;
+  background: #fff8e8;
+}
+
+.merge-preview {
+  display: grid;
+  gap: 7px;
+}
+
+.merge-preview article {
+  display: grid;
+  gap: 4px;
+  border: 1px solid rgba(15, 76, 129, 0.16);
+  border-radius: 13px;
+  padding: 11px;
+  background: #f7fbfe;
+}
+
+.merge-preview article.incorporated {
+  border-color: rgba(147, 98, 14, 0.2);
+  background: #fffaf0;
+}
+
+.merge-preview article p {
+  margin: 2px 0 0;
+  color: #45535f;
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.merge-arrow {
+  justify-self: center;
+  color: #0f4c81;
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.merge-confirm-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid #dce5eb;
+  border-radius: 12px;
+  padding: 11px 12px;
+  color: #34424e;
+  background: #f8fafb;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.merge-confirm-row input {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: #0f4c81;
+}
+
+@media (min-width: 640px) {
+  .product-card-actions,
+  .merge-search-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+  }
+}
