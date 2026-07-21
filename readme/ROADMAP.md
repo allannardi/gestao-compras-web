@@ -42,16 +42,25 @@
 - termos sem perda do formulário;
 - histórico ordenado por quantidade de registros.
 
-## v1.1.0 — Mesclagem e aliases — patch atual
+## v1.1.0 — Mesclagem e aliases — validada
 
 - união segura de produtos duplicados;
 - transferência de compras e históricos;
 - aliases para reconhecer descrições antigas;
 - auditoria administrativa.
 
-## Pós-beta
+## v1.2.0 — Fundação do Admin Geral — patch atual
 
-- painel Admin Geral;
-- gestão comercial de licenças Premium;
+- permissão global separada;
+- painel de resumo, famílias, usuários e auditoria;
+- suspensão e reativação;
+- gestão de papéis e vínculos;
+- exclusão definitiva de famílias e usuários;
+- privacidade por metadados, sem abrir compras ou notas.
+
+## Próximos passos
+
+- v1.1.1 — ajustes adicionais identificados no beta;
+- definição futura dos recursos dos planos, sem escopo fechado;
 - restauração orientada de backup;
 - melhorias baseadas no uso real das famílias beta.

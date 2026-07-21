@@ -28,6 +28,7 @@ import type { AceiteLegalStatus } from "@/types/beta";
 
 type Props = {
   apiUrl: string;
+  initialView?: "admin";
 };
 
 type AuthMode = "login" | "signup";
@@ -71,7 +72,7 @@ function acceptedStatus(result: {
   };
 }
 
-export function AuthGate({ apiUrl }: Props) {
+export function AuthGate({ apiUrl, initialView }: Props) {
   const [session, setSession] = useState<Session | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const [context, setContext] = useState<FamilyContext | null>(null);
@@ -628,6 +629,7 @@ export function AuthGate({ apiUrl }: Props) {
       apiUrl={apiUrl}
       accessToken={session.access_token}
       context={context}
+      initialView={initialView}
       onContextRefresh={async () => {
         try {
           const nextContext = await fetchFamilyContextDirect(

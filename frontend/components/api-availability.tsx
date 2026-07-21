@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { AdminGeralView } from "@/components/admin-geral-view";
+
 import { DashboardView } from "@/components/dashboard-view";
 import { NfceCapture } from "@/components/nfce-capture";
 import { OnboardingCard } from "@/components/onboarding-card";
@@ -10,6 +12,7 @@ import { ProductsView } from "@/components/products-view";
 import { PurchasesView } from "@/components/purchases-view";
 import { RegistriesView } from "@/components/registries-view";
 import { SettingsView } from "@/components/settings-view";
+import { fetchAdminAccess } from "@/services/admin-geral";
 import type { FamilyContext } from "@/types/auth";
 
 type ApiState = "checking" | "online" | "offline";
@@ -21,12 +24,14 @@ type AppView =
   | "registries"
   | "settings"
   | "privacy"
+  | "admin"
   | "more";
 
 type Props = {
   apiUrl: string;
   accessToken: string;
   context: FamilyContext;
+  initialView?: "admin";
   onContextRefresh: () => Promise<FamilyContext>;
   onLogout: () => Promise<void>;
   onAccountDeleted: (message: string) => Promise<void>;
@@ -72,6 +77,7 @@ export function ApiAvailability({
   apiUrl,
   accessToken,
   context,
+  initialView,
   onContextRefresh,
   onLogout,
   onAccountDeleted,
@@ -85,7 +91,8 @@ export function ApiAvailability({
     "Conectando ao ambiente seguro da sua família…",
   );
   const [loggingOut, setLoggingOut] = useState(false);
-  const [view, setView] = useState<AppView>("add");
+  const [view, setView] = useState<AppView>(initialView === "admin" ? "admin" : "add");
+  const [adminAccess, setAdminAccess] = useState<boolean | null>(null);
   const [purchaseRefreshKey, setPurchaseRefreshKey] = useState(0);
   const [onboardingOpenKey, setOnboardingOpenKey] = useState(0);
   const [apiVersion, setApiVersion] = useState("");
@@ -199,6 +206,23 @@ export function ApiAvailability({
     };
   }, []);
 
+  useEffect(() => {
+    if (apiState !== "online") return;
+    let cancelled = false;
+    void fetchAdminAccess(apiUrl, accessToken)
+      .then((result) => {
+        if (!cancelled) setAdminAccess(result.admin_geral);
+      })
+      .catch(() => {
+        if (!cancelled) setAdminAccess(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken, apiState, apiUrl]);
+
+  const familySuspended = context.familia_status !== "ativa";
+
   const showPurchases = () => {
     setPurchaseRefreshKey((value) => value + 1);
     setView("purchases");
@@ -213,7 +237,8 @@ export function ApiAvailability({
     view === "more" ||
     view === "registries" ||
     view === "settings" ||
-    view === "privacy";
+    view === "privacy" ||
+    view === "admin";
 
   return (
     <>
@@ -223,6 +248,7 @@ export function ApiAvailability({
           <strong>{context.familia_nome}</strong>
           <small>
             {context.nome} · {context.papel === "administrador" ? "Administrador" : "Membro"}
+            {familySuspended ? " · Família suspensa" : ""}
           </small>
         </div>
         <div className="family-session-actions desktop-session-actions">
@@ -246,7 +272,7 @@ export function ApiAvailability({
         </div>
       </section>
 
-      {apiState === "online" && (
+      {apiState === "online" && !familySuspended && (
         <nav className="app-navigation" aria-label="Navegação principal">
           <button
             type="button"
@@ -314,7 +340,9 @@ export function ApiAvailability({
                         ? "Configurações da família"
                         : view === "privacy"
                           ? "Privacidade e dados"
-                        : "Mais opções"}
+                          : view === "admin"
+                            ? "Admin Geral"
+                            : "Mais opções"}
           </h1>
           <p className="subtitle">
             {view === "add"
@@ -331,7 +359,9 @@ export function ApiAvailability({
                         ? "Atualize seus dados, gerencie membros e compartilhe o acesso da família."
                         : view === "privacy"
                           ? "Entenda quais informações são armazenadas e como controlar sua conta."
-                        : "Abra cadastros, ajustes ou encerre sua sessão com segurança."}
+                          : view === "admin"
+                            ? "Gerencie famílias, usuários e auditoria sem acessar o conteúdo particular das compras."
+                            : "Abra cadastros, ajustes ou encerre sua sessão com segurança."}
           </p>
         </div>
 
@@ -353,7 +383,7 @@ export function ApiAvailability({
         </section>
       )}
 
-      {apiState === "online" && (
+      {apiState === "online" && !familySuspended && view !== "admin" && (
         <OnboardingCard
           apiUrl={apiUrl}
           accessToken={accessToken}
@@ -364,7 +394,7 @@ export function ApiAvailability({
         />
       )}
 
-      {apiState === "online" && view === "add" && (
+      {apiState === "online" && !familySuspended && view === "add" && (
         <NfceCapture
           apiUrl={apiUrl}
           accessToken={accessToken}
@@ -375,7 +405,7 @@ export function ApiAvailability({
         />
       )}
 
-      {apiState === "online" && view === "purchases" && (
+      {apiState === "online" && !familySuspended && view === "purchases" && (
         <PurchasesView
           key={`purchases-${purchaseRefreshKey}`}
           apiUrl={apiUrl}
@@ -386,7 +416,7 @@ export function ApiAvailability({
         />
       )}
 
-      {apiState === "online" && view === "products" && (
+      {apiState === "online" && !familySuspended && view === "products" && (
         <ProductsView
           apiUrl={apiUrl}
           accessToken={accessToken}
@@ -395,7 +425,7 @@ export function ApiAvailability({
         />
       )}
 
-      {apiState === "online" && view === "dashboard" && (
+      {apiState === "online" && !familySuspended && view === "dashboard" && (
         <DashboardView
           apiUrl={apiUrl}
           accessToken={accessToken}
@@ -403,7 +433,7 @@ export function ApiAvailability({
         />
       )}
 
-      {apiState === "online" && view === "registries" && (
+      {apiState === "online" && !familySuspended && view === "registries" && (
         <RegistriesView
           apiUrl={apiUrl}
           accessToken={accessToken}
@@ -411,7 +441,7 @@ export function ApiAvailability({
         />
       )}
 
-      {apiState === "online" && view === "settings" && (
+      {apiState === "online" && !familySuspended && view === "settings" && (
         <SettingsView
           apiUrl={apiUrl}
           accessToken={accessToken}
@@ -427,7 +457,7 @@ export function ApiAvailability({
         />
       )}
 
-      {apiState === "online" && view === "privacy" && (
+      {apiState === "online" && !familySuspended && view === "privacy" && (
         <PrivacyView
           apiUrl={apiUrl}
           accessToken={accessToken}
@@ -437,7 +467,7 @@ export function ApiAvailability({
         />
       )}
 
-      {apiState === "online" && view === "more" && (
+      {apiState === "online" && !familySuspended && view === "more" && (
         <section className="more-options-section" aria-label="Mais opções">
           <button type="button" onClick={() => setView("registries")}>
             <span aria-hidden="true">▧</span>
@@ -470,6 +500,15 @@ export function ApiAvailability({
               <small>Dados, exportação e exclusão</small>
             </div>
           </button>
+          {adminAccess && (
+            <button type="button" className="admin-general-entry" onClick={() => setView("admin")}>
+              <span aria-hidden="true">◆</span>
+              <div>
+                <strong>Admin Geral</strong>
+                <small>Famílias, usuários e auditoria</small>
+              </div>
+            </button>
+          )}
           <button
             type="button"
             onClick={() => window.location.reload()}
@@ -493,6 +532,53 @@ export function ApiAvailability({
             </div>
           </button>
         </section>
+      )}
+
+      {apiState === "online" && familySuspended && view !== "admin" && (
+        <section className="feedback-card error-card api-warning" role="alert">
+          <strong>Família temporariamente suspensa</strong>
+          <p>Entre em contato com o suporte para regularizar o acesso.</p>
+          <div className="button-row">
+            {adminAccess && (
+              <button className="capture-button" type="button" onClick={() => setView("admin")}>
+                Abrir Admin Geral
+              </button>
+            )}
+            <button className="ghost-action" type="button" onClick={() => void logout()}>
+              Sair
+            </button>
+          </div>
+        </section>
+      )}
+
+      {apiState === "online" && view === "admin" && adminAccess === null && (
+        <section className="processing-card" role="status">
+          <span className="spinner" aria-hidden="true" />
+          <div><strong>Validando Admin Geral</strong><p>Confirmando sua permissão de sistema…</p></div>
+        </section>
+      )}
+
+      {apiState === "online" && view === "admin" && adminAccess === false && (
+        <section className="feedback-card error-card" role="alert">
+          <strong>Acesso não autorizado</strong>
+          <p>Seu usuário não possui permissão de Administrador Geral.</p>
+          <button
+            className="ghost-action"
+            type="button"
+            onClick={() => familySuspended ? void logout() : setView("more")}
+          >
+            {familySuspended ? "Sair" : "Voltar"}
+          </button>
+        </section>
+      )}
+
+      {apiState === "online" && view === "admin" && adminAccess === true && (
+        <AdminGeralView
+          apiUrl={apiUrl}
+          accessToken={accessToken}
+          onContextRefresh={onContextRefresh}
+          onClose={() => setView(familySuspended ? "admin" : "more")}
+        />
       )}
 
       {apiState === "offline" && (

@@ -71,3 +71,16 @@
 - migration 015 obrigatória;
 - 108 testes backend e build frontend aprovados.
 
+## v1.2.0 — Fundação do Admin Geral
+
+- perfil global de Administrador Geral;
+- rota protegida `/admin-geral`;
+- resumo operacional do sistema;
+- gestão de famílias e usuários;
+- suspensão e reativação de famílias;
+- alteração de papéis e remoção de membros;
+- exclusão definitiva de famílias e usuários;
+- auditoria administrativa;
+- nenhum recurso Premium, cobrança ou limite comercial;
+- migration 016 obrigatória;
+- 115 testes backend e build frontend aprovados.

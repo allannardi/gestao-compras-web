@@ -1,0 +1,22 @@
+Gestão de Compras Web v1.2.0 — Fundação do Admin Geral
+
+Migration obrigatória:
+- database/migrations/016_admin_geral.sql
+
+Backend:
+- acesso global e bloqueio de famílias suspensas;
+- endpoints /api/v1/admin-geral/*;
+- famílias, usuários, membros, auditoria e exclusões definitivas;
+- exclusão Auth com SUPABASE_SECRET_KEY já existente.
+
+Frontend:
+- rota /admin-geral;
+- botão restrito em Mais;
+- Resumo, Famílias, Usuários e Auditoria;
+- confirmações reforçadas para exclusões definitivas;
+- tratamento de família suspensa.
+
+Não inclui:
+- Premium, cobrança, assinatura ou limites comerciais;
+- dependências novas;
+- variáveis de ambiente novas.

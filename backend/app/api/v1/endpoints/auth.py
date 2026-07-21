@@ -17,4 +17,5 @@ def read_current_user(
         familia_id=context.familia_id,
         familia_nome=context.familia_nome,
         papel=context.papel,
+        familia_status=context.familia_status,
     )

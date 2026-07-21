@@ -8,3 +8,4 @@ class AuthContextResponse(BaseModel):
     familia_id: str
     familia_nome: str
     papel: str
+    familia_status: str = "ativa"

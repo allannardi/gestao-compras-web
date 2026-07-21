@@ -30,6 +30,7 @@ def test_auth_me_returns_family_context() -> None:
             "familia_id": "family-123",
             "familia_nome": "Família Nardi",
             "papel": "administrador",
+            "familia_status": "ativa",
         }
     finally:
         app.dependency_overrides.clear()

@@ -27,6 +27,15 @@ class FamilyContext:
     familia_nome: str
     papel: str
     access_token: str = ""
+    familia_status: str = "ativa"
+
+
+@dataclass(frozen=True)
+class SystemAdminContext:
+    user_id: str
+    email: str
+    nome: str
+    access_token: str = ""
 
 
 def _supabase_headers(access_token: str) -> dict[str, str]:
@@ -155,6 +164,7 @@ def _fetch_family_context(user: AuthenticatedUser) -> FamilyContext:
         familia_nome=str(context.get("familia_nome") or "Minha família"),
         papel=str(context.get("papel") or "membro"),
         access_token=user.access_token,
+        familia_status=str(context.get("familia_status") or "ativa"),
     )
 
 
@@ -173,4 +183,74 @@ def get_current_user(
 def get_current_family_context(
     user: AuthenticatedUser = Depends(get_current_user),
 ) -> FamilyContext:
-    return _fetch_family_context(user)
+    context = _fetch_family_context(user)
+    if context.familia_status != "ativa":
+        raise HTTPException(
+            status_code=status.HTTP_423_LOCKED,
+            detail=(
+                "Esta família está temporariamente suspensa. "
+                "Entre em contato com o suporte."
+            ),
+        )
+    return context
+
+
+def _fetch_system_admin_context(user: AuthenticatedUser) -> SystemAdminContext:
+    _ensure_supabase_configured()
+
+    try:
+        response = requests.post(
+            f"{settings.supabase_url.rstrip('/')}/rest/v1/rpc/meu_acesso_admin_geral",
+            headers=_supabase_headers(user.access_token),
+            json={},
+            timeout=settings.supabase_request_timeout_seconds,
+        )
+    except requests.RequestException as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Não foi possível validar o acesso ao Admin Geral.",
+        ) from exc
+
+    try:
+        payload: Any = response.json()
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="O Supabase retornou uma resposta administrativa inválida.",
+        ) from exc
+
+    if response.status_code in {401, 403}:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Seu usuário não possui acesso ao Admin Geral.",
+        )
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Não foi possível validar o Admin Geral. "
+                "Confirme se a migration v1.2.0 foi executada."
+            ),
+        )
+
+    if isinstance(payload, list):
+        payload = payload[0] if payload else None
+
+    if not isinstance(payload, dict) or not payload.get("admin_geral"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Seu usuário não possui acesso ao Admin Geral.",
+        )
+
+    return SystemAdminContext(
+        user_id=str(payload.get("usuario_id") or user.id),
+        email=str(payload.get("email") or user.email),
+        nome=str(payload.get("nome") or user.metadata.get("nome") or "Administrador Geral"),
+        access_token=user.access_token,
+    )
+
+
+def get_current_system_admin(
+    user: AuthenticatedUser = Depends(get_current_user),
+) -> SystemAdminContext:
+    return _fetch_system_admin_context(user)

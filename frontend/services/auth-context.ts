@@ -60,6 +60,7 @@ function normalizeContextPayload(payload: unknown): FamilyContext | null {
     familia_id: String(record.familia_id),
     familia_nome: String(record.familia_nome ?? "Minha família"),
     papel: String(record.papel ?? "membro"),
+    familia_status: String(record.familia_status ?? "ativa"),
   };
 }
 

@@ -5,4 +5,5 @@ export type FamilyContext = {
   familia_id: string;
   familia_nome: string;
   papel: "administrador" | "membro" | string;
+  familia_status: "ativa" | "suspensa" | "cancelada" | string;
 };
