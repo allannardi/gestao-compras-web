@@ -1,0 +1,16 @@
+Gestão de Compras Web v1.2.1 — Hotfix da galeria de fotos
+
+Frontend:
+- separa o input de galeria do input de fallback da câmera;
+- remove `capture="environment"` do fluxo de foto já tirada;
+- mantém câmera direta no fluxo Ler QR-CODE da NF;
+- atualiza versão e cache PWA para v1.2.1.
+
+Backend:
+- atualiza somente a versão declarada para v1.2.1.
+
+Não inclui:
+- migration;
+- dependência nova;
+- variável de ambiente nova;
+- alteração em banco de dados.

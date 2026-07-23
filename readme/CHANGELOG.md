@@ -84,3 +84,11 @@
 - nenhum recurso Premium, cobrança ou limite comercial;
 - migration 016 obrigatória;
 - 115 testes backend e build frontend aprovados.
+
+## v1.2.1 — Hotfix da galeria de fotos
+
+- separação entre o seletor de galeria e o fallback de câmera;
+- botão **Usar uma foto já tirada** sem atributo `capture`;
+- câmera mantida para **Ler QR-CODE da NF**;
+- cache da PWA e versões atualizados para v1.2.1;
+- nenhuma migration, dependência ou configuração nova.

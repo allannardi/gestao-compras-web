@@ -49,7 +49,7 @@
 - aliases para reconhecer descrições antigas;
 - auditoria administrativa.
 
-## v1.2.0 — Fundação do Admin Geral — patch atual
+## v1.2.0 — Fundação do Admin Geral — validada
 
 - permissão global separada;
 - painel de resumo, famílias, usuários e auditoria;
@@ -57,6 +57,12 @@
 - gestão de papéis e vínculos;
 - exclusão definitiva de famílias e usuários;
 - privacidade por metadados, sem abrir compras ou notas.
+
+## v1.2.1 — Hotfix da galeria — patch atual
+
+- botão de foto existente abre a galeria;
+- câmera permanece separada para captura direta;
+- nenhuma alteração no banco ou no backend funcional.
 
 ## Próximos passos
 

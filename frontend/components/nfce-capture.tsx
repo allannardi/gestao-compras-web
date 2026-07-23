@@ -68,7 +68,8 @@ export function NfceCapture({
   const [cameraReady, setCameraReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const cameraFallbackInputRef = useRef<HTMLInputElement>(null);
 
   const stopCamera = () => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -138,7 +139,7 @@ export function NfceCapture({
     setCameraReady(false);
 
     if (!navigator.mediaDevices?.getUserMedia) {
-      fileInputRef.current?.click();
+      cameraFallbackInputRef.current?.click();
       return;
     }
 
@@ -290,7 +291,14 @@ export function NfceCapture({
   return (
     <section className="capture-section" aria-label="Leitura de NFC-e">
       <input
-        ref={fileInputRef}
+        ref={galleryInputRef}
+        className="hidden-file-input"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        onChange={handleFile}
+      />
+      <input
+        ref={cameraFallbackInputRef}
         className="hidden-file-input"
         type="file"
         accept="image/jpeg,image/png,image/webp"
@@ -307,7 +315,7 @@ export function NfceCapture({
           <button
             className="secondary-action"
             type="button"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => galleryInputRef.current?.click()}
           >
             Usar uma foto já tirada
           </button>
@@ -378,7 +386,7 @@ export function NfceCapture({
             <button
               className="capture-button"
               type="button"
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => galleryInputRef.current?.click()}
             >
               Tentar com uma foto
             </button>
